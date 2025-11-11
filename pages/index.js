@@ -21,6 +21,18 @@ export default function Home() {
   const [history, setHistory] = useState([]);
   const [template, setTemplate] = useState('');
 
+  // Utility for button styles
+  const buttonStyle = (bg, hoverBg, color = '#fff') => ({
+    padding: '6px 12px',
+    backgroundColor: bg,
+    color: color,
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+    transition: 'background-color 0.2s',
+  });
+
   // Load from localStorage on mount
   useEffect(() => {
     const savedHistory = localStorage.getItem('promptHistory');
@@ -29,7 +41,7 @@ export default function Home() {
     setDarkMode(savedDark);
   }, []);
 
-  // Apply background based on dark mode
+  // Apply body theme
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#111827' : '#f9fafb';
     document.body.style.color = darkMode ? '#f9fafb' : '#111827';
@@ -66,7 +78,6 @@ export default function Home() {
         setOutput(data.prompt);
         setUsedModel(data.modelUsed);
 
-        // Save to history
         const newEntry = {
           id: Date.now(),
           input: input.trim(),
@@ -92,15 +103,10 @@ export default function Home() {
   const sharePrompt = () => {
     if (!output) return;
     const encoded = encodeURIComponent(output);
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encoded}`;
-    const whatsappUrl = `https://wa.me/?text=${encoded}`;
-    
-    // Try Web Share API first (modern browsers)
     if (navigator.share) {
       navigator.share({ title: 'AI Prompt', text: output }).catch(console.warn);
     } else {
-      // Fallback: Open Twitter
-      window.open(twitterUrl, '_blank');
+      window.open(`https://twitter.com/intent/tweet?text=${encoded}`, '_blank');
     }
   };
 
@@ -111,30 +117,13 @@ export default function Home() {
     }
   };
 
-  // Theme-based styles
+  // Styles
   const containerStyle = {
     maxWidth: '700px',
     margin: '0 auto',
     padding: '2rem',
     fontFamily: 'system-ui, sans-serif',
   };
-
-  const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '1.5rem',
-  };
-
-  const buttonStyle = (bg, hoverBg, color = '#fff') => ({
-    padding: '8px 16px',
-    backgroundColor: bg,
-    color: color,
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.875rem',
-  });
 
   const inputStyle = {
     width: '100%',
@@ -174,19 +163,64 @@ export default function Home() {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
-      <div style={headerStyle}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: '700', color: '#2563eb' }}>
-          🤖 AI Prompt Maker
-        </h1>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#4b5563' : '#d1d5db', darkMode ? '#f9fafb' : '#111827')}
-          aria-label="Toggle dark mode"
+      {/* ====== NAVBAR ====== */}
+      <nav style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '1rem 0',
+        borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+        marginBottom: '2rem'
+      }}>
+        <a
+          href="/"
+          style={{
+            fontSize: '1.75rem',
+            fontWeight: '800',
+            color: '#2563eb',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
         >
-          {darkMode ? '☀️ Light' : '🌙 Dark'}
-        </button>
-      </div>
+          🤖 PromptMaker
+        </a>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', gap: '1.25rem' }}>
+            <a
+              href="/"
+              style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                textDecoration: 'none',
+                fontWeight: '600',
+                fontSize: '1rem'
+              }}
+            >
+              Home
+            </a>
+            <a
+              href="/blog"
+              style={{
+                color: darkMode ? '#d1d5db' : '#4b5563',
+                textDecoration: 'none',
+                fontWeight: '500',
+                fontSize: '1rem'
+              }}
+            >
+              📚 Blog
+            </a>
+          </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#4b5563' : '#d1d5db', darkMode ? '#f9fafb' : '#111827')}
+            aria-label="Toggle dark mode"
+          >
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
+          </button>
+        </div>
+      </nav>
 
       <p style={{ textAlign: 'center', color: darkMode ? '#9ca3af' : '#6b7280', marginBottom: '1.5rem' }}>
         Free models • Auto fallback • Save & share prompts
@@ -342,24 +376,7 @@ export default function Home() {
       )}
 
       <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
-      <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
-  
-  <br />
-  <a
-    href="/blog"
-    style={{
-      color: darkMode ? '#93c5fd' : '#3b82f6',
-      textDecoration: 'none',
-      fontWeight: '600',
-      marginTop: '0.5rem',
-      display: 'inline-block',
-    }}
-  >
-    📚 Read Prompt Engineering Guides
-  </a>
-</footer> 
-
-🔒 No data stored on server • Powered by OpenRouter (Made With Mahendra)
+        🔒 No data stored on server • Powered by OpenRouter (free tier)
       </footer>
     </div>
   );
