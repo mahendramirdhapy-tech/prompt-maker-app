@@ -343,7 +343,7 @@ export default function Home() {
 
       <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
       <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
-  🔒 No data stored on server • Powered by OpenRouter (free tier)
+  
   <br />
   <a
     href="/blog"
@@ -359,7 +359,7 @@ export default function Home() {
   </a>
 </footer> 
 
-🔒 No data stored on server • Powered by OpenRouter (free tier)
+🔒 No data stored on server • Powered by OpenRouter (Made With Mahendra)
       </footer>
     </div>
   );
