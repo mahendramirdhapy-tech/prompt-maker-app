@@ -10,7 +10,7 @@ const FREE_MODELS = [
 ];
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
-const SITE_URL = process.env.SITE_URL || 'https://aipromptmaker.online';
+const SITE_URL = process.env.SITE_URL || 'https://aipromptmaker.online'; // ✅ No spaces
 const APP_NAME = 'PromptMaker';
 
 export default async function handler(req, res) {
@@ -24,18 +24,15 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Valid "idea" string required' });
   }
 
-  // 🔹 Language instruction
   const langInstruction = language === 'Hindi'
     ? 'Output must be in Hindi.'
     : 'Output must be in English.';
 
-  // 🔹 Tone-based temperature
-  let temperature = 0.7; // default
+  let temperature = 0.7;
   if (tone === 'Creative' || tone === 'Humorous') temperature = 0.9;
   else if (tone === 'Professional' || tone === 'Technical') temperature = 0.3;
   else if (tone === 'Friendly') temperature = 0.6;
 
-  // 🔹 System prompt with tone + language
   const systemPrompt = `You are an expert AI prompt engineer. Convert the user's rough idea into a clear, detailed, and effective prompt that can be used with large language models. 
 Tone: ${tone}.
 ${langInstruction}
@@ -46,14 +43,14 @@ Respond ONLY with the final prompt, no explanations.`;
       console.log(`[API] Trying model: ${model} | Tone: ${tone} | Max Tokens: ${maxTokens}`);
       
       const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
+        'https://openrouter.ai/api/v1/chat/completions', // ✅ No spaces
         {
           model: model,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: idea.trim() },
           ],
-          max_tokens: Math.min(Math.max(maxTokens, 100), 1000), // clamp between 100–1000
+          max_tokens: Math.min(Math.max(maxTokens, 100), 1000),
           temperature: temperature,
         },
         {
