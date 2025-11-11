@@ -21,7 +21,7 @@ export default function Home() {
   const [history, setHistory] = useState([]);
   const [template, setTemplate] = useState('');
 
-  // Load history & theme from localStorage on mount
+  // Load from localStorage on mount
   useEffect(() => {
     const savedHistory = localStorage.getItem('promptHistory');
     const savedDark = localStorage.getItem('darkMode') === 'true';
@@ -29,15 +29,11 @@ export default function Home() {
     setDarkMode(savedDark);
   }, []);
 
-  // Apply dark mode class to body
+  // Apply background based on dark mode
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('darkMode', 'true');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('darkMode', 'false');
-    }
+    document.body.style.backgroundColor = darkMode ? '#111827' : '#f9fafb';
+    document.body.style.color = darkMode ? '#f9fafb' : '#111827';
+    localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
   const handleTemplateChange = (e) => {
@@ -79,7 +75,7 @@ export default function Home() {
           model: data.modelUsed,
           timestamp: new Date().toISOString(),
         };
-        const updatedHistory = [newEntry, ...history.slice(0, 9)]; // Keep last 10
+        const updatedHistory = [newEntry, ...history.slice(0, 9)];
         setHistory(updatedHistory);
         localStorage.setItem('promptHistory', JSON.stringify(updatedHistory));
       } else {
@@ -95,22 +91,15 @@ export default function Home() {
 
   const sharePrompt = () => {
     if (!output) return;
-    const text = encodeURIComponent(output);
-    const url = `https://prompt-maker-app.vercel.app`;
+    const encoded = encodeURIComponent(output);
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encoded}`;
+    const whatsappUrl = `https://wa.me/?text=${encoded}`;
     
-    // Try Web Share API (mobile/desktop modern browsers)
+    // Try Web Share API first (modern browsers)
     if (navigator.share) {
-      navigator.share({
-        title: 'AI Prompt',
-        text: output,
-        url: window.location.href,
-      }).catch(console.error);
+      navigator.share({ title: 'AI Prompt', text: output }).catch(console.warn);
     } else {
-      // Fallback: Twitter & WhatsApp
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
-      const whatsappUrl = `https://wa.me/?text=${text}`;
-      alert('Choose: [1] Twitter, [2] WhatsApp');
-      // Better: show buttons, but for simplicity, opening Twitter
+      // Fallback: Open Twitter
       window.open(twitterUrl, '_blank');
     }
   };
@@ -122,157 +111,239 @@ export default function Home() {
     }
   };
 
+  // Theme-based styles
+  const containerStyle = {
+    maxWidth: '700px',
+    margin: '0 auto',
+    padding: '2rem',
+    fontFamily: 'system-ui, sans-serif',
+  };
+
+  const headerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '1.5rem',
+  };
+
+  const buttonStyle = (bg, hoverBg, color = '#fff') => ({
+    padding: '8px 16px',
+    backgroundColor: bg,
+    color: color,
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+  });
+
+  const inputStyle = {
+    width: '100%',
+    padding: '12px',
+    fontSize: '16px',
+    border: darkMode ? '1px solid #374151' : '1px solid #d1d5db',
+    borderRadius: '8px',
+    backgroundColor: darkMode ? '#1f2937' : '#fff',
+    color: darkMode ? '#f9fafb' : '#000',
+    marginBottom: '0.5rem',
+  };
+
+  const cardStyle = {
+    padding: '1.25rem',
+    marginTop: '1.5rem',
+    border: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+    borderRadius: '12px',
+    backgroundColor: darkMode ? '#1f2937' : '#fff',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+  };
+
+  const historyItemStyle = {
+    padding: '12px',
+    marginBottom: '8px',
+    border: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+    borderRadius: '8px',
+    backgroundColor: darkMode ? '#374151' : '#f3f4f6',
+    cursor: 'pointer',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    marginBottom: '0.5rem',
+    fontWeight: '600',
+    color: darkMode ? '#f9fafb' : '#111827',
+  };
+
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">🤖 AI Prompt Maker</h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-            aria-label="Toggle dark mode"
-          >
-            {darkMode ? '☀️ Light' : '🌙 Dark'}
-          </button>
-        </header>
+    <div style={containerStyle}>
+      {/* Header */}
+      <div style={headerStyle}>
+        <h1 style={{ fontSize: '1.875rem', fontWeight: '700', color: '#2563eb' }}>
+          🤖 AI Prompt Maker
+        </h1>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#4b5563' : '#d1d5db', darkMode ? '#f9fafb' : '#111827')}
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? '☀️ Light' : '🌙 Dark'}
+        </button>
+      </div>
 
-        <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-          Free models • Auto fallback • Save & share prompts
-        </p>
+      <p style={{ textAlign: 'center', color: darkMode ? '#9ca3af' : '#6b7280', marginBottom: '1.5rem' }}>
+        Free models • Auto fallback • Save & share prompts
+      </p>
 
-        {/* Template Selector */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Prompt Template</label>
-          <select
-            value={template}
-            onChange={handleTemplateChange}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          >
-            {TEMPLATES.map((t) => (
-              <option key={t.value || 'custom'} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Template Selector */}
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={labelStyle}>Prompt Template</label>
+        <select
+          value={template}
+          onChange={handleTemplateChange}
+          style={{
+            ...inputStyle,
+            padding: '8px',
+          }}
+        >
+          {TEMPLATES.map((t) => (
+            <option key={t.value || 'custom'} value={t.value}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {/* Language Toggle */}
-        <div className="mb-4 flex gap-4">
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              name="lang"
-              checked={language === 'English'}
-              onChange={() => setLanguage('English')}
-              className="mr-2"
-            />
-            English
-          </label>
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              name="lang"
-              checked={language === 'Hindi'}
-              onChange={() => setLanguage('Hindi')}
-              className="mr-2"
-            />
-            हिंदी
-          </label>
-        </div>
-
-        {/* Input Form */}
-        <form onSubmit={handleSubmit} className="mb-8">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Describe your idea..."
-            rows="4"
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white mb-3"
-            required
+      {/* Language Toggle */}
+      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
+        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+          <input
+            type="radio"
+            name="lang"
+            checked={language === 'English'}
+            onChange={() => setLanguage('English')}
+            style={{ marginRight: '6px' }}
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 px-4 rounded-lg font-medium ${
-              loading
-                ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            {loading ? '⚙️ Generating...' : '✨ Generate Optimized Prompt'}
-          </button>
-        </form>
+          English
+        </label>
+        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+          <input
+            type="radio"
+            name="lang"
+            checked={language === 'Hindi'}
+            onChange={() => setLanguage('Hindi')}
+            style={{ marginRight: '6px' }}
+          />
+          हिंदी
+        </label>
+      </div>
 
-        {/* Output */}
-        {output && (
-          <div className="mb-8 p-5 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-semibold">✅ Your AI Prompt:</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigator.clipboard.writeText(output)}
-                  className="text-sm bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
-                >
-                  📋 Copy
-                </button>
-                <button
-                  onClick={sharePrompt}
-                  className="text-sm bg-purple-600 text-white px-2 py-1 rounded hover:bg-purple-700"
-                >
-                  📤 Share
-                </button>
-              </div>
-            </div>
-            <pre className="whitespace-pre-wrap break-words bg-gray-100 dark:bg-gray-900 p-3 rounded-md border">
-              {output}
-            </pre>
-            {usedModel && (
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Model: <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{usedModel}</code>
-              </p>
-            )}
-          </div>
-        )}
+      {/* Form */}
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Describe your idea..."
+          rows="4"
+          style={inputStyle}
+          required
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '12px',
+            backgroundColor: loading ? (darkMode ? '#4b5563' : '#9ca3af') : '#2563eb',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {loading ? '⚙️ Generating...' : '✨ Generate Optimized Prompt'}
+        </button>
+      </form>
 
-        {/* History */}
-        {history.length > 0 && (
-          <div className="mt-10">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold">📜 Recent Prompts</h3>
+      {/* Output */}
+      {output && (
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+            <h3 style={{ fontWeight: '600' }}>✅ Your AI Prompt:</h3>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
-                onClick={clearHistory}
-                className="text-sm text-red-500 hover:underline"
+                onClick={() => navigator.clipboard.writeText(output)}
+                style={buttonStyle('#0d9488', '#0a7a6f')}
               >
-                Clear All
+                📋 Copy
+              </button>
+              <button
+                onClick={sharePrompt}
+                style={buttonStyle('#7e22ce', '#6b21a8')}
+              >
+                📤 Share
               </button>
             </div>
-            <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-              {history.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750"
-                  onClick={() => {
-                    setInput(item.input);
-                    setOutput(item.output);
-                    setUsedModel(item.model);
-                    setLanguage(item.language);
-                  }}
-                >
-                  <p className="font-medium truncate">{item.input}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {new Date(item.timestamp).toLocaleString()} • {item.language}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
-        )}
+          <pre
+            style={{
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              backgroundColor: darkMode ? '#111827' : '#f3f4f6',
+              padding: '1rem',
+              borderRadius: '6px',
+              border: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+              fontSize: '0.95rem',
+              color: darkMode ? '#f9fafb' : '#111827',
+            }}
+          >
+            {output}
+          </pre>
+          {usedModel && (
+            <p style={{ marginTop: '0.75rem', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
+              Model used: <code style={{ backgroundColor: darkMode ? '#1f2937' : '#e5e7eb', padding: '2px 4px', borderRadius: '4px' }}>
+                {usedModel}
+              </code>
+            </p>
+          )}
+        </div>
+      )}
 
-        <footer className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
-          🔒 No data stored on server • Powered by OpenRouter (free tier)
-        </footer>
-      </div>
+      {/* History */}
+      {history.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ fontWeight: '600' }}>📜 Recent Prompts</h3>
+            <button
+              onClick={clearHistory}
+              style={{ color: '#ef4444', fontSize: '0.875rem', cursor: 'pointer' }}
+            >
+              Clear All
+            </button>
+          </div>
+          <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            {history.map((item) => (
+              <div
+                key={item.id}
+                style={historyItemStyle}
+                onClick={() => {
+                  setInput(item.input);
+                  setOutput(item.output);
+                  setUsedModel(item.model);
+                  setLanguage(item.language);
+                }}
+              >
+                <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>{item.input}</div>
+                <div style={{ fontSize: '0.75rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
+                  {new Date(item.timestamp).toLocaleString()} • {item.language}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
+        🔒 No data stored on server • Powered by OpenRouter (free tier)
+      </footer>
     </div>
   );
 }
