@@ -342,7 +342,24 @@ export default function Home() {
       )}
 
       <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
-        🔒 No data stored on server • Powered by OpenRouter (free tier)
+      <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
+  🔒 No data stored on server • Powered by OpenRouter (free tier)
+  <br />
+  <a
+    href="/blog"
+    style={{
+      color: darkMode ? '#93c5fd' : '#3b82f6',
+      textDecoration: 'none',
+      fontWeight: '600',
+      marginTop: '0.5rem',
+      display: 'inline-block',
+    }}
+  >
+    📚 Read Prompt Engineering Guides
+  </a>
+</footer> 
+
+🔒 No data stored on server • Powered by OpenRouter (free tier)
       </footer>
     </div>
   );
