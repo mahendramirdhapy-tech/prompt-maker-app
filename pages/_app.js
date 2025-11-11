@@ -37,6 +37,7 @@ export default function App({ Component, pageProps }) {
 
         {/* Favicon (optional) */}
         <link rel="icon" href="/favicon.ico" />
+            <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
       </Head>
       <Component {...pageProps} />
     </>
