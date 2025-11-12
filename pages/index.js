@@ -230,6 +230,11 @@ export default function Home() {
 
         <div id="nav-menu" style={navMenuStyle}>
           <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
+           <a href="/seo">🔍 SEO</a>
+           <a href="/code">💻 Code</a>
+          <a href="/email">✉️ Email</a>
+          <a href="/translate">🔄 Translate</a>
+          <a href="/blog-outline">📝 Outline</a>
           <a href="/blog" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📚 Blog</a>
           <a href="/image" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🖼️ Image</a>
           {user ? (
