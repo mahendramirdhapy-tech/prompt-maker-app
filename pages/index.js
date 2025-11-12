@@ -1,6 +1,7 @@
 // pages/index.js
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase.js';
+import { useRouter } from 'next/router';
 
 const TEMPLATES = [
   { label: 'Custom Idea', value: '' },
@@ -30,6 +31,7 @@ export default function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
 
   // Dark mode sync
   useEffect(() => {
@@ -42,12 +44,24 @@ export default function Home() {
   // User & usage init
   useEffect(() => {
     const init = async () => {
-      const { session } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
       const count = parseInt(localStorage.getItem('guestUsage') || '0');
       setUsageCount(count);
     };
     init();
+
+    // Auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user || null);
+        if (event === 'SIGNED_IN') {
+          setShowLoginModal(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Client-side mobile detection
@@ -122,13 +136,15 @@ export default function Home() {
   };
 
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { 
-        redirectTo: window.location.origin 
-      },
-    });
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { 
+          redirectTo: `${window.location.origin}/auth/callback`
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
       console.error('Login error:', error);
       alert('Login failed: ' + error.message);
     }
@@ -193,6 +209,11 @@ export default function Home() {
     document.body.style.color = newDarkMode ? '#f9fafb' : '#111827';
   };
 
+  // Navigation functions
+  const navigateTo = (path) => {
+    router.push(path);
+  };
+
   // Button style helper
   const buttonStyle = (bg, color = '#fff') => ({
     padding: '8px 16px',
@@ -203,6 +224,20 @@ export default function Home() {
     cursor: 'pointer',
     fontSize: '0.875rem',
     fontWeight: '500',
+    textDecoration: 'none',
+    display: 'inline-block',
+    textAlign: 'center',
+  });
+
+  const navLinkStyle = (isActive = false) => ({
+    color: isActive ? (darkMode ? '#93c5fd' : '#3b82f6') : (darkMode ? '#d1d5db' : '#4b5563'),
+    textDecoration: 'none',
+    fontWeight: isActive ? '600' : '400',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    transition: 'all 0.2s',
+    cursor: 'pointer',
+    backgroundColor: isActive ? (darkMode ? '#374151' : '#f3f4f6') : 'transparent',
   });
 
   return (
@@ -223,17 +258,21 @@ export default function Home() {
         borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
         marginBottom: '24px',
       }}>
-        <a href="/" style={{
-          fontSize: '1.5rem',
-          fontWeight: '800',
-          color: '#2563eb',
-          textDecoration: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}>
+        <div 
+          onClick={() => navigateTo('/')}
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: '800',
+            color: '#2563eb',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            cursor: 'pointer',
+          }}
+        >
           🤖 PromptMaker
-        </a>
+        </div>
 
         {/* Mobile Menu Button */}
         {isMobile && (
@@ -257,18 +296,57 @@ export default function Home() {
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '16px' 
+            gap: '8px' 
           }}>
-            <a href="/" style={{ 
-              color: darkMode ? '#93c5fd' : '#3b82f6', 
-              textDecoration: 'none', 
-              fontWeight: '600' 
-            }}>
-              Home
-            </a>
-            
+            {/* Navigation Links */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span 
+                onClick={() => navigateTo('/')}
+                style={navLinkStyle(router.pathname === '/')}
+              >
+                Home
+              </span>
+              <span 
+                onClick={() => navigateTo('/seo')}
+                style={navLinkStyle(router.pathname === '/seo')}
+              >
+                🔍 SEO
+              </span>
+              <span 
+                onClick={() => navigateTo('/code')}
+                style={navLinkStyle(router.pathname === '/code')}
+              >
+                💻 Code
+              </span>
+              <span 
+                onClick={() => navigateTo('/email')}
+                style={navLinkStyle(router.pathname === '/email')}
+              >
+                ✉️ Email
+              </span>
+              <span 
+                onClick={() => navigateTo('/translate')}
+                style={navLinkStyle(router.pathname === '/translate')}
+              >
+                🔄 Translate
+              </span>
+              <span 
+                onClick={() => navigateTo('/blog-outline')}
+                style={navLinkStyle(router.pathname === '/blog-outline')}
+              >
+                📝 Outline
+              </span>
+              <span 
+                onClick={() => navigateTo('/blog')}
+                style={navLinkStyle(router.pathname === '/blog')}
+              >
+                📚 Blog
+              </span>
+            </div>
+
+            {/* User Section */}
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '16px' }}>
                 <span style={{ 
                   color: darkMode ? '#93c5fd' : '#3b82f6', 
                   fontSize: '0.875rem' 
@@ -277,7 +355,7 @@ export default function Home() {
                 </span>
                 <button 
                   onClick={handleLogout}
-                  style={buttonStyle('#ef4444')}
+                  style={buttonStyle('#6b7280')}
                 >
                   Logout
                 </button>
@@ -287,7 +365,7 @@ export default function Home() {
                 onClick={handleLogin} 
                 style={buttonStyle('#4f46e5')}
               >
-                Login
+                Login with Google
               </button>
             )}
             
@@ -314,16 +392,55 @@ export default function Home() {
           borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
           marginBottom: '24px',
         }}>
-          <a href="/" style={{ 
-            color: darkMode ? '#93c5fd' : '#3b82f6', 
-            textDecoration: 'none', 
-            fontWeight: '600' 
-          }}>
-            Home
-          </a>
+          {/* Mobile Navigation Links */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span 
+              onClick={() => { navigateTo('/'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/')}
+            >
+              Home
+            </span>
+            <span 
+              onClick={() => { navigateTo('/seo'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/seo')}
+            >
+              🔍 SEO
+            </span>
+            <span 
+              onClick={() => { navigateTo('/code'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/code')}
+            >
+              💻 Code
+            </span>
+            <span 
+              onClick={() => { navigateTo('/email'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/email')}
+            >
+              ✉️ Email
+            </span>
+            <span 
+              onClick={() => { navigateTo('/translate'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/translate')}
+            >
+              🔄 Translate
+            </span>
+            <span 
+              onClick={() => { navigateTo('/blog-outline'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/blog-outline')}
+            >
+              📝 Outline
+            </span>
+            <span 
+              onClick={() => { navigateTo('/blog'); setMobileMenuOpen(false); }}
+              style={navLinkStyle(router.pathname === '/blog')}
+            >
+              📚 Blog
+            </span>
+          </div>
           
+          {/* Mobile User Section */}
           {user ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '8px', borderTop: darkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
               <span style={{ 
                 color: darkMode ? '#93c5fd' : '#3b82f6', 
                 fontSize: '0.875rem' 
@@ -332,7 +449,7 @@ export default function Home() {
               </span>
               <button 
                 onClick={handleLogout}
-                style={buttonStyle('#ef4444')}
+                style={buttonStyle('#6b7280')}
               >
                 Logout
               </button>
@@ -342,7 +459,7 @@ export default function Home() {
               onClick={handleLogin} 
               style={buttonStyle('#4f46e5')}
             >
-              Login
+              Login with Google
             </button>
           )}
           
@@ -356,11 +473,12 @@ export default function Home() {
               darkMode ? '#f9fafb' : '#1f2937'
             )}
           >
-            {darkMode ? '☀️ Light' : '🌙 Dark'}
+            {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
           </button>
         </div>
       )}
 
+      {/* Rest of your component remains the same */}
       {/* Usage Warning */}
       {!canGenerate() && !user && (
         <div style={{
