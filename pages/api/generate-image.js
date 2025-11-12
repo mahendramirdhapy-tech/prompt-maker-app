@@ -8,54 +8,94 @@ export default async function handler(req, res) {
 
   const { prompt } = req.body;
   if (!prompt || typeof prompt !== 'string') {
-    return res.status(400).json({ error: 'Valid prompt required' });
+    return res.status(400).json({ error: 'Valid "prompt" string required' });
   }
 
-  const HORDE_KEY = process.env.HORDE_API_KEY || '0000000000'; // anonymous
+  // AI Horde allows anonymous usage
+  const HORDE_API_KEY = process.env.HORDE_API_KEY || '0000000000'; // anonymous key
 
   try {
-    // Step 1: Submit async request
-    const submit = await axios.post(
+    // Step 1: Submit image generation request
+    const submitRes = await axios.post(
       'https://aihorde.net/api/v2/generate/async',
       {
         prompt,
-        params: { width: 512, height: 512, steps: 30, n: 1 },
+        params: {
+          width: 512,
+          height: 512,
+          steps: 30,
+          n: 1,
+          sampler_name: 'k_euler',
+        },
         nsfw: false,
         censor_nsfw: true,
-        models: ['stable_diffusion']
+        models: ['stable_diffusion'],
       },
-      { headers: { apikey: HORDE_KEY } }
+      {
+        headers: {
+          'apikey': HORDE_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      }
     );
 
-    const id = submit.data.id;
-    if (!id) throw new Error('No ID');
-
-    // Step 2: Wait for completion (max 60s)
-    let done = false;
-    for (let i = 0; i < 30; i++) {
-      await new Promise(r => setTimeout(r, 2000));
-      const status = await axios.get(`https://aihorde.net/api/v2/generate/check/${id}`, {
-        headers: { apikey: HORDE_KEY }
-      });
-      if (status.data.done) { done = true; break; }
+    const generateId = submitRes.data.id;
+    if (!generateId) {
+      throw new Error('No generate ID returned');
     }
 
-    if (!done) throw new Error('Timeout');
+    // Step 2: Poll for result (max 60 seconds)
+    let retries = 0;
+    const maxRetries = 30;
 
-    // Step 3: Get image URL
-    const result = await axios.get(`https://aihorde.net/api/v2/generate/status/${id}`, {
-      headers: { apikey: HORDE_KEY }
+    while (retries < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2s
+
+      const checkRes = await axios.get(
+        `https://aihorde.net/api/v2/generate/check/${generateId}`,
+        {
+          headers: { 'apikey': HORDE_API_KEY },
+          timeout: 10000,
+        }
+      );
+
+      if (checkRes.data.done) break;
+      retries++;
+    }
+
+    if (retries >= maxRetries) {
+      throw new Error('Image generation timed out');
+    }
+
+    // Step 3: Fetch the image URL
+    const fetchRes = await axios.get(
+      `https://aihorde.net/api/v2/generate/status/${generateId}`,
+      {
+        headers: { 'apikey': HORDE_API_KEY },
+        timeout: 10000,
+      }
+    );
+
+    const imageUrl = fetchRes.data.generations[0]?.img;
+    if (!imageUrl) {
+      throw new Error('No image URL in response');
+    }
+
+    // Step 4: Download image as binary
+    const imgBuffer = await axios.get(imageUrl, {
+      responseType: 'arraybuffer',
+      timeout: 10000,
     });
 
-    const imgUrl = result.data.generations[0]?.img;
-    if (!imgUrl) throw new Error('No image');
-
-    // Step 4: Proxy image to client
-    const img = await axios.get(imgUrl, { responseType: 'arraybuffer' });
+    // Return image to client
     res.setHeader('Content-Type', 'image/png');
-    res.status(200).send(Buffer.from(img.data));
-  } catch (e) {
-    console.error('AI Horde Error:', e.message);
-    res.status(500).json({ error: 'Image generation failed' });
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.status(200).send(Buffer.from(imgBuffer.data, 'binary'));
+  } catch (error) {
+    console.error('🔥 AI Horde Error:', error.message);
+    res.status(500).json({
+      error: 'Image generation failed. Please try again.',
+    });
   }
 }
