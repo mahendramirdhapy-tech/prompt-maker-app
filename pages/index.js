@@ -29,7 +29,7 @@ export default function Home() {
   const [usageCount, setUsageCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false); // ← नया: मोबाइल डिटेक्शन
+  const [isMobile, setIsMobile] = useState(false);
 
   // Dark mode sync
   useEffect(() => {
@@ -41,14 +41,14 @@ export default function Home() {
 
   // User & usage init
   useEffect(() => {
-  const init = async () => {
-    const {  session } = await supabase.auth.getSession(); // ✅ सिर्फ एक { }
-    setUser(session?.user || null);
-    const count = parseInt(localStorage.getItem('guestUsage') || '0');
-    setUsageCount(count);
-  };
-  init();
-}, []);
+    const init = async () => {
+      const {  session } = await supabase.auth.getSession(); // ✅ सही destructuring
+      setUser(session?.user || null);
+      const count = parseInt(localStorage.getItem('guestUsage') || '0');
+      setUsageCount(count);
+    };
+    init();
+  }, []);
 
   // Client-side mobile detection
   useEffect(() => {
@@ -184,7 +184,6 @@ export default function Home() {
           🤖 PromptMaker
         </a>
 
-        {/* Mobile Menu Button */}
         {isMobile && (
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -201,7 +200,6 @@ export default function Home() {
           </button>
         )}
 
-        {/* Desktop Nav */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
@@ -228,7 +226,6 @@ export default function Home() {
         )}
       </header>
 
-      {/* Mobile Menu */}
       {isMobile && mobileMenuOpen && (
         <div style={{
           display: 'flex',
@@ -264,7 +261,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Usage Warning */}
       {!canGenerate() && !user && (
         <div style={{
           backgroundColor: '#fef3c7',
@@ -279,7 +275,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Controls */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>Tone</label>
         <select value={tone} onChange={(e) => setTone(e.target.value)} style={{
@@ -338,7 +333,6 @@ export default function Home() {
         </label>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }}>
         <textarea
           value={input}
@@ -377,7 +371,6 @@ export default function Home() {
         </button>
       </form>
 
-      {/* Output */}
       {output && (
         <div style={{
           padding: '20px',
@@ -427,7 +420,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Login Modal */}
       {showLoginModal && !user && (
         <div style={{
           position: 'fixed',
