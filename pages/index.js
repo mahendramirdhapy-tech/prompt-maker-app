@@ -1,6 +1,6 @@
 // pages/index.js
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase.js'; // ✅ .js extension added
+import { supabase } from '../lib/supabase.js';
 
 const TEMPLATES = [
   { label: 'Custom Idea', value: '' },
@@ -9,10 +9,11 @@ const TEMPLATES = [
   { label: 'Instagram Caption', value: 'Write a catchy Instagram caption for a photo of' },
   { label: 'Story Starter', value: 'Write the first paragraph of a short story about' },
   { label: 'Email Draft', value: 'Draft a professional email about' },
+  { label: 'Twitter Post', value: 'Write a viral tweet about' },
+  { label: 'LinkedIn Post', value: 'Write a professional LinkedIn post about' },
 ];
 
 const TONES = ['Professional', 'Friendly', 'Technical', 'Creative', 'Humorous'];
-const MAX_TOKENS_OPTIONS = [200, 400, 600, 800];
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -23,13 +24,15 @@ export default function Home() {
   const [language, setLanguage] = useState('English');
   const [template, setTemplate] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const [history, setHistory] = useState([]);
 
   // Advanced controls
   const [tone, setTone] = useState('Professional');
   const [maxTokens, setMaxTokens] = useState(600);
   const [feedbackGiven, setFeedbackGiven] = useState(null);
   const [feedbackComment, setFeedbackComment] = useState('');
+
+  // New: Mode switcher
+  const [mode, setMode] = useState('prompt'); // 'prompt', 'social', 'image'
 
   // Usage
   const [usageCount, setUsageCount] = useState(0);
@@ -50,7 +53,6 @@ export default function Home() {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
-
       const guestCount = parseInt(localStorage.getItem('guestUsage') || '0');
       setUsageCount(guestCount);
     };
@@ -88,38 +90,67 @@ export default function Home() {
     setFeedbackGiven(null);
 
     try {
+      // Step 1: Generate text prompt
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idea: input, language, tone, maxTokens }),
+        body: JSON.stringify({ 
+          idea: input, 
+          language, 
+          tone, 
+          maxTokens,
+          type: mode === 'image' ? 'image' : (mode === 'social' ? 'social' : 'prompt')
+        }),
       });
 
       const data = await res.json();
+      if (!data.success) {
+        alert('❌ ' + (data.error || 'Failed to generate.'));
+        return;
+      }
 
-      if (data.success) {
-        setOutput(data.prompt);
-        setUsedModel(data.modelUsed);
+      let finalOutput = data.prompt;
+      let imageUrl = null;
 
-        // Save to Supabase
-        await supabase.from('prompts').insert({
-          user_id: user?.id || null,
-          input: input.trim(),
-          output: data.prompt,
-          model_used: data.modelUsed,
-          language,
-          tone,
-          max_tokens: maxTokens,
+      // Step 2: If image mode, generate image
+      if (mode === 'image') {
+        const imgRes = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: data.prompt })
         });
 
-        // Update usage
-        if (!user) {
-          const newCount = usageCount + 1;
-          setUsageCount(newCount);
-          localStorage.setItem('guestUsage', newCount.toString());
-          if (newCount >= 5) setShowLoginModal(true);
+        if (imgRes.ok) {
+          const imgBlob = await imgRes.blob();
+          imageUrl = URL.createObjectURL(imgBlob);
+          finalOutput = imageUrl;
+        } else {
+          alert('⚠️ Image generation failed. Showing text description.');
         }
-      } else {
-        alert('❌ ' + (data.error || 'Failed to generate prompt.'));
+      }
+
+      setOutput(finalOutput);
+      setUsedModel(data.modelUsed);
+
+      // Save to Supabase
+      await supabase.from('prompts').insert({
+        user_id: user?.id || null,
+        input: input.trim(),
+        output: mode === 'image' ? data.prompt : finalOutput,
+        model_used: data.modelUsed,
+        language,
+        tone,
+        max_tokens: maxTokens,
+        type: mode,
+        image_url: imageUrl || null,
+      });
+
+      // Update usage
+      if (!user) {
+        const newCount = usageCount + 1;
+        setUsageCount(newCount);
+        localStorage.setItem('guestUsage', newCount.toString());
+        if (newCount >= 5) setShowLoginModal(true);
       }
     } catch (err) {
       console.error(err);
@@ -135,7 +166,7 @@ export default function Home() {
 
   const handleFeedback = async (rating) => {
     setFeedbackGiven(rating);
-    const { data: prompts, error } = await supabase
+    const { data: prompts } = await supabase
       .from('prompts')
       .select('id')
       .order('created_at', { ascending: false })
@@ -151,15 +182,24 @@ export default function Home() {
   };
 
   const exportAsTxt = () => {
-    const blob = new Blob([output], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `prompt_${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (mode === 'image') {
+      // Download image
+      const a = document.createElement('a');
+      a.href = output;
+      a.download = 'ai-image.png';
+      a.click();
+    } else {
+      // Download text
+      const blob = new Blob([output], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prompt_${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   };
 
   const handleLogin = async () => {
@@ -195,15 +235,6 @@ export default function Home() {
     borderRadius: '12px',
     backgroundColor: darkMode ? '#1f2937' : '#fff',
     boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-  };
-
-  const historyItemStyle = {
-    padding: '12px',
-    marginBottom: '8px',
-    border: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-    borderRadius: '8px',
-    backgroundColor: darkMode ? '#374151' : '#f3f4f6',
-    cursor: 'pointer',
   };
 
   const labelStyle = {
@@ -285,6 +316,28 @@ export default function Home() {
           </button>
         </div>
       </nav>
+
+      {/* Mode Switcher */}
+      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setMode('prompt')}
+          style={buttonStyle(mode === 'prompt' ? '#2563eb' : '#e5e7eb', mode === 'prompt' ? '#fff' : '#000')}
+        >
+          🧠 Prompt
+        </button>
+        <button
+          onClick={() => setMode('social')}
+          style={buttonStyle(mode === 'social' ? '#2563eb' : '#e5e7eb', mode === 'social' ? '#fff' : '#000')}
+        >
+          📱 Social Post
+        </button>
+        <button
+          onClick={() => setMode('image')}
+          style={buttonStyle(mode === 'image' ? '#2563eb' : '#e5e7eb', mode === 'image' ? '#fff' : '#000')}
+        >
+          🖼️ Image
+        </button>
+      </div>
 
       {!canGenerate() && !user && (
         <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', textAlign: 'center' }}>
@@ -383,7 +436,7 @@ export default function Home() {
             cursor: (loading || !canGenerate()) ? 'not-allowed' : 'pointer',
           }}
         >
-          {loading ? '⚙️ Generating...' : '✨ Generate Prompt'}
+          {loading ? '⚙️ Generating...' : '✨ Generate'}
         </button>
       </form>
 
@@ -391,27 +444,35 @@ export default function Home() {
       {output && (
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <h3 style={{ fontWeight: '600' }}>✅ Your AI Prompt:</h3>
+            <h3 style={{ fontWeight: '600' }}>
+              {mode === 'image' ? '🖼️ Your AI Image' : mode === 'social' ? '📱 Social Post' : '🧠 AI Prompt'}
+            </h3>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button onClick={handleRegenerate} style={buttonStyle('#0d9488')}>🔁 Regenerate</button>
-              <button onClick={exportAsTxt} style={buttonStyle('#7e22ce')}>💾 TXT</button>
+              <button onClick={exportAsTxt} style={buttonStyle('#7e22ce')}>
+                {mode === 'image' ? '💾 PNG' : '💾 TXT'}
+              </button>
             </div>
           </div>
-          <pre
-            style={{
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              backgroundColor: darkMode ? '#111827' : '#f3f4f6',
-              padding: '1rem',
-              borderRadius: '6px',
-              border: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-              fontSize: '0.95rem',
-              color: darkMode ? '#f9fafb' : '#111827',
-            }}
-          >
-            {output}
-          </pre>
-          {usedModel && (
+          {mode === 'image' ? (
+            <img src={output} alt="AI Generated" style={{ width: '100%', borderRadius: '6px' }} />
+          ) : (
+            <pre
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                backgroundColor: darkMode ? '#111827' : '#f3f4f6',
+                padding: '1rem',
+                borderRadius: '6px',
+                border: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                fontSize: '0.95rem',
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+            >
+              {output}
+            </pre>
+          )}
+          {usedModel && mode !== 'image' && (
             <p style={{ marginTop: '0.75rem', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
               Model used: <code style={{ backgroundColor: darkMode ? '#1f2937' : '#e5e7eb', padding: '2px 4px', borderRadius: '4px' }}>
                 {usedModel}
@@ -419,8 +480,8 @@ export default function Home() {
             </p>
           )}
 
-          {/* Feedback */}
-          {feedbackGiven === null && (
+          {/* Feedback (not for image) */}
+          {mode !== 'image' && feedbackGiven === null && (
             <div style={{ marginTop: '1rem' }}>
               <p style={{ marginBottom: '0.5rem' }}>Was this helpful?</p>
               <div>
@@ -455,7 +516,7 @@ export default function Home() {
       )}
 
       <footer style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
-        🔒 No data stored on server • Powered by OpenRouter (free tier)
+        🔒 No data stored on server • Powered by OpenRouter (Created By Mahendra)
       </footer>
     </div>
   );
