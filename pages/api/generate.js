@@ -10,7 +10,7 @@ const FREE_MODELS = [
 ];
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
-const SITE_URL = process.env.SITE_URL || 'https://aipromptmaker.online'; // ✅ Fixed: no trailing spaces
+const SITE_URL = process.env.SITE_URL || 'https://aipromptmaker.online';
 const APP_NAME = 'PromptMaker';
 
 export default async function handler(req, res) {
@@ -18,32 +18,42 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Only POST allowed' });
   }
 
-  const { idea, language = 'English', tone = 'Professional', maxTokens = 600 } = req.body;
+  const { idea, language = 'English', tone = 'Professional', maxTokens = 600, type = 'prompt' } = req.body;
 
   if (!idea || typeof idea !== 'string') {
     return res.status(400).json({ error: 'Valid "idea" string required' });
   }
 
-  const langInstruction = language === 'Hindi'
-    ? 'Output must be in Hindi.'
-    : 'Output must be in English.';
-
-  let temperature = 0.7;
-  if (tone === 'Creative' || tone === 'Humorous') temperature = 0.9;
-  else if (tone === 'Professional' || tone === 'Technical') temperature = 0.3;
-  else if (tone === 'Friendly') temperature = 0.6;
-
-  const systemPrompt = `You are an expert AI prompt engineer. Convert the user's rough idea into a clear, detailed, and effective prompt that can be used with large language models. 
+  // 🔹 Build system prompt based on type
+  let systemPrompt = "";
+  if (type === 'social') {
+    systemPrompt = `You are a social media expert. Generate an engaging ${language} post for: ${idea}. Include 3-5 relevant hashtags. Respond ONLY with the post text, no explanations.`;
+  } else if (type === 'image') {
+    systemPrompt = `Describe a detailed, vivid image based on: ${idea}. Include style, mood, lighting, and key visual elements. One paragraph only. No markdown, no quotes.`;
+  } else {
+    const langInstruction = language === 'Hindi'
+      ? 'Output must be in Hindi.'
+      : 'Output must be in English.';
+    systemPrompt = `You are an expert AI prompt engineer. Convert the user's rough idea into a clear, detailed, and effective prompt that can be used with large language models. 
 Tone: ${tone}.
 ${langInstruction}
 Respond ONLY with the final prompt, no explanations.`;
+  }
+
+  // 🔹 Set temperature based on tone (only for non-image types)
+  let temperature = 0.7;
+  if (type !== 'image') {
+    if (tone === 'Creative' || tone === 'Humorous') temperature = 0.9;
+    else if (tone === 'Professional' || tone === 'Technical') temperature = 0.3;
+    else if (tone === 'Friendly') temperature = 0.6;
+  }
 
   for (const model of FREE_MODELS) {
     try {
-      console.log(`[API] Trying model: ${model} | Tone: ${tone} | Max Tokens: ${maxTokens}`);
-      
+      console.log(`[API] Trying model: ${model} | Type: ${type} | Tone: ${tone}`);
+
       const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions', // ✅ Fixed: no trailing spaces
+        'https://openrouter.ai/api/v1/chat/completions',
         {
           model: model,
           messages: [
