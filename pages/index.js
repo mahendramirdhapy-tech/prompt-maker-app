@@ -28,10 +28,9 @@ export default function Home() {
   const [feedbackComment, setFeedbackComment] = useState('');
   const [usageCount, setUsageCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Dark mode sync
+  // Dark mode
   useEffect(() => {
     const isDark = localStorage.getItem('darkMode') === 'true';
     setDarkMode(isDark);
@@ -39,10 +38,10 @@ export default function Home() {
     document.body.style.color = isDark ? '#f9fafb' : '#111827';
   }, []);
 
-  // User & usage init
+  // User init
   useEffect(() => {
     const init = async () => {
-      const {  session } = await supabase.auth.getSession(); // ✅ सही destructuring
+      const {  session } = await supabase.auth.getSession(); // ✅ सही
       setUser(session?.user || null);
       const count = parseInt(localStorage.getItem('guestUsage') || '0');
       setUsageCount(count);
@@ -50,14 +49,12 @@ export default function Home() {
     init();
   }, []);
 
-  // Client-side mobile detection
+  // Mobile detection (client-only)
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
   const canGenerate = () => user || usageCount < 5;
@@ -107,7 +104,6 @@ export default function Home() {
     }
   };
 
-  const handleRegenerate = () => handleSubmit({ preventDefault: () => {} });
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -126,24 +122,7 @@ export default function Home() {
     URL.revokeObjectURL(url);
   };
 
-  const handleFeedback = async (rating) => {
-    setFeedbackGiven(rating);
-    const {  prompts } = await supabase
-      .from('prompts')
-      .select('id')
-      .order('created_at', { ascending: false })
-      .limit(1);
-    if (prompts?.length) {
-      await supabase.from('feedback').insert({ prompt_id: prompts[0].id, rating, comment: feedbackComment });
-    }
-  };
-
-  const handleTemplateChange = (e) => {
-    const val = e.target.value;
-    setTemplate(val);
-    if (val) setInput(val + ' ');
-    else setInput('');
-  };
+  const handleRegenerate = () => handleSubmit({ preventDefault: () => {} });
 
   const buttonStyle = (bg, color = '#fff') => ({
     padding: '6px 12px',
@@ -157,13 +136,12 @@ export default function Home() {
 
   return (
     <div style={{
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontFamily: 'system-ui, sans-serif',
       maxWidth: '800px',
       margin: '0 auto',
       padding: '0 16px',
       paddingBottom: '40px',
     }}>
-      {/* Header */}
       <header style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -184,82 +162,27 @@ export default function Home() {
           🤖 PromptMaker
         </a>
 
-        {isMobile && (
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              fontSize: '1.5rem',
-              background: 'none',
-              border: 'none',
-              color: darkMode ? '#f9fafb' : '#111827',
-              cursor: 'pointer',
-            }}
-            aria-label="Toggle menu"
-          >
-            ☰
-          </button>
-        )}
-
-        {!isMobile && (
+        {isMobile ? (
+          <span style={{ fontSize: '1.5rem' }}>☰</span>
+        ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
-            <a href="/seo" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔍 SEO</a>
-            <a href="/code" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>💻 Code</a>
-            <a href="/email" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>✉️ Email</a>
-            <a href="/translate" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔄 Translate</a>
-            <a href="/blog-outline" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📝 Outline</a>
-            <a href="/blog" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📚 Blog</a>
+            <a href="/seo">🔍 SEO</a>
+            <a href="/code">💻 Code</a>
+            <a href="/email">✉️ Email</a>
+            <a href="/translate">🔄 Translate</a>
+            <a href="/blog-outline">📝 Outline</a>
+            <a href="/blog">📚 Blog</a>
             {user ? (
-              <span style={{ color: darkMode ? '#93c5fd' : '#3b82f6', fontSize: '0.875rem' }}>
-                Hi, {user.email?.split('@')[0]}
-              </span>
+              <span>Hi, {user.email?.split('@')[0]}</span>
             ) : (
               <button onClick={handleLogin} style={buttonStyle('#4f46e5')}>Login</button>
             )}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#f9fafb' : '#111827')}
-            >
+            <button onClick={() => setDarkMode(!darkMode)} style={buttonStyle('#e5e7eb', '#000')}>
               {darkMode ? '☀️' : '🌙'}
             </button>
           </div>
         )}
       </header>
-
-      {isMobile && mobileMenuOpen && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          padding: '16px 0',
-          borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-          marginBottom: '24px',
-        }}>
-          <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
-          <a href="/seo" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔍 SEO</a>
-          <a href="/code" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>💻 Code</a>
-          <a href="/email" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>✉️ Email</a>
-          <a href="/translate" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔄 Translate</a>
-          <a href="/blog-outline" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📝 Outline</a>
-          <a href="/blog" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📚 Blog</a>
-          {user ? (
-            <span style={{ color: darkMode ? '#93c5fd' : '#3b82f6', fontSize: '0.875rem' }}>
-              Hi, {user.email?.split('@')[0]}
-            </span>
-          ) : (
-            <button onClick={handleLogin} style={buttonStyle('#4f46e5')}>Login</button>
-          )}
-          <button
-            onClick={() => {
-              setDarkMode(!darkMode);
-              setMobileMenuOpen(false);
-            }}
-            style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#f9fafb' : '#1f2937')}
-          >
-            {darkMode ? '☀️ Light' : '🌙 Dark'}
-          </button>
-        </div>
-      )}
 
       {!canGenerate() && !user && (
         <div style={{
@@ -269,7 +192,6 @@ export default function Home() {
           borderRadius: '8px',
           textAlign: 'center',
           marginBottom: '20px',
-          fontSize: '0.9rem'
         }}>
           🚨 5 free prompts used! <button onClick={handleLogin} style={{ color: '#4f46e5', fontWeight: '600', background: 'none', border: 'none' }}>Login to continue</button>
         </div>
@@ -308,7 +230,7 @@ export default function Home() {
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>Template</label>
         <select
           value={template}
-          onChange={handleTemplateChange}
+          onChange={(e) => setTemplate(e.target.value)}
           style={{
             width: '100%',
             padding: '10px',
@@ -323,11 +245,11 @@ export default function Home() {
       </div>
 
       <div style={{ marginBottom: '20px', display: 'flex', gap: '12px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'center' }}>
           <input type="radio" name="lang" checked={language === 'English'} onChange={() => setLanguage('English')} />
           <span style={{ marginLeft: '6px' }}>English</span>
         </label>
-        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'center' }}>
           <input type="radio" name="lang" checked={language === 'Hindi'} onChange={() => setLanguage('Hindi')} />
           <span style={{ marginLeft: '6px' }}>हिंदी</span>
         </label>
@@ -348,7 +270,6 @@ export default function Home() {
             backgroundColor: darkMode ? '#1f2937' : '#fff',
             color: darkMode ? '#f9fafb' : '#000',
             marginBottom: '12px',
-            boxSizing: 'border-box',
           }}
           required
         />
@@ -364,7 +285,6 @@ export default function Home() {
             borderRadius: '8px',
             fontSize: '1.1rem',
             fontWeight: '600',
-            cursor: (loading || !canGenerate()) ? 'not-allowed' : 'pointer',
           }}
         >
           {loading ? '⚙️ Generating...' : '✨ Generate Prompt'}
@@ -380,8 +300,8 @@ export default function Home() {
           marginBottom: '24px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ margin: 0, fontWeight: '600' }}>🧠 Your AI Prompt</h3>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <h3>🧠 Your AI Prompt</h3>
+            <div>
               <button onClick={handleRegenerate} style={buttonStyle('#0d9488')}>🔁</button>
               <button onClick={exportTxt} style={buttonStyle('#7e22ce')}>💾</button>
             </div>
@@ -393,29 +313,11 @@ export default function Home() {
             backgroundColor: darkMode ? '#111827' : '#f9fafb',
             padding: '14px',
             borderRadius: '8px',
-            margin: 0,
           }}>{output}</pre>
           {usedModel && (
             <p style={{ marginTop: '12px', fontSize: '0.875rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
               Model: <code style={{ backgroundColor: darkMode ? '#1f2937' : '#e5e7eb', padding: '2px 6px', borderRadius: '4px' }}>{usedModel}</code>
             </p>
-          )}
-          {feedbackGiven === null && (
-            <div style={{ marginTop: '16px' }}>
-              <p style={{ marginBottom: '8px', fontSize: '0.9rem' }}>Was this helpful?</p>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => handleFeedback(true)} style={buttonStyle('#22c55e')}>👍 Yes</button>
-                <button onClick={() => handleFeedback(false)} style={buttonStyle('#ef4444')}>👎 No</button>
-                {feedbackGiven === false && (
-                  <input
-                    value={feedbackComment}
-                    onChange={(e) => setFeedbackComment(e.target.value)}
-                    placeholder="What went wrong?"
-                    style={{ marginLeft: '8px', padding: '6px', fontSize: '0.875rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                  />
-                )}
-              </div>
-            </div>
           )}
         </div>
       )}
@@ -438,13 +340,13 @@ export default function Home() {
             maxWidth: '400px',
             width: '90%',
           }}>
-            <h3 style={{ margin: '0 0 12px' }}>Continue for Free!</h3>
-            <p style={{ margin: '0 0 20px', color: '#555' }}>Login with Google to get unlimited prompts.</p>
+            <h3>Continue for Free!</h3>
+            <p>Login with Google to get unlimited prompts.</p>
             <div>
               <button onClick={handleLogin} style={buttonStyle('#4f46e5', '#fff')}>Google Login</button>
               <button
                 onClick={() => setShowLoginModal(false)}
-                style={{ marginLeft: '12px', color: '#6b7280', background: 'none', border: 'none', fontSize: '0.95rem' }}
+                style={{ marginLeft: '12px', color: '#6b7280', background: 'none', border: 'none' }}
               >
                 Cancel
               </button>
@@ -457,5 +359,4 @@ export default function Home() {
         Powered by OpenRouter • Made with ❤️ by Mahendra
       </footer>
     </div>
-  );
-}
+  )
