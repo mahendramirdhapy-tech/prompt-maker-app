@@ -10,7 +10,7 @@ const FREE_MODELS = [
 ];
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
-const SITE_URL = process.env.SITE_URL || 'https://aipromptmaker.online'; // ✅ No spaces
+const SITE_URL = process.env.SITE_URL || 'https://aipromptmaker.online'; // ✅ Fixed: no trailing spaces
 const APP_NAME = 'PromptMaker';
 
 export default async function handler(req, res) {
@@ -43,7 +43,7 @@ Respond ONLY with the final prompt, no explanations.`;
       console.log(`[API] Trying model: ${model} | Tone: ${tone} | Max Tokens: ${maxTokens}`);
       
       const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions', // ✅ No spaces
+        'https://openrouter.ai/api/v1/chat/completions', // ✅ Fixed: no trailing spaces
         {
           model: model,
           messages: [
