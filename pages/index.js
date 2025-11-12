@@ -356,8 +356,8 @@ export default function Home() {
       )}
 
       <footer style={{ textAlign: 'center', paddingTop: '24px', fontSize: '0.85rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
-        Powered by OpenRouter • Made with ❤️ by Mahendra
+        Powered by OpenRouter • Made with by Mahendra
       </footer>
     </div>
-  )
-};
+  );
+}
