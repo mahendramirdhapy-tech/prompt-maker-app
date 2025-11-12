@@ -41,14 +41,14 @@ export default function Home() {
 
   // User & usage init
   useEffect(() => {
-    const init = async () => {
-      const {  { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-      const count = parseInt(localStorage.getItem('guestUsage') || '0');
-      setUsageCount(count);
-    };
-    init();
-  }, []);
+  const init = async () => {
+    const {  session } = await supabase.auth.getSession(); // ✅ सिर्फ एक { }
+    setUser(session?.user || null);
+    const count = parseInt(localStorage.getItem('guestUsage') || '0');
+    setUsageCount(count);
+  };
+  init();
+}, []);
 
   // Client-side mobile detection
   useEffect(() => {
