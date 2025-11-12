@@ -29,22 +29,35 @@ export default function Home() {
   const [usageCount, setUsageCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // ← नया: मोबाइल डिटेक्शन
 
-  // Apply dark mode to body
+  // Dark mode sync
   useEffect(() => {
-    document.body.className = darkMode ? 'dark' : '';
-    localStorage.setItem('darkMode', darkMode);
-  }, [darkMode]);
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    document.body.style.backgroundColor = isDark ? '#111827' : '#f9fafb';
+    document.body.style.color = isDark ? '#f9fafb' : '#111827';
+  }, []);
 
-  // Init user & usage
+  // User & usage init
   useEffect(() => {
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {  { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
       const count = parseInt(localStorage.getItem('guestUsage') || '0');
       setUsageCount(count);
     };
     init();
+  }, []);
+
+  // Client-side mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const canGenerate = () => user || usageCount < 5;
@@ -115,7 +128,7 @@ export default function Home() {
 
   const handleFeedback = async (rating) => {
     setFeedbackGiven(rating);
-    const { data: prompts } = await supabase
+    const {  prompts } = await supabase
       .from('prompts')
       .select('id')
       .order('created_at', { ascending: false })
@@ -132,39 +145,6 @@ export default function Home() {
     else setInput('');
   };
 
-  // 📱 Responsive styles
-  const baseStyle = {
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    padding: '0 16px',
-    maxWidth: '800px',
-    margin: '0 auto',
-  };
-
-  const headerStyle = {
-    padding: '16px 0',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e6e7',
-    marginBottom: '24px',
-  };
-
-  const logoStyle = {
-    fontSize: '1.5rem',
-    fontWeight: '800',
-    color: '#2563eb',
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-  };
-
-  const navMenuStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  };
-
   const buttonStyle = (bg, color = '#fff') => ({
     padding: '6px 12px',
     backgroundColor: bg,
@@ -173,70 +153,98 @@ export default function Home() {
     borderRadius: '6px',
     cursor: 'pointer',
     fontSize: '0.875rem',
-    whiteSpace: 'nowrap',
   });
 
-  const mobileMenuButton = {
-    display: 'none',
-    fontSize: '1.5rem',
-    background: 'none',
-    border: 'none',
-    color: darkMode ? '#f9fafb' : '#111827',
-    cursor: 'pointer',
-  };
-
-  const mobileMenu = {
-    display: 'none',
-    flexDirection: 'column',
-    gap: '12px',
-    padding: '16px 0',
-    borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e6e7',
-    marginBottom: '24px',
-  };
-
-  // Apply responsive behavior via JS (since inline styles don't support @media)
-  const adjustStyles = () => {
-    const isMobile = window.innerWidth < 768;
-    const navMenu = document.getElementById('nav-menu');
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    if (navMenu) navMenu.style.display = isMobile ? 'none' : 'flex';
-    if (mobileBtn) mobileBtn.style.display = isMobile ? 'block' : 'none';
-    if (mobileMenu && !mobileMenuOpen) mobileMenu.style.display = 'none';
-    if (mobileMenu && mobileMenuOpen) mobileMenu.style.display = isMobile ? 'flex' : 'none';
-  };
-
-  useEffect(() => {
-    adjustStyles();
-    window.addEventListener('resize', adjustStyles);
-    return () => window.removeEventListener('resize', adjustStyles);
-  }, [mobileMenuOpen]);
-
   return (
-    <div style={baseStyle}>
+    <div style={{
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      maxWidth: '800px',
+      margin: '0 auto',
+      padding: '0 16px',
+      paddingBottom: '40px',
+    }}>
       {/* Header */}
-      <header style={headerStyle}>
-        <a href="/" style={logoStyle}>🤖 PromptMaker</a>
-        
-        <button
-          id="mobile-menu-btn"
-          style={mobileMenuButton}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          ☰
-        </button>
+      <header style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px 0',
+        borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+        marginBottom: '24px',
+      }}>
+        <a href="/" style={{
+          fontSize: '1.5rem',
+          fontWeight: '800',
+          color: '#2563eb',
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}>
+          🤖 PromptMaker
+        </a>
 
-        <div id="nav-menu" style={navMenuStyle}>
+        {/* Mobile Menu Button */}
+        {isMobile && (
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{
+              fontSize: '1.5rem',
+              background: 'none',
+              border: 'none',
+              color: darkMode ? '#f9fafb' : '#111827',
+              cursor: 'pointer',
+            }}
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+        )}
+
+        {/* Desktop Nav */}
+        {!isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
+            <a href="/seo" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔍 SEO</a>
+            <a href="/code" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>💻 Code</a>
+            <a href="/email" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>✉️ Email</a>
+            <a href="/translate" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔄 Translate</a>
+            <a href="/blog-outline" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📝 Outline</a>
+            <a href="/blog" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📚 Blog</a>
+            {user ? (
+              <span style={{ color: darkMode ? '#93c5fd' : '#3b82f6', fontSize: '0.875rem' }}>
+                Hi, {user.email?.split('@')[0]}
+              </span>
+            ) : (
+              <button onClick={handleLogin} style={buttonStyle('#4f46e5')}>Login</button>
+            )}
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#f9fafb' : '#111827')}
+            >
+              {darkMode ? '☀️' : '🌙'}
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* Mobile Menu */}
+      {isMobile && mobileMenuOpen && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          padding: '16px 0',
+          borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+          marginBottom: '24px',
+        }}>
           <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
-           <a href="/seo">🔍 SEO</a>
-           <a href="/code">💻 Code</a>
-          <a href="/email">✉️ Email</a>
-          <a href="/translate">🔄 Translate</a>
-          <a href="/blog-outline">📝 Outline</a>
+          <a href="/seo" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔍 SEO</a>
+          <a href="/code" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>💻 Code</a>
+          <a href="/email" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>✉️ Email</a>
+          <a href="/translate" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🔄 Translate</a>
+          <a href="/blog-outline" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📝 Outline</a>
           <a href="/blog" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📚 Blog</a>
-          <a href="/image" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🖼️ Image</a>
           {user ? (
             <span style={{ color: darkMode ? '#93c5fd' : '#3b82f6', fontSize: '0.875rem' }}>
               Hi, {user.email?.split('@')[0]}
@@ -245,36 +253,16 @@ export default function Home() {
             <button onClick={handleLogin} style={buttonStyle('#4f46e5')}>Login</button>
           )}
           <button
-            onClick={() => setDarkMode(!darkMode)}
-            style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#f9fafb' : '#111827')}
+            onClick={() => {
+              setDarkMode(!darkMode);
+              setMobileMenuOpen(false);
+            }}
+            style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#f9fafb' : '#1f2937')}
           >
-            {darkMode ? '☀️' : '🌙'}
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
           </button>
         </div>
-      </header>
-
-      {/* Mobile Menu */}
-      <div id="mobile-menu" style={mobileMenu}>
-        <a href="/" style={{ color: darkMode ? '#93c5fd' : '#3b82f6', textDecoration: 'none', fontWeight: '600' }}>Home</a>
-        <a href="/blog" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>📚 Blog</a>
-        <a href="/image" style={{ color: darkMode ? '#d1d5db' : '#4b5563', textDecoration: 'none' }}>🖼️ Image</a>
-        {user ? (
-          <span style={{ color: darkMode ? '#93c5fd' : '#3b82f6', fontSize: '0.875rem' }}>
-            Hi, {user.email?.split('@')[0]}
-          </span>
-        ) : (
-          <button onClick={handleLogin} style={buttonStyle('#4f46e5')}>Login</button>
-        )}
-        <button
-          onClick={() => {
-            setDarkMode(!darkMode);
-            setMobileMenuOpen(false);
-          }}
-          style={buttonStyle(darkMode ? '#374151' : '#e5e7eb', darkMode ? '#f9fafb' : '#1f2937')}
-        >
-          {darkMode ? '☀️ Light' : '🌙 Dark'}
-        </button>
-      </div>
+      )}
 
       {/* Usage Warning */}
       {!canGenerate() && !user && (
@@ -457,7 +445,6 @@ export default function Home() {
             textAlign: 'center',
             maxWidth: '400px',
             width: '90%',
-            margin: '0 auto',
           }}>
             <h3 style={{ margin: '0 0 12px' }}>Continue for Free!</h3>
             <p style={{ margin: '0 0 20px', color: '#555' }}>Login with Google to get unlimited prompts.</p>
@@ -474,7 +461,7 @@ export default function Home() {
         </div>
       )}
 
-      <footer style={{ textAlign: 'center', padding: '24px 0 40px', fontSize: '0.85rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
+      <footer style={{ textAlign: 'center', paddingTop: '24px', fontSize: '0.85rem', color: darkMode ? '#9ca3af' : '#6b7280' }}>
         Powered by OpenRouter • Made with ❤️ by Mahendra
       </footer>
     </div>
