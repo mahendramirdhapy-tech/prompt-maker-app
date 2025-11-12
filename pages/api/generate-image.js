@@ -2,64 +2,55 @@
 import axios from 'axios';
 
 export default async function handler(req, res) {
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Only POST allowed' });
   }
 
   const { prompt } = req.body;
+  const HORD_API_KEY = process.env.HORD_AI_API_KEY;
 
-  // Validate input
-  if (!prompt || typeof prompt !== 'string') {
-    return res.status(400).json({ error: 'Valid "prompt" string required' });
-  }
-
-  // Get Hord AI API key from environment
-  const HORD_AI_API_KEY = process.env.HORD_AI_API_KEY;
-  if (!HORD_AI_API_KEY) {
-    console.error('❌ HORD_AI_API_KEY is not set in environment variables');
-    return res.status(500).json({ error: 'Image service not configured' });
+  if (!HORD_API_KEY) {
+    return res.status(500).json({ error: 'Hord AI key missing' });
   }
 
   try {
-    // Call Hord AI API
-    // ⚠️ Replace the URL below with your actual Hord AI endpoint if different
-    const response = await axios.post(
-      'https://api.hord.ai/v1/images/generate', // ✅ Confirm this is your correct endpoint
+    // Step 1: Get available styles
+    const stylesRes = await axios.get('https://api.hord.ai/v1/collections', {
+      headers: { Authorization: `Bearer ${HORD_API_KEY}` }
+    });
+
+    // Step 2: Find first image model with a style
+    let styleId = null;
+    for (const model of stylesRes.data) {
+      if (model.type === 'image' && model.styles?.[0]?.id) {
+        styleId = model.styles[0].id;
+        break;
+      }
+    }
+
+    if (!styleId) {
+      return res.status(500).json({ error: 'No image style found' });
+    }
+
+    // Step 3: Generate image
+    const imgRes = await axios.post(
+      'https://api.hord.ai/v1/images/generate',
       {
-        prompt: prompt,
+        prompt,
+        style_id: styleId, // ← यह ज़रूरी है
         width: 512,
-        height: 512,
-        // Add other params if needed (e.g., model, style, etc.)
+        height: 512
       },
       {
-        headers: {
-          'Authorization': `Bearer ${HORD_AI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        // Important: We expect binary image data
-        responseType: 'arraybuffer',
-        timeout: 30000, // 30 seconds
+        headers: { Authorization: `Bearer ${HORD_API_KEY}` },
+        responseType: 'arraybuffer'
       }
     );
 
-    // Set headers for image response
     res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache 1 day
-    res.setHeader('X-Generated-By', 'PromptMaker + Hord AI');
-
-    // Send binary image data
-    res.status(200).send(Buffer.from(response.data, 'binary'));
+    res.status(200).send(Buffer.from(imgRes.data, 'binary'));
   } catch (error) {
-    console.error('🔥 Hord AI Error:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data ? JSON.stringify(error.response.data) : 'No response data'
-    });
-
-    // Return user-friendly error
-    res.status(500).json({
-      error: 'Failed to generate image. Please try again.'
-    });
+    console.error('Hord error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Image generation failed' });
   }
 }
