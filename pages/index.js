@@ -1154,7 +1154,7 @@ export default function Home() {
                 }}>
                   💬 Feedback
                 </a>
-                <a href="/blog" style={{
+                <a href="/feedback" style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   textDecoration: 'none',
                   fontSize: '0.9rem'
