@@ -489,7 +489,7 @@ export default function Home() {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       maxWidth: '1200px',
       margin: '0 auto',
-      padding: isMobile ? '0 12px' : '0 24px',
+      padding: isMobile ? '12px' : '24px',
       paddingBottom: isMobile ? '80px' : '40px',
       minHeight: '100vh',
       backgroundColor: darkMode ? '#0f172a' : '#ffffff',
@@ -500,14 +500,14 @@ export default function Home() {
     // SIMPLE HEADER
     header: {
       textAlign: 'center',
-      padding: isMobile ? '20px 0' : '30px 0',
+      padding: isMobile ? '15px 0' : '30px 0',
       borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-      marginBottom: '30px',
+      marginBottom: '20px',
     },
 
     // SIMPLE TEXT LOGO
     mainTitle: {
-      fontSize: isMobile ? '2rem' : '3rem',
+      fontSize: isMobile ? '1.8rem' : '3rem',
       fontWeight: '900',
       color: '#3b82f6',
       margin: '0 0 8px 0',
@@ -516,7 +516,7 @@ export default function Home() {
     },
 
     subtitle: {
-      fontSize: isMobile ? '1rem' : '1.2rem',
+      fontSize: isMobile ? '0.9rem' : '1.2rem',
       color: darkMode ? '#cbd5e1' : '#64748b',
       margin: '0',
       fontWeight: '500',
@@ -527,36 +527,36 @@ export default function Home() {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginTop: '20px',
+      marginTop: '15px',
       flexWrap: 'wrap',
-      gap: '10px',
+      gap: '8px',
     },
 
     button: (bg, color = '#fff') => ({
-      padding: isMobile ? '10px 14px' : '8px 16px',
+      padding: isMobile ? '8px 12px' : '8px 16px',
       backgroundColor: bg,
       color: color,
       border: 'none',
       borderRadius: '8px',
       cursor: 'pointer',
-      fontSize: isMobile ? '0.9rem' : '0.9rem',
+      fontSize: isMobile ? '0.8rem' : '0.9rem',
       fontWeight: '600',
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '6px',
+      gap: '4px',
     }),
 
     // Generate Button
     generateButton: {
       width: '100%',
-      padding: '16px',
+      padding: isMobile ? '14px' : '16px',
       backgroundColor: loading || !canGenerate() || !input.trim() 
         ? '#9ca3af' 
         : '#10b981',
       color: '#fff',
       border: 'none',
       borderRadius: '12px',
-      fontSize: '1.1rem',
+      fontSize: isMobile ? '1rem' : '1.1rem',
       fontWeight: '700',
       cursor: (loading || !canGenerate() || !input.trim()) 
         ? 'not-allowed' 
@@ -568,19 +568,19 @@ export default function Home() {
       backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
       border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
       borderRadius: '12px',
-      padding: '20px',
-      marginBottom: '20px',
+      padding: isMobile ? '16px' : '20px',
+      marginBottom: '16px',
     },
 
     input: {
       width: '100%',
-      padding: '12px',
+      padding: isMobile ? '10px' : '12px',
       borderRadius: '8px',
       border: `1px solid ${darkMode ? '#334155' : '#d1d5db'}`,
       backgroundColor: darkMode ? '#0f172a' : '#ffffff',
       color: darkMode ? '#f8fafc' : '#1e293b',
-      fontSize: '16px',
-      marginBottom: '16px',
+      fontSize: isMobile ? '14px' : '16px',
+      marginBottom: '12px',
       boxSizing: 'border-box',
     },
   };
@@ -673,12 +673,19 @@ export default function Home() {
           {/* Navigation */}
           <div style={styles.navContainer}>
             {/* Left side - Navigation links */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: isMobile ? '4px' : '8px', 
+              flexWrap: 'wrap',
+              justifyContent: isMobile ? 'center' : 'flex-start',
+              flex: isMobile ? '1' : 'auto'
+            }}>
               <span onClick={() => navigateTo('/')} style={{ 
                 color: router.pathname === '/' ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
                 cursor: 'pointer',
-                padding: '8px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
                 backgroundColor: router.pathname === '/' ? (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
               }}>
                 🏠 Home
@@ -686,50 +693,59 @@ export default function Home() {
               <span onClick={() => navigateTo('/seo')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                padding: '8px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}>
                 🔍 SEO
               </span>
               <span onClick={() => navigateTo('/code')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                padding: '8px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}>
                 💻 Code
               </span>
               <span onClick={() => navigateTo('/email')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                padding: '8px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}>
                 ✉️ Email
               </span>
               <span onClick={() => navigateTo('/translate')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                padding: '8px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}>
                 🔄 Translate
               </span>
-
-      <span onClick={() => navigateTo('/prompts')} style={{ 
+              <span onClick={() => navigateTo('/prompts')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                padding: '8px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}>
-                📮 Prompt Library
+                📚 Library
               </span>
-
-                  
             </div>
 
             {/* Right side - Actions */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: isMobile ? '6px' : '8px', 
+              alignItems: 'center',
+              justifyContent: isMobile ? 'center' : 'flex-end',
+              flex: isMobile ? '1' : 'auto',
+              marginTop: isMobile ? '8px' : '0'
+            }}>
               <button 
                 onClick={() => setShowHistory(!showHistory)}
                 style={styles.button('#8b5cf6')}
@@ -739,11 +755,11 @@ export default function Home() {
 
               {user ? (
                 <button onClick={handleLogout} style={styles.button('#6b7280')}>
-                  Logout
+                  {isMobile ? 'Logout' : 'Logout'}
                 </button>
               ) : (
                 <button onClick={handleLogin} style={styles.button('#3b82f6')}>
-                  Login
+                  {isMobile ? 'Login' : 'Login'}
                 </button>
               )}
               
@@ -761,7 +777,7 @@ export default function Home() {
         <main style={{ 
           display: 'flex',
           flexDirection: isMobile ? 'column' : 'row',
-          gap: '20px',
+          gap: isMobile ? '16px' : '20px',
         }}>
           
           {/* Input Section */}
@@ -770,23 +786,24 @@ export default function Home() {
             {!canGenerate() && !user && (
               <div style={{
                 ...styles.card,
-                background: 'linear(135deg, #fef3c7, #fde68a)',
+                background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
                 border: '1px solid #f59e0b',
                 color: '#92400e',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>🚨</span>
-                  <strong>Free Limit Reached</strong>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: isMobile ? '1rem' : '1.2rem' }}>🚨</span>
+                  <strong style={{ fontSize: isMobile ? '0.9rem' : '1rem' }}>Free Limit Reached</strong>
                 </div>
-                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                <p style={{ margin: 0, fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
                   You've used all 5 free prompts. Login for unlimited access!
                 </p>
                 <button 
                   onClick={handleLogin}
                   style={{
                     ...styles.button('#3b82f6'),
-                    marginTop: '12px',
-                    width: '100%'
+                    marginTop: '10px',
+                    width: '100%',
+                    fontSize: isMobile ? '0.9rem' : '1rem'
                   }}
                 >
                   🔐 Login to Continue
@@ -796,11 +813,15 @@ export default function Home() {
 
             {/* Configuration */}
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 16px 0' }}>⚙️ Configuration</h2>
+              <h2 style={{ margin: '0 0 12px 0', fontSize: isMobile ? '1.2rem' : '1.4rem' }}>⚙️ Configuration</h2>
               
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+                gap: isMobile ? '10px' : '12px' 
+              }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     Tone
                   </label>
                   <select 
@@ -815,7 +836,7 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     Template
                   </label>
                   <select 
@@ -830,8 +851,8 @@ export default function Home() {
                 </div>
               </div>
 
-              <div style={{ marginTop: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+              <div style={{ marginTop: '12px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                   Response Length: {maxTokens} tokens
                 </label>
                 <input
@@ -845,12 +866,12 @@ export default function Home() {
                 />
               </div>
 
-              <div style={{ marginTop: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+              <div style={{ marginTop: '12px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                   Language
                 </label>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: isMobile ? '12px' : '16px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     <input 
                       type="radio" 
                       name="lang" 
@@ -859,7 +880,7 @@ export default function Home() {
                     />
                     English
                   </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     <input 
                       type="radio" 
                       name="lang" 
@@ -874,16 +895,16 @@ export default function Home() {
 
             {/* Input Form */}
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 16px 0' }}>💡 Your Idea</h2>
+              <h2 style={{ margin: '0 0 12px 0', fontSize: isMobile ? '1.2rem' : '1.4rem' }}>💡 Your Idea</h2>
               <form onSubmit={handleSubmit}>
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Describe what you want to create..."
-                  rows="5"
+                  rows={isMobile ? 4 : 5}
                   style={{
                     ...styles.input,
-                    minHeight: '120px',
+                    minHeight: isMobile ? '100px' : '120px',
                     resize: 'vertical',
                   }}
                   required
@@ -891,11 +912,12 @@ export default function Home() {
                 
                 {loading && generationStatus && (
                   <div style={{
-                    padding: '12px',
+                    padding: isMobile ? '10px' : '12px',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     borderRadius: '8px',
-                    marginBottom: '16px',
+                    marginBottom: '12px',
                     textAlign: 'center',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem'
                   }}>
                     {generationStatus}
                   </div>
@@ -916,8 +938,15 @@ export default function Home() {
           <div style={{ flex: 1 }}>
             {output ? (
               <div style={styles.card}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h2 style={{ margin: 0 }}>🎉 Your AI Prompt</h2>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  marginBottom: '12px',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  gap: isMobile ? '8px' : '0'
+                }}>
+                  <h2 style={{ margin: 0, fontSize: isMobile ? '1.2rem' : '1.4rem' }}>🎉 Your AI Prompt</h2>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button 
                       onClick={handleRegenerate}
@@ -938,14 +967,14 @@ export default function Home() {
                   backgroundColor: darkMode ? '#0f172a' : '#ffffff',
                   border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
                   borderRadius: '8px',
-                  padding: '16px',
-                  marginBottom: '16px',
+                  padding: isMobile ? '12px' : '16px',
+                  marginBottom: '12px',
                 }}>
                   <pre style={{
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word',
                     margin: 0,
-                    fontSize: '0.9rem',
+                    fontSize: isMobile ? '0.85rem' : '0.9rem',
                     lineHeight: '1.5',
                   }}>
                     {output}
@@ -957,17 +986,18 @@ export default function Home() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '12px',
+                    padding: isMobile ? '10px' : '12px',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     borderRadius: '8px',
-                    marginBottom: '16px',
+                    marginBottom: '12px',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem'
                   }}>
                     <span>Generated with:</span>
                     <code style={{ 
                       backgroundColor: 'rgba(59, 130, 246, 0.2)',
                       padding: '4px 8px',
                       borderRadius: '4px',
-                      fontSize: '0.8rem',
+                      fontSize: isMobile ? '0.75rem' : '0.8rem',
                     }}>
                       {usedModel}
                     </code>
@@ -977,19 +1007,19 @@ export default function Home() {
                 {/* Feedback Section */}
                 {feedbackGiven === null && (
                   <div style={{
-                    padding: '16px',
+                    padding: isMobile ? '12px' : '16px',
                     backgroundColor: 'rgba(248, 250, 252, 0.8)',
                     border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
                     borderRadius: '12px',
                   }}>
                     <p style={{ 
-                      margin: '0 0 12px 0',
-                      fontSize: '0.9rem',
+                      margin: '0 0 10px 0',
+                      fontSize: isMobile ? '0.85rem' : '0.9rem',
                       fontWeight: '600',
                     }}>
                       Was this helpful?
                     </p>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <button 
                         onClick={() => handleFeedback(true)}
                         style={styles.button('#22c55e')}
@@ -1010,11 +1040,15 @@ export default function Home() {
               <div style={{
                 ...styles.card,
                 textAlign: 'center',
-                padding: '40px 20px',
+                padding: isMobile ? '30px 16px' : '40px 20px',
               }}>
-                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🚀</div>
-                <h3 style={{ margin: '0 0 8px 0' }}>Ready to Create?</h3>
-                <p style={{ margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                <div style={{ fontSize: isMobile ? '2.5rem' : '3rem', marginBottom: '12px' }}>🚀</div>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? '1.2rem' : '1.4rem' }}>Ready to Create?</h3>
+                <p style={{ 
+                  margin: 0, 
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  fontSize: isMobile ? '0.9rem' : '1rem'
+                }}>
                   Enter your idea above to generate AI prompts
                 </p>
               </div>
@@ -1025,8 +1059,8 @@ export default function Home() {
         {/* FOOTER SECTION */}
         <footer style={{
           backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-          padding: '40px 20px 20px 20px',
-          marginTop: '50px',
+          padding: isMobile ? '30px 16px 16px' : '40px 20px 20px',
+          marginTop: '40px',
           borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
         }}>
           <div style={{
@@ -1034,51 +1068,51 @@ export default function Home() {
             margin: '0 auto',
             display: 'grid',
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: '30px',
-            marginBottom: '30px'
+            gap: isMobile ? '20px' : '30px',
+            marginBottom: '20px'
           }}>
             
             {/* Company Info */}
             <div>
               <h3 style={{
                 color: darkMode ? '#f8fafc' : '#1e293b',
-                margin: '0 0 15px 0',
-                fontSize: '1.1rem'
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
               }}>
                 AI Prompt Maker
               </h3>
               <p style={{
                 color: darkMode ? '#cbd5e1' : '#64748b',
-                margin: '0 0 15px 0',
-                fontSize: '0.9rem',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
                 lineHeight: '1.5'
               }}>
                 Transform your ideas into perfect AI prompts with our advanced multi-model AI technology. Free tool for creators, writers, and developers.
               </p>
-              <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ 
-                  padding: '8px 12px', 
+                  padding: '6px 10px', 
                   backgroundColor: darkMode ? '#334155' : '#e2e8f0',
                   borderRadius: '6px',
-                  fontSize: '0.8rem',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
                   fontWeight: '500'
                 }}>
                   🚀 Fast
                 </span>
                 <span style={{ 
-                  padding: '8px 12px', 
+                  padding: '6px 10px', 
                   backgroundColor: darkMode ? '#334155' : '#e2e8f0',
                   borderRadius: '6px',
-                  fontSize: '0.8rem',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
                   fontWeight: '500'
                 }}>
                   🔒 Secure
                 </span>
                 <span style={{ 
-                  padding: '8px 12px', 
+                  padding: '6px 10px', 
                   backgroundColor: darkMode ? '#334155' : '#e2e8f0',
                   borderRadius: '6px',
-                  fontSize: '0.8rem',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
                   fontWeight: '500'
                 }}>
                   🎯 AI Powered
@@ -1090,44 +1124,44 @@ export default function Home() {
             <div>
               <h3 style={{
                 color: darkMode ? '#f8fafc' : '#1e293b',
-                margin: '0 0 15px 0',
-                fontSize: '1.1rem'
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
               }}>
                 Quick Links
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <span onClick={() => navigateTo('/')} style={{
                   color: darkMode ? '#93c5fd' : '#3b82f6',
                   cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   🏠 Home
                 </span>
                 <span onClick={() => navigateTo('/seo')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   🔍 SEO Tools
                 </span>
                 <span onClick={() => navigateTo('/code')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   💻 Code Assistant
                 </span>
                 <span onClick={() => navigateTo('/email')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   ✉️ Email Writer
                 </span>
                 <span onClick={() => navigateTo('/translate')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   🔄 Translator
                 </span>
@@ -1138,40 +1172,40 @@ export default function Home() {
             <div>
               <h3 style={{
                 color: darkMode ? '#f8fafc' : '#1e293b',
-                margin: '0 0 15px 0',
-                fontSize: '1.1rem'
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
               }}>
                 Support
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <a href="/help" style={{
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span onClick={() => navigateTo('/help')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
-                  textDecoration: 'none',
-                  fontSize: '0.9rem'
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   ❓ Help Center
-                </a>
-                <a href="/contact" style={{
+                </span>
+                <span onClick={() => navigateTo('/contact')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
-                  textDecoration: 'none',
-                  fontSize: '0.9rem'
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   📧 Contact Us
-                </a>
-                <a href="/feedback" style={{
+                </span>
+                <span onClick={() => navigateTo('/feedback')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
-                  textDecoration: 'none',
-                  fontSize: '0.9rem'
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   💬 Feedback
-                </a>
-                <a href="/feedback" style={{
+                </span>
+                <span onClick={() => navigateTo('/blog')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
-                  textDecoration: 'none',
-                  fontSize: '0.9rem'
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem'
                 }}>
                   📚 Blog
-                </a>
+                </span>
               </div>
             </div>
           </div>
@@ -1179,44 +1213,44 @@ export default function Home() {
           {/* Bottom Section */}
           <div style={{
             borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-            paddingTop: '20px',
+            paddingTop: isMobile ? '15px' : '20px',
             textAlign: 'center'
           }}>
             <div style={{
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: '20px',
-              marginBottom: '15px',
+              gap: isMobile ? '15px' : '20px',
+              marginBottom: isMobile ? '12px' : '15px',
               flexWrap: 'wrap'
             }}>
-              <a href="/privacy" style={{
+              <span onClick={() => navigateTo('/privacy')} style={{
                 color: darkMode ? '#93c5fd' : '#3b82f6',
-                textDecoration: 'none',
-                fontSize: '0.8rem'
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem'
               }}>
                 Privacy Policy
-              </a>
-              <a href="/terms" style={{
+              </span>
+              <span onClick={() => navigateTo('/terms')} style={{
                 color: darkMode ? '#93c5fd' : '#3b82f6',
-                textDecoration: 'none',
-                fontSize: '0.8rem'
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem'
               }}>
                 Terms of Service
-              </a>
-              <a href="/cookies" style={{
+              </span>
+              <span onClick={() => navigateTo('/cookies')} style={{
                 color: darkMode ? '#93c5fd' : '#3b82f6',
-                textDecoration: 'none',
-                fontSize: '0.8rem'
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem'
               }}>
                 Cookie Policy
-              </a>
+              </span>
             </div>
             
             <p style={{ 
               margin: '0', 
               color: darkMode ? '#94a3b8' : '#475569',
-              fontSize: '0.8rem',
+              fontSize: isMobile ? '0.75rem' : '0.8rem',
               lineHeight: '1.5'
             }}>
               © 2024 AI Prompt Maker. All rights reserved. 
@@ -1225,6 +1259,224 @@ export default function Home() {
             </p>
           </div>
         </footer>
+
+        {/* HISTORY MODAL */}
+        {showHistory && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            padding: isMobile ? '10px' : '20px'
+          }}>
+            <div style={{
+              backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+              borderRadius: '12px',
+              padding: isMobile ? '16px' : '20px',
+              width: isMobile ? '100%' : '600px',
+              maxHeight: '80vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              {/* Header */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+                paddingBottom: '10px',
+                borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
+              }}>
+                <h2 style={{ 
+                  margin: 0, 
+                  color: darkMode ? '#f8fafc' : '#1e293b',
+                  fontSize: isMobile ? '1.3rem' : '1.5rem'
+                }}>
+                  📚 Prompt History
+                </h2>
+                <button
+                  onClick={() => setShowHistory(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: isMobile ? '1.3rem' : '1.5rem',
+                    cursor: 'pointer',
+                    color: darkMode ? '#94a3b8' : '#64748b',
+                    padding: '5px'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* History List */}
+              <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                marginBottom: '16px'
+              }}>
+                {promptHistory.length === 0 ? (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '40px 20px',
+                    color: darkMode ? '#94a3b8' : '#64748b'
+                  }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
+                    <h3 style={{ margin: '0 0 10px 0' }}>No History Yet</h3>
+                    <p style={{ margin: 0 }}>Your generated prompts will appear here</p>
+                  </div>
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}>
+                    {promptHistory.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => loadFromHistory(item)}
+                        style={{
+                          backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                          border: `1px solid ${selectedHistory?.id === item.id ? '#3b82f6' : (darkMode ? '#334155' : '#e2e8f0')}`,
+                          borderRadius: '8px',
+                          padding: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          position: 'relative'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = darkMode ? '#1e40af20' : '#3b82f610';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = darkMode ? '#0f172a' : '#f8fafc';
+                        }}
+                      >
+                        {/* Delete Button */}
+                        <button
+                          onClick={(e) => deleteHistoryItem(item.id, e)}
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: 'none',
+                            borderRadius: '4px',
+                            color: '#ef4444',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            fontSize: '0.8rem'
+                          }}
+                          title="Delete this history"
+                        >
+                          🗑️
+                        </button>
+
+                        {/* History Content */}
+                        <div style={{ marginRight: '40px' }}>
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            marginBottom: '8px'
+                          }}>
+                            <strong style={{
+                              color: darkMode ? '#f8fafc' : '#1e293b',
+                              fontSize: isMobile ? '0.9rem' : '1rem'
+                            }}>
+                              {item.input.substring(0, 60)}{item.input.length > 60 ? '...' : ''}
+                            </strong>
+                            <span style={{
+                              color: darkMode ? '#94a3b8' : '#64748b',
+                              fontSize: isMobile ? '0.7rem' : '0.8rem',
+                              whiteSpace: 'nowrap'
+                            }}>
+                              {formatDate(item.timestamp)}
+                            </span>
+                          </div>
+                          
+                          <div style={{
+                            display: 'flex',
+                            gap: '8px',
+                            flexWrap: 'wrap',
+                            marginBottom: '6px'
+                          }}>
+                            <span style={{
+                              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                              color: '#3b82f6',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: isMobile ? '0.7rem' : '0.75rem'
+                            }}>
+                              {item.tone}
+                            </span>
+                            <span style={{
+                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                              color: '#10b981',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: isMobile ? '0.7rem' : '0.75rem'
+                            }}>
+                              {item.model}
+                            </span>
+                          </div>
+
+                          <p style={{
+                            margin: 0,
+                            color: darkMode ? '#cbd5e1' : '#64748b',
+                            fontSize: isMobile ? '0.8rem' : '0.85rem',
+                            lineHeight: '1.4'
+                          }}>
+                            {item.output.substring(0, 80)}{item.output.length > 80 ? '...' : ''}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Actions */}
+              {promptHistory.length > 0 && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingTop: '12px',
+                  borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
+                }}>
+                  <span style={{
+                    color: darkMode ? '#94a3b8' : '#64748b',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  }}>
+                    {promptHistory.length} prompts
+                  </span>
+                  <button
+                    onClick={clearHistory}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      color: '#ef4444',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: isMobile ? '0.8rem' : '0.9rem',
+                      fontWeight: '600'
+                    }}
+                  >
+                    Clear All
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Add basic CSS */}
         <style jsx>{`
@@ -1236,4 +1488,4 @@ export default function Home() {
       </div>
     </>
   );
-}
+                              }
