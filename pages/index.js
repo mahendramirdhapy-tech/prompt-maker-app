@@ -716,7 +716,7 @@ export default function Home() {
                 🔄 Translate
               </span>
 
-      <span onClick={() => navigateTo('/prompt')} style={{ 
+      <span onClick={() => navigateTo('/prompts')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
                 padding: '8px 12px',
