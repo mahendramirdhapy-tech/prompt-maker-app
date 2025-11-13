@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 const TEMPLATES = [
   { label: 'Custom Idea', value: '' },
@@ -44,6 +45,12 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState(null);
   const router = useRouter();
+
+  // Page specific SEO data
+  const pageTitle = "AI Prompt Maker - Free AI Prompt Generator Tool";
+  const pageDescription = "Transform your ideas into perfect AI prompts with our free AI Prompt Generator. Support for multiple AI models including GPT-4, Gemini, Claude, and Llama. No login required.";
+  const pageUrl = "https://aipromptmaker.online/";
+  const pageImage = "https://aipromptmaker.online/og-image.jpg";
 
   // Cache system
   const [responseCache, setResponseCache] = useState(new Map());
@@ -579,568 +586,643 @@ export default function Home() {
   };
 
   return (
-    <div style={styles.container}>
-      {/* SIMPLE HEADER */}
-      <header style={styles.header}>
-        <h1 style={styles.mainTitle}>
-          AI Prompt Maker
-        </h1>
-        <p style={styles.subtitle}>
-          Transform your ideas into perfect AI prompts
-        </p>
+    <>
+      {/* SEO Head Section */}
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
         
-        {/* Navigation */}
-        <div style={styles.navContainer}>
-          {/* Left side - Navigation links */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <span onClick={() => navigateTo('/')} style={{ 
-              color: router.pathname === '/' ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
-              cursor: 'pointer',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              backgroundColor: router.pathname === '/' ? (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
-            }}>
-              🏠 Home
-            </span>
-            <span onClick={() => navigateTo('/seo')} style={{ 
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              cursor: 'pointer',
-              padding: '8px 12px',
-              borderRadius: '6px',
-            }}>
-              🔍 SEO
-            </span>
-            <span onClick={() => navigateTo('/code')} style={{ 
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              cursor: 'pointer',
-              padding: '8px 12px',
-              borderRadius: '6px',
-            }}>
-              💻 Code
-            </span>
-            <span onClick={() => navigateTo('/email')} style={{ 
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              cursor: 'pointer',
-              padding: '8px 12px',
-              borderRadius: '6px',
-            }}>
-              ✉️ Email
-            </span>
-            <span onClick={() => navigateTo('/translate')} style={{ 
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              cursor: 'pointer',
-              padding: '8px 12px',
-              borderRadius: '6px',
-            }}>
-              🔄 Translate
-            </span>
-          </div>
-
-          {/* Right side - Actions */}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button 
-              onClick={() => setShowHistory(!showHistory)}
-              style={styles.button('#8b5cf6')}
-            >
-              📚 History
-            </button>
-
-            {user ? (
-              <button onClick={handleLogout} style={styles.button('#6b7280')}>
-                Logout
-              </button>
-            ) : (
-              <button onClick={handleLogin} style={styles.button('#3b82f6')}>
-                Login
-              </button>
-            )}
-            
-            <button
-              onClick={toggleDarkMode}
-              style={styles.button(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}
-            >
-              {darkMode ? '☀️' : '🌙'}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* MAIN CONTENT */}
-      <main style={{ 
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        gap: '20px',
-      }}>
+        {/* Canonical URL */}
+        <link rel="canonical" href={pageUrl} />
         
-        {/* Input Section */}
-        <div style={{ flex: 1 }}>
-          {/* Usage Alert */}
-          {!canGenerate() && !user && (
-            <div style={{
-              ...styles.card,
-              background: 'linear(135deg, #fef3c7, #fde68a)',
-              border: '1px solid #f59e0b',
-              color: '#92400e',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🚨</span>
-                <strong>Free Limit Reached</strong>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                You've used all 5 free prompts. Login for unlimited access!
-              </p>
-              <button 
-                onClick={handleLogin}
-                style={{
-                  ...styles.button('#3b82f6'),
-                  marginTop: '12px',
-                  width: '100%'
-                }}
-              >
-                🔐 Login to Continue
-              </button>
-            </div>
-          )}
+        {/* Open Graph */}
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={pageImage} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="AI Prompt Maker" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={pageImage} />
+        
+        {/* Additional Meta Tags */}
+        <meta name="keywords" content="AI prompt generator, free AI tools, ChatGPT prompts, content creation, AI writing assistant, GPT-4 prompts, Gemini AI, Claude AI, Llama AI" />
+        <meta name="author" content="AI Prompt Maker" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        
+        {/* Structured Data for FAQ */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "What is AI Prompt Maker?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "AI Prompt Maker is a free online tool that helps you create perfect AI prompts for various AI models like GPT-4, Gemini, Claude, and Llama. It transforms your basic ideas into well-structured prompts that generate better AI responses."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Is AI Prompt Maker free to use?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, AI Prompt Maker is completely free to use. You get 5 free prompts without login, and unlimited access after creating a free account."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Which AI models are supported?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We support multiple AI models including Google Gemini Pro, Claude Instant, Meta Llama 3, and Mistral 7B. The system automatically selects the best available model for your prompt."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I use generated prompts for commercial purposes?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, all prompts generated by our tool can be used for personal and commercial purposes without any restrictions."
+                  }
+                }
+              ]
+            })
+          }}
+        />
+      </Head>
 
-          {/* Configuration */}
-          <div style={styles.card}>
-            <h2 style={{ margin: '0 0 16px 0' }}>⚙️ Configuration</h2>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
-                  Tone
-                </label>
-                <select 
-                  value={tone} 
-                  onChange={(e) => setTone(e.target.value)} 
-                  style={styles.input}
-                >
-                  {TONES.map(toneOption => (
-                    <option key={toneOption} value={toneOption}>{toneOption}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
-                  Template
-                </label>
-                <select 
-                  value={template} 
-                  onChange={handleTemplateChange} 
-                  style={styles.input}
-                >
-                  {TEMPLATES.map(template => (
-                    <option key={template.value} value={template.value}>{template.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
-                Response Length: {maxTokens} tokens
-              </label>
-              <input
-                type="range"
-                min="200"
-                max="800"
-                step="200"
-                value={maxTokens}
-                onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                style={{ width: '100%' }}
-              />
-            </div>
-
-            <div style={{ marginTop: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
-                Language
-              </label>
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <input 
-                    type="radio" 
-                    name="lang" 
-                    checked={language === 'English'} 
-                    onChange={() => setLanguage('English')} 
-                  />
-                  English
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <input 
-                    type="radio" 
-                    name="lang" 
-                    checked={language === 'Hindi'} 
-                    onChange={() => setLanguage('Hindi')} 
-                  />
-                  हिंदी
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Input Form */}
-          <div style={styles.card}>
-            <h2 style={{ margin: '0 0 16px 0' }}>💡 Your Idea</h2>
-            <form onSubmit={handleSubmit}>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Describe what you want to create..."
-                rows="5"
-                style={{
-                  ...styles.input,
-                  minHeight: '120px',
-                  resize: 'vertical',
-                }}
-                required
-              />
-              
-              {loading && generationStatus && (
-                <div style={{
-                  padding: '12px',
-                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                  borderRadius: '8px',
-                  marginBottom: '16px',
-                  textAlign: 'center',
-                }}>
-                  {generationStatus}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading || !canGenerate() || !input.trim()}
-                style={styles.generateButton}
-              >
-                {loading ? '⚡ Generating...' : '✨ Generate AI Prompt'}
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Output Section */}
-        <div style={{ flex: 1 }}>
-          {output ? (
-            <div style={styles.card}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h2 style={{ margin: 0 }}>🎉 Your AI Prompt</h2>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button 
-                    onClick={handleRegenerate}
-                    style={styles.button('#10b981')}
-                  >
-                    🔄
-                  </button>
-                  <button 
-                    onClick={exportTxt}
-                    style={styles.button('#8b5cf6')}
-                  >
-                    💾
-                  </button>
-                </div>
-              </div>
-              
-              <div style={{
-                backgroundColor: darkMode ? '#0f172a' : '#ffffff',
-                border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: '16px',
-              }}>
-                <pre style={{
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                  margin: 0,
-                  fontSize: '0.9rem',
-                  lineHeight: '1.5',
-                }}>
-                  {output}
-                </pre>
-              </div>
-              
-              {usedModel && (
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '12px',
-                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                  borderRadius: '8px',
-                  marginBottom: '16px',
-                }}>
-                  <span>Generated with:</span>
-                  <code style={{ 
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '0.8rem',
-                  }}>
-                    {usedModel}
-                  </code>
-                </div>
-              )}
-
-              {/* Feedback Section */}
-              {feedbackGiven === null && (
-                <div style={{
-                  padding: '16px',
-                  backgroundColor: 'rgba(248, 250, 252, 0.8)',
-                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-                  borderRadius: '12px',
-                }}>
-                  <p style={{ 
-                    margin: '0 0 12px 0',
-                    fontSize: '0.9rem',
-                    fontWeight: '600',
-                  }}>
-                    Was this helpful?
-                  </p>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <button 
-                      onClick={() => handleFeedback(true)}
-                      style={styles.button('#22c55e')}
-                    >
-                      👍 Yes
-                    </button>
-                    <button 
-                      onClick={() => handleFeedback(false)}
-                      style={styles.button('#ef4444')}
-                    >
-                      👎 No
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div style={{
-              ...styles.card,
-              textAlign: 'center',
-              padding: '40px 20px',
-            }}>
-              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🚀</div>
-              <h3 style={{ margin: '0 0 8px 0' }}>Ready to Create?</h3>
-              <p style={{ margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
-                Enter your idea above to generate AI prompts
-              </p>
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* FOOTER SECTION */}
-      <footer style={{
-        backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-        padding: '40px 20px 20px 20px',
-        marginTop: '50px',
-        borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: '30px',
-          marginBottom: '30px'
-        }}>
+      <div style={styles.container}>
+        {/* SIMPLE HEADER */}
+        <header style={styles.header}>
+          <h1 style={styles.mainTitle}>
+            AI Prompt Maker
+          </h1>
+          <p style={styles.subtitle}>
+            Transform your ideas into perfect AI prompts
+          </p>
           
-          {/* Company Info */}
-          <div>
-            <h3 style={{
-              color: darkMode ? '#f8fafc' : '#1e293b',
-              margin: '0 0 15px 0',
-              fontSize: '1.1rem'
-            }}>
-              AI Prompt Maker
-            </h3>
-            <p style={{
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              margin: '0 0 15px 0',
-              fontSize: '0.9rem',
-              lineHeight: '1.5'
-            }}>
-              Transform your ideas into perfect AI prompts with our advanced multi-model AI technology.
-            </p>
-            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-              <span style={{ 
-                padding: '8px 12px', 
-                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                fontWeight: '500'
-              }}>
-                🚀 Fast
-              </span>
-              <span style={{ 
-                padding: '8px 12px', 
-                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                fontWeight: '500'
-              }}>
-                🔒 Secure
-              </span>
-              <span style={{ 
-                padding: '8px 12px', 
-                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                fontWeight: '500'
-              }}>
-                🎯 AI Powered
-              </span>
-            </div>
-          </div>
-          
-          {/* Quick Links */}
-          <div>
-            <h3 style={{
-              color: darkMode ? '#f8fafc' : '#1e293b',
-              margin: '0 0 15px 0',
-              fontSize: '1.1rem'
-            }}>
-              Quick Links
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span onClick={() => navigateTo('/')} style={{
-                color: darkMode ? '#93c5fd' : '#3b82f6',
+          {/* Navigation */}
+          <div style={styles.navContainer}>
+            {/* Left side - Navigation links */}
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span onClick={() => navigateTo('/')} style={{ 
+                color: router.pathname === '/' ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
                 cursor: 'pointer',
-                fontSize: '0.9rem'
+                padding: '8px 12px',
+                borderRadius: '6px',
+                backgroundColor: router.pathname === '/' ? (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
               }}>
                 🏠 Home
               </span>
-              <span onClick={() => navigateTo('/seo')} style={{
+              <span onClick={() => navigateTo('/seo')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                fontSize: '0.9rem'
+                padding: '8px 12px',
+                borderRadius: '6px',
               }}>
-                🔍 SEO Tools
+                🔍 SEO
               </span>
-              <span onClick={() => navigateTo('/code')} style={{
+              <span onClick={() => navigateTo('/code')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                fontSize: '0.9rem'
+                padding: '8px 12px',
+                borderRadius: '6px',
               }}>
-                💻 Code Assistant
+                💻 Code
               </span>
-              <span onClick={() => navigateTo('/email')} style={{
+              <span onClick={() => navigateTo('/email')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                fontSize: '0.9rem'
+                padding: '8px 12px',
+                borderRadius: '6px',
               }}>
-                ✉️ Email Writer
+                ✉️ Email
               </span>
-              <span onClick={() => navigateTo('/translate')} style={{
+              <span onClick={() => navigateTo('/translate')} style={{ 
                 color: darkMode ? '#cbd5e1' : '#64748b',
                 cursor: 'pointer',
-                fontSize: '0.9rem'
+                padding: '8px 12px',
+                borderRadius: '6px',
               }}>
-                🔄 Translator
+                🔄 Translate
               </span>
             </div>
+
+            {/* Right side - Actions */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button 
+                onClick={() => setShowHistory(!showHistory)}
+                style={styles.button('#8b5cf6')}
+              >
+                📚 History
+              </button>
+
+              {user ? (
+                <button onClick={handleLogout} style={styles.button('#6b7280')}>
+                  Logout
+                </button>
+              ) : (
+                <button onClick={handleLogin} style={styles.button('#3b82f6')}>
+                  Login
+                </button>
+              )}
+              
+              <button
+                onClick={toggleDarkMode}
+                style={styles.button(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}
+              >
+                {darkMode ? '☀️' : '🌙'}
+              </button>
+            </div>
           </div>
+        </header>
+
+        {/* MAIN CONTENT */}
+        <main style={{ 
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: '20px',
+        }}>
           
-          {/* Support */}
-          <div>
-            <h3 style={{
-              color: darkMode ? '#f8fafc' : '#1e293b',
-              margin: '0 0 15px 0',
-              fontSize: '1.1rem'
-            }}>
-              Support
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a href="/help" style={{
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                textDecoration: 'none',
-                fontSize: '0.9rem'
+          {/* Input Section */}
+          <div style={{ flex: 1 }}>
+            {/* Usage Alert */}
+            {!canGenerate() && !user && (
+              <div style={{
+                ...styles.card,
+                background: 'linear(135deg, #fef3c7, #fde68a)',
+                border: '1px solid #f59e0b',
+                color: '#92400e',
               }}>
-                ❓ Help Center
-              </a>
-              <a href="/contact" style={{
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                textDecoration: 'none',
-                fontSize: '0.9rem'
-              }}>
-                📧 Contact Us
-              </a>
-              <a href="/feedback" style={{
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                textDecoration: 'none',
-                fontSize: '0.9rem'
-              }}>
-                💬 Feedback
-              </a>
-              <a href="/blog" style={{
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                textDecoration: 'none',
-                fontSize: '0.9rem'
-              }}>
-                📚 Blog
-              </a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🚨</span>
+                  <strong>Free Limit Reached</strong>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                  You've used all 5 free prompts. Login for unlimited access!
+                </p>
+                <button 
+                  onClick={handleLogin}
+                  style={{
+                    ...styles.button('#3b82f6'),
+                    marginTop: '12px',
+                    width: '100%'
+                  }}
+                >
+                  🔐 Login to Continue
+                </button>
+              </div>
+            )}
+
+            {/* Configuration */}
+            <div style={styles.card}>
+              <h2 style={{ margin: '0 0 16px 0' }}>⚙️ Configuration</h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                    Tone
+                  </label>
+                  <select 
+                    value={tone} 
+                    onChange={(e) => setTone(e.target.value)} 
+                    style={styles.input}
+                  >
+                    {TONES.map(toneOption => (
+                      <option key={toneOption} value={toneOption}>{toneOption}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                    Template
+                  </label>
+                  <select 
+                    value={template} 
+                    onChange={handleTemplateChange} 
+                    style={styles.input}
+                  >
+                    {TEMPLATES.map(template => (
+                      <option key={template.value} value={template.value}>{template.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+                  Response Length: {maxTokens} tokens
+                </label>
+                <input
+                  type="range"
+                  min="200"
+                  max="800"
+                  step="200"
+                  value={maxTokens}
+                  onChange={(e) => setMaxTokens(parseInt(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div style={{ marginTop: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+                  Language
+                </label>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <input 
+                      type="radio" 
+                      name="lang" 
+                      checked={language === 'English'} 
+                      onChange={() => setLanguage('English')} 
+                    />
+                    English
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <input 
+                      type="radio" 
+                      name="lang" 
+                      checked={language === 'Hindi'} 
+                      onChange={() => setLanguage('Hindi')} 
+                    />
+                    हिंदी
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Input Form */}
+            <div style={styles.card}>
+              <h2 style={{ margin: '0 0 16px 0' }}>💡 Your Idea</h2>
+              <form onSubmit={handleSubmit}>
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Describe what you want to create..."
+                  rows="5"
+                  style={{
+                    ...styles.input,
+                    minHeight: '120px',
+                    resize: 'vertical',
+                  }}
+                  required
+                />
+                
+                {loading && generationStatus && (
+                  <div style={{
+                    padding: '12px',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    textAlign: 'center',
+                  }}>
+                    {generationStatus}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !canGenerate() || !input.trim()}
+                  style={styles.generateButton}
+                >
+                  {loading ? '⚡ Generating...' : '✨ Generate AI Prompt'}
+                </button>
+              </form>
             </div>
           </div>
-        </div>
-        
-        {/* Bottom Section */}
-        <div style={{
+
+          {/* Output Section */}
+          <div style={{ flex: 1 }}>
+            {output ? (
+              <div style={styles.card}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h2 style={{ margin: 0 }}>🎉 Your AI Prompt</h2>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      onClick={handleRegenerate}
+                      style={styles.button('#10b981')}
+                    >
+                      🔄
+                    </button>
+                    <button 
+                      onClick={exportTxt}
+                      style={styles.button('#8b5cf6')}
+                    >
+                      💾
+                    </button>
+                  </div>
+                </div>
+                
+                <div style={{
+                  backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  borderRadius: '8px',
+                  padding: '16px',
+                  marginBottom: '16px',
+                }}>
+                  <pre style={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    margin: 0,
+                    fontSize: '0.9rem',
+                    lineHeight: '1.5',
+                  }}>
+                    {output}
+                  </pre>
+                </div>
+                
+                {usedModel && (
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '12px',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                  }}>
+                    <span>Generated with:</span>
+                    <code style={{ 
+                      backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.8rem',
+                    }}>
+                      {usedModel}
+                    </code>
+                  </div>
+                )}
+
+                {/* Feedback Section */}
+                {feedbackGiven === null && (
+                  <div style={{
+                    padding: '16px',
+                    backgroundColor: 'rgba(248, 250, 252, 0.8)',
+                    border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                    borderRadius: '12px',
+                  }}>
+                    <p style={{ 
+                      margin: '0 0 12px 0',
+                      fontSize: '0.9rem',
+                      fontWeight: '600',
+                    }}>
+                      Was this helpful?
+                    </p>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <button 
+                        onClick={() => handleFeedback(true)}
+                        style={styles.button('#22c55e')}
+                      >
+                        👍 Yes
+                      </button>
+                      <button 
+                        onClick={() => handleFeedback(false)}
+                        style={styles.button('#ef4444')}
+                      >
+                        👎 No
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{
+                ...styles.card,
+                textAlign: 'center',
+                padding: '40px 20px',
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🚀</div>
+                <h3 style={{ margin: '0 0 8px 0' }}>Ready to Create?</h3>
+                <p style={{ margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                  Enter your idea above to generate AI prompts
+                </p>
+              </div>
+            )}
+          </div>
+        </main>
+
+        {/* FOOTER SECTION */}
+        <footer style={{
+          backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+          padding: '40px 20px 20px 20px',
+          marginTop: '50px',
           borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-          paddingTop: '20px',
-          textAlign: 'center'
         }}>
           <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '20px',
-            marginBottom: '15px',
-            flexWrap: 'wrap'
+            maxWidth: '1200px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: '30px',
+            marginBottom: '30px'
           }}>
-            <a href="/privacy" style={{
-              color: darkMode ? '#93c5fd' : '#3b82f6',
-              textDecoration: 'none',
-              fontSize: '0.8rem'
-            }}>
-              Privacy Policy
-            </a>
-            <a href="/terms" style={{
-              color: darkMode ? '#93c5fd' : '#3b82f6',
-              textDecoration: 'none',
-              fontSize: '0.8rem'
-            }}>
-              Terms of Service
-            </a>
-            <a href="/cookies" style={{
-              color: darkMode ? '#93c5fd' : '#3b82f6',
-              textDecoration: 'none',
-              fontSize: '0.8rem'
-            }}>
-              Cookie Policy
-            </a>
+            
+            {/* Company Info */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 15px 0',
+                fontSize: '1.1rem'
+              }}>
+                AI Prompt Maker
+              </h3>
+              <p style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                margin: '0 0 15px 0',
+                fontSize: '0.9rem',
+                lineHeight: '1.5'
+              }}>
+                Transform your ideas into perfect AI prompts with our advanced multi-model AI technology. Free tool for creators, writers, and developers.
+              </p>
+              <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                <span style={{ 
+                  padding: '8px 12px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🚀 Fast
+                </span>
+                <span style={{ 
+                  padding: '8px 12px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🔒 Secure
+                </span>
+                <span style={{ 
+                  padding: '8px 12px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🎯 AI Powered
+                </span>
+              </div>
+            </div>
+            
+            {/* Quick Links */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 15px 0',
+                fontSize: '1.1rem'
+              }}>
+                Quick Links
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <span onClick={() => navigateTo('/')} style={{
+                  color: darkMode ? '#93c5fd' : '#3b82f6',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}>
+                  🏠 Home
+                </span>
+                <span onClick={() => navigateTo('/seo')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}>
+                  🔍 SEO Tools
+                </span>
+                <span onClick={() => navigateTo('/code')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}>
+                  💻 Code Assistant
+                </span>
+                <span onClick={() => navigateTo('/email')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}>
+                  ✉️ Email Writer
+                </span>
+                <span onClick={() => navigateTo('/translate')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}>
+                  🔄 Translator
+                </span>
+              </div>
+            </div>
+            
+            {/* Support */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 15px 0',
+                fontSize: '1.1rem'
+              }}>
+                Support
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a href="/help" style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem'
+                }}>
+                  ❓ Help Center
+                </a>
+                <a href="/contact" style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem'
+                }}>
+                  📧 Contact Us
+                </a>
+                <a href="/feedback" style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem'
+                }}>
+                  💬 Feedback
+                </a>
+                <a href="/blog" style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem'
+                }}>
+                  📚 Blog
+                </a>
+              </div>
+            </div>
           </div>
           
-          <p style={{ 
-            margin: '0', 
-            color: darkMode ? '#94a3b8' : '#475569',
-            fontSize: '0.8rem',
-            lineHeight: '1.5'
+          {/* Bottom Section */}
+          <div style={{
+            borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+            paddingTop: '20px',
+            textAlign: 'center'
           }}>
-            © 2024 AI Prompt Maker. All rights reserved. 
-            <br />
-            Powered by multiple AI models • Made with ❤️ for creators worldwide
-          </p>
-        </div>
-      </footer>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '20px',
+              marginBottom: '15px',
+              flexWrap: 'wrap'
+            }}>
+              <a href="/privacy" style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                textDecoration: 'none',
+                fontSize: '0.8rem'
+              }}>
+                Privacy Policy
+              </a>
+              <a href="/terms" style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                textDecoration: 'none',
+                fontSize: '0.8rem'
+              }}>
+                Terms of Service
+              </a>
+              <a href="/cookies" style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                textDecoration: 'none',
+                fontSize: '0.8rem'
+              }}>
+                Cookie Policy
+              </a>
+            </div>
+            
+            <p style={{ 
+              margin: '0', 
+              color: darkMode ? '#94a3b8' : '#475569',
+              fontSize: '0.8rem',
+              lineHeight: '1.5'
+            }}>
+              © 2024 AI Prompt Maker. All rights reserved. 
+              <br />
+              Powered by multiple AI models • Made with ❤️ for creators worldwide
+            </p>
+          </div>
+        </footer>
 
-      {/* Add basic CSS */}
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+        {/* Add basic CSS */}
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    </>
   );
 }
