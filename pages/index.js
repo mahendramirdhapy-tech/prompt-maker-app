@@ -476,7 +476,7 @@ export default function Home() {
     }
   };
 
-  // Professional styling variables - FIXED COLORS AND CENTERED LOGO
+  // Professional styling variables - TEXT ONLY LOGO
   const styles = {
     container: {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -492,7 +492,7 @@ export default function Home() {
       boxSizing: 'border-box',
     },
 
-    // NEW: Centered Header with Logo at Top
+    // Centered Header with Text Logo at Top
     header: {
       display: 'flex',
       flexDirection: 'column',
@@ -505,7 +505,7 @@ export default function Home() {
       gap: '16px',
     },
 
-    // NEW: Centered Logo Container
+    // Centered Logo Container
     logoContainer: {
       display: 'flex',
       flexDirection: 'column',
@@ -515,31 +515,31 @@ export default function Home() {
       textAlign: 'center',
     },
 
-    // NEW: Big Beautiful Logo
-    logo: {
-      fontSize: isMobile ? '2rem' : '2.5rem',
+    // Text Only Logo - Beautiful Styling
+    logoText: {
+      fontSize: isMobile ? '2rem' : '2.8rem',
       fontWeight: '900',
       background: 'linear(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
       backgroundClip: 'text',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       textDecoration: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
       cursor: 'pointer',
-      flexShrink: 0,
       textAlign: 'center',
-      lineHeight: '1.2',
+      lineHeight: '1.1',
+      letterSpacing: '-0.02em',
+      margin: 0,
+      padding: 0,
     },
 
     logoSubtitle: {
-      fontSize: isMobile ? '0.9rem' : '1rem',
+      fontSize: isMobile ? '0.9rem' : '1.1rem',
       color: 'var(--text-secondary, #64748b)',
       fontWeight: '500',
       textAlign: 'center',
-      maxWidth: '400px',
+      maxWidth: '500px',
       lineHeight: '1.4',
+      margin: 0,
     },
 
     // Navigation Row Below Logo
@@ -579,7 +579,7 @@ export default function Home() {
       },
     }),
 
-    // FIXED: Generate Button with Proper Colors
+    // Generate Button with Proper Colors
     generateButton: {
       width: '100%',
       padding: isMobile ? '18px' : '20px',
@@ -667,20 +667,19 @@ export default function Home() {
 
   return (
     <div style={styles.container}>
-      {/* NEW: Enhanced Header with Centered Logo */}
+      {/* Enhanced Header with Text Only Logo */}
       <header style={styles.header}>
-        {/* Logo Container - Centered at Top */}
+        {/* Text Logo Container - Centered at Top */}
         <div style={styles.logoContainer}>
-          <div 
+          <h1 
             onClick={() => navigateTo('/')} 
-            style={styles.logo}
+            style={styles.logoText}
           >
-            <div style={{ fontSize: isMobile ? '1.8em' : '2em' }}>🚀</div>
             AI Prompt Maker
-          </div>
-          <div style={styles.logoSubtitle}>
+          </h1>
+          <p style={styles.logoSubtitle}>
             Transform your ideas into perfect AI prompts with multiple AI models
-          </div>
+          </p>
         </div>
 
         {/* Navigation Row */}
@@ -823,8 +822,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Rest of the components remain the same but with updated generate button */}
-      {/* History Sidebar, Mobile Menu, etc. */}
+      {/* Rest of the code remains exactly the same */}
+      {/* Only the header section has been updated */}
 
       {/* Main Content Grid */}
       <main style={{ 
@@ -1015,7 +1014,7 @@ export default function Home() {
                 </div>
               )}
 
-              {/* FIXED: Generate Button with Proper Colors */}
+              {/* Generate Button with Proper Colors */}
               <button
                 type="submit"
                 disabled={loading || !canGenerate() || !input.trim()}
