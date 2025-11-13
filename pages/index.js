@@ -476,30 +476,37 @@ export default function Home() {
     }
   };
 
-  // Professional styling variables
+  // Professional styling variables - MOBILE FIXED
   const styles = {
     container: {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       maxWidth: '1200px',
       margin: '0 auto',
-      padding: isMobile ? '0 16px' : '0 24px',
+      padding: isMobile ? '0 12px' : '0 24px',
       paddingBottom: isMobile ? '80px' : '40px',
       minHeight: '100vh',
       background: 'var(--bg-primary, #ffffff)',
       color: 'var(--text-primary, #1e293b)',
+      overflowX: 'hidden', // Prevent horizontal scroll
+      width: '100%',
+      boxSizing: 'border-box',
     },
 
     header: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: isMobile ? '20px 0' : '24px 0',
+      padding: isMobile ? '16px 0' : '24px 0',
       borderBottom: `1px solid var(--border-color, #e2e8f0)`,
-      marginBottom: '32px',
+      marginBottom: '24px',
+      width: '100%',
+      boxSizing: 'border-box',
+      flexWrap: 'wrap', // Allow wrapping on mobile
+      gap: '12px',
     },
 
     logo: {
-      fontSize: isMobile ? '1.5rem' : '1.75rem',
+      fontSize: isMobile ? '1.25rem' : '1.75rem',
       fontWeight: '800',
       background: 'linear(135deg, #667eea 0%, #764ba2 100%)',
       backgroundClip: 'text',
@@ -508,26 +515,32 @@ export default function Home() {
       textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '8px',
       cursor: 'pointer',
+      flexShrink: 0, // Prevent logo from shrinking
     },
 
     button: (bg, color = '#fff') => ({
-      padding: isMobile ? '12px 20px' : '10px 20px',
+      padding: isMobile ? '12px 16px' : '10px 20px',
       backgroundColor: bg,
       color: color,
       border: 'none',
       borderRadius: '12px',
       cursor: 'pointer',
-      fontSize: isMobile ? '0.95rem' : '0.9rem',
+      fontSize: isMobile ? '0.9rem' : '0.9rem',
       fontWeight: '600',
       transition: 'all 0.2s ease',
       textDecoration: 'none',
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '8px',
-      minHeight: isMobile ? '48px' : '44px',
+      gap: '6px',
+      minHeight: isMobile ? '44px' : '44px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      flexShrink: 0,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '100%',
       ':hover': {
         transform: 'translateY(-1px)',
         boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
@@ -538,15 +551,17 @@ export default function Home() {
       color: isActive ? '#3b82f6' : 'var(--text-secondary, #64748b)',
       textDecoration: 'none',
       fontWeight: isActive ? '600' : '500',
-      padding: '10px 16px',
+      padding: isMobile ? '10px 12px' : '10px 16px',
       borderRadius: '10px',
       transition: 'all 0.2s ease',
       cursor: 'pointer',
       backgroundColor: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-      fontSize: '0.9rem',
+      fontSize: isMobile ? '0.85rem' : '0.9rem',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
+      gap: '6px',
+      flexShrink: 0,
+      whiteSpace: 'nowrap',
       ':hover': {
         backgroundColor: 'rgba(59, 130, 246, 0.05)',
         color: '#3b82f6',
@@ -557,22 +572,25 @@ export default function Home() {
       backgroundColor: 'var(--bg-secondary, #f8fafc)',
       border: `1px solid var(--border-color, #e2e8f0)`,
       borderRadius: '16px',
-      padding: isMobile ? '20px' : '24px',
-      marginBottom: '24px',
+      padding: isMobile ? '16px' : '24px',
+      marginBottom: '20px',
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      width: '100%',
+      boxSizing: 'border-box',
     },
 
     input: {
       width: '100%',
-      padding: isMobile ? '16px' : '14px',
+      padding: isMobile ? '14px' : '14px',
       borderRadius: '12px',
       border: `1px solid var(--border-color, #e2e8f0)`,
       backgroundColor: 'var(--bg-primary, #ffffff)',
       color: 'var(--text-primary, #1e293b)',
-      fontSize: '1rem',
+      fontSize: '16px', // Prevent zoom on iOS
       marginBottom: '16px',
       boxSizing: 'border-box',
       transition: 'all 0.2s ease',
+      WebkitAppearance: 'none', // Remove default iOS styles
       ':focus': {
         outline: 'none',
         borderColor: '#3b82f6',
@@ -583,17 +601,28 @@ export default function Home() {
 
   return (
     <div style={styles.container}>
-      {/* Enhanced Header */}
+      {/* Enhanced Header - MOBILE FIXED */}
       <header style={styles.header}>
         <div onClick={() => navigateTo('/')} style={styles.logo}>
-          <div style={{ fontSize: '1.5em' }}>🚀</div>
-          PromptCraft
+          <div style={{ fontSize: isMobile ? '1.2em' : '1.5em' }}>🚀</div>
+          {isMobile ? 'PC' : 'PromptCraft'}
         </div>
 
         {/* Desktop Navigation */}
         {!isMobile && (
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <nav style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '4px',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '2px',
+              flexWrap: 'wrap'
+            }}>
               <span onClick={() => navigateTo('/')} style={styles.navLink(router.pathname === '/')}>
                 🏠 Home
               </span>
@@ -617,7 +646,13 @@ export default function Home() {
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '20px' }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              marginLeft: '16px',
+              flexWrap: 'wrap'
+            }}>
               {/* History Button */}
               <button 
                 onClick={() => setShowHistory(!showHistory)}
@@ -625,13 +660,17 @@ export default function Home() {
                 title="View History"
               >
                 <span>📚</span>
-                History ({promptHistory.length})
+                {isMobile ? '' : `History (${promptHistory.length})`}
               </button>
 
               {user ? (
                 <>
-                  <span style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.9rem' }}>
-                    👋 Welcome, {user.email?.split('@')[0]}
+                  <span style={{ 
+                    color: 'var(--text-secondary, #64748b)', 
+                    fontSize: '0.85rem',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    👋 {user.email?.split('@')[0]}
                   </span>
                   <button onClick={handleLogout} style={styles.button('#6b7280')}>
                     Logout
@@ -640,7 +679,7 @@ export default function Home() {
               ) : (
                 <button onClick={handleLogin} style={styles.button('#3b82f6')}>
                   <span>🔐</span>
-                  Login
+                  {isMobile ? 'Login' : 'Login'}
                 </button>
               )}
               
@@ -656,13 +695,18 @@ export default function Home() {
 
         {/* Mobile Menu Button */}
         {isMobile && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            flexShrink: 0
+          }}>
             {/* Mobile History Button */}
             <button 
               onClick={() => setShowHistory(!showHistory)}
               style={{
                 ...styles.button('#8b5cf6'),
-                padding: '10px',
+                padding: '10px 12px',
               }}
               title="History"
             >
@@ -677,7 +721,8 @@ export default function Home() {
                   fontSize: '0.7rem',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  marginLeft: '4px'
                 }}>
                   {promptHistory.length}
                 </span>
@@ -693,6 +738,7 @@ export default function Home() {
                 cursor: 'pointer',
                 fontSize: '1.5rem',
                 padding: '8px',
+                flexShrink: 0,
               }}
             >
               {mobileMenuOpen ? '✕' : '☰'}
@@ -701,7 +747,7 @@ export default function Home() {
         )}
       </header>
 
-      {/* History Sidebar */}
+      {/* History Sidebar - MOBILE FIXED */}
       {showHistory && (
         <div style={{
           position: 'fixed',
@@ -715,16 +761,22 @@ export default function Home() {
           zIndex: 1001,
           display: 'flex',
           flexDirection: 'column',
+          overflow: 'hidden',
         }}>
           {/* History Header */}
           <div style={{
-            padding: '20px',
+            padding: isMobile ? '16px' : '20px',
             borderBottom: `1px solid var(--border-color, #e2e8f0)`,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexShrink: 0,
           }}>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700' }}>
+            <h2 style={{ 
+              margin: 0, 
+              fontSize: isMobile ? '1.1rem' : '1.25rem', 
+              fontWeight: '700' 
+            }}>
               📚 Prompt History
             </h2>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -739,6 +791,7 @@ export default function Home() {
                     borderRadius: '8px',
                     cursor: 'pointer',
                     fontSize: '0.8rem',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   Clear All
@@ -762,7 +815,12 @@ export default function Home() {
           </div>
 
           {/* History List */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+          <div style={{ 
+            flex: 1, 
+            overflowY: 'auto', 
+            padding: isMobile ? '12px' : '16px',
+            WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
+          }}>
             {promptHistory.length === 0 ? (
               <div style={{ 
                 textAlign: 'center', 
@@ -778,13 +836,17 @@ export default function Home() {
                 </p>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: isMobile ? '10px' : '12px' 
+              }}>
                 {promptHistory.map((item) => (
                   <div
                     key={item.id}
                     onClick={() => loadFromHistory(item)}
                     style={{
-                      padding: '16px',
+                      padding: isMobile ? '14px' : '16px',
                       backgroundColor: selectedHistory?.id === item.id 
                         ? 'rgba(59, 130, 246, 0.1)' 
                         : 'var(--bg-secondary, #f8fafc)',
@@ -817,6 +879,7 @@ export default function Home() {
                         padding: '4px',
                         borderRadius: '4px',
                         fontSize: '0.8rem',
+                        zIndex: 1,
                       }}
                       title="Delete this item"
                     >
@@ -824,31 +887,33 @@ export default function Home() {
                     </button>
 
                     {/* History Item Content */}
-                    <div style={{ marginBottom: '8px' }}>
+                    <div style={{ marginBottom: '8px', paddingRight: '20px' }}>
                       <div style={{ 
-                        fontSize: '0.85rem', 
+                        fontSize: '0.8rem', 
                         color: 'var(--text-secondary, #64748b)',
-                        marginBottom: '4px'
+                        marginBottom: '6px'
                       }}>
                         {formatDate(item.timestamp)}
                       </div>
                       <div style={{ 
                         fontWeight: '600',
-                        fontSize: '0.9rem',
+                        fontSize: '0.85rem',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        lineHeight: '1.4',
                       }}>
                         {item.input}
                       </div>
                     </div>
 
                     <div style={{ 
-                      fontSize: '0.8rem', 
+                      fontSize: '0.75rem', 
                       color: 'var(--text-secondary, #64748b)',
                       display: 'flex',
-                      gap: '12px'
+                      gap: '10px',
+                      flexWrap: 'wrap'
                     }}>
                       <span>🎵 {item.tone}</span>
                       <span>🌐 {item.language}</span>
@@ -862,7 +927,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - IMPROVED */}
       {isMobile && mobileMenuOpen && (
         <div style={{
           position: 'fixed',
@@ -870,62 +935,152 @@ export default function Home() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.8)',
+          backgroundColor: 'rgba(0,0,0,0.9)',
           zIndex: 1000,
           display: 'flex',
           flexDirection: 'column',
-          padding: '20px',
+          padding: '16px',
+          overflow: 'hidden',
         }}>
           <div style={{
             backgroundColor: 'var(--bg-primary, #ffffff)',
             borderRadius: '20px',
-            padding: '24px',
+            padding: '20px',
             flex: 1,
             overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-              <span onClick={() => navigateTo('/')} style={styles.navLink(router.pathname === '/')}>
+            {/* Close Button */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginBottom: '20px',
+            }}>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-primary, #1e293b)',
+                  cursor: 'pointer',
+                  fontSize: '1.5rem',
+                  padding: '8px',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Navigation Links */}
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '8px', 
+              marginBottom: '24px',
+              flex: 1,
+            }}>
+              <span onClick={() => navigateTo('/')} style={{
+                ...styles.navLink(router.pathname === '/'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 🏠 Home
               </span>
-              <span onClick={() => navigateTo('/seo')} style={styles.navLink(router.pathname === '/seo')}>
+              <span onClick={() => navigateTo('/seo')} style={{
+                ...styles.navLink(router.pathname === '/seo'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 🔍 SEO Tools
               </span>
-              <span onClick={() => navigateTo('/code')} style={styles.navLink(router.pathname === '/code')}>
+              <span onClick={() => navigateTo('/code')} style={{
+                ...styles.navLink(router.pathname === '/code'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 💻 Code Assistant
               </span>
-              <span onClick={() => navigateTo('/email')} style={styles.navLink(router.pathname === '/email')}>
+              <span onClick={() => navigateTo('/email')} style={{
+                ...styles.navLink(router.pathname === '/email'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 ✉️ Email Writer
               </span>
-              <span onClick={() => navigateTo('/translate')} style={styles.navLink(router.pathname === '/translate')}>
+              <span onClick={() => navigateTo('/translate')} style={{
+                ...styles.navLink(router.pathname === '/translate'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 🔄 Translator
               </span>
-              <span onClick={() => navigateTo('/blog-outline')} style={styles.navLink(router.pathname === '/blog-outline')}>
+              <span onClick={() => navigateTo('/blog-outline')} style={{
+                ...styles.navLink(router.pathname === '/blog-outline'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 📝 Blog Outline
               </span>
-              <span onClick={() => navigateTo('/blog')} style={styles.navLink(router.pathname === '/blog')}>
+              <span onClick={() => navigateTo('/blog')} style={{
+                ...styles.navLink(router.pathname === '/blog'),
+                fontSize: '1rem',
+                padding: '16px',
+                justifyContent: 'center',
+              }}>
                 📚 Blog Articles
               </span>
             </div>
 
-            <div style={{ paddingTop: '20px', borderTop: `1px solid var(--border-color, #e2e8f0)` }}>
+            {/* User Section */}
+            <div style={{ 
+              paddingTop: '20px', 
+              borderTop: `1px solid var(--border-color, #e2e8f0)`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}>
               {user ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ color: '#3b82f6', fontSize: '1rem', fontWeight: '600' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ 
+                    color: '#3b82f6', 
+                    fontSize: '1rem', 
+                    fontWeight: '600',
+                    textAlign: 'center'
+                  }}>
                     👋 Hello, {user.email?.split('@')[0]}
                   </div>
-                  <button onClick={handleLogout} style={styles.button('#ef4444')}>
+                  <button onClick={handleLogout} style={{
+                    ...styles.button('#ef4444'),
+                    width: '100%',
+                    justifyContent: 'center',
+                  }}>
                     🚪 Logout
                   </button>
                 </div>
               ) : (
-                <button onClick={handleLogin} style={styles.button('#3b82f6')}>
+                <button onClick={handleLogin} style={{
+                  ...styles.button('#3b82f6'),
+                  width: '100%',
+                  justifyContent: 'center',
+                }}>
                   🔐 Login with Google
                 </button>
               )}
               
               <button
                 onClick={toggleDarkMode}
-                style={styles.button('#6b7280', '#ffffff')}
+                style={{
+                  ...styles.button('#6b7280', '#ffffff'),
+                  width: '100%',
+                  justifyContent: 'center',
+                }}
               >
                 {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
               </button>
@@ -934,18 +1089,24 @@ export default function Home() {
         </div>
       )}
 
-      {/* Main Content Grid */}
+      {/* Main Content Grid - MOBILE FIXED */}
       <main style={{ 
-        display: 'grid', 
-        gap: '24px',
-        gridTemplateColumns: isMobile ? '1fr' : showHistory ? '1fr' : '1fr 1fr',
-        alignItems: 'start',
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: '20px',
+        alignItems: 'stretch',
         marginRight: showHistory && !isMobile ? '400px' : '0',
         transition: 'margin-right 0.3s ease',
+        width: '100%',
+        boxSizing: 'border-box',
       }}>
         
         {/* Left Column - Input Section */}
-        <div>
+        <div style={{ 
+          flex: isMobile ? '0 0 auto' : '1',
+          width: '100%',
+          minWidth: 0, // Prevent flex item overflow
+        }}>
           {/* Usage Alert */}
           {!canGenerate() && !user && (
             <div style={{
@@ -976,13 +1137,17 @@ export default function Home() {
 
           {/* Configuration Card */}
           <div style={styles.card}>
-            <h2 style={{ margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: '700' }}>
+            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: '700' }}>
               ⚙️ Configuration
             </h2>
             
-            <div style={{ display: 'grid', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {/* Tone & Template Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+                gap: '12px' 
+              }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.9rem' }}>
                     🎵 Tone
@@ -1040,7 +1205,7 @@ export default function Home() {
                     background: 'linear(90deg, #3b82f6 0%, #3b82f6 ' + ((maxTokens - 200) / 600 * 100) + '%, #e2e8f0 ' + ((maxTokens - 200) / 600 * 100) + '%, #e2e8f0 100%)',
                   }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary, #64748b)', marginTop: '4px' }}>
                   <span>Short</span>
                   <span>Long</span>
                 </div>
@@ -1079,7 +1244,7 @@ export default function Home() {
 
           {/* Input Card */}
           <div style={styles.card}>
-            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.25rem', fontWeight: '700' }}>
+            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: '700' }}>
               💡 Your Idea
             </h2>
             <form onSubmit={handleSubmit}>
@@ -1087,11 +1252,11 @@ export default function Home() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Describe what you want to create... (e.g., 'a social media post about climate change')"
-                rows={6}
+                rows={isMobile ? 5 : 6}
                 style={{
                   ...styles.input,
                   resize: 'vertical',
-                  minHeight: '140px',
+                  minHeight: isMobile ? '120px' : '140px',
                   fontSize: '16px',
                 }}
                 required
@@ -1118,7 +1283,7 @@ export default function Home() {
                 disabled={loading || !canGenerate() || !input.trim()}
                 style={{
                   width: '100%',
-                  padding: '16px',
+                  padding: isMobile ? '16px' : '16px',
                   background: loading || !canGenerate() || !input.trim() 
                     ? 'linear(135deg, #9ca3af, #6b7280)' 
                     : 'linear(135deg, #3b82f6, #1d4ed8)',
@@ -1152,26 +1317,38 @@ export default function Home() {
         </div>
 
         {/* Right Column - Output Section */}
-        <div>
+        <div style={{ 
+          flex: isMobile ? '0 0 auto' : '1',
+          width: '100%',
+          minWidth: 0, // Prevent flex item overflow
+        }}>
           {output && (
             <div style={styles.card}>
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center', 
-                marginBottom: '20px' 
+                marginBottom: '16px',
+                flexWrap: 'wrap',
+                gap: '8px'
               }}>
-                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700' }}>
+                <h2 style={{ 
+                  margin: 0, 
+                  fontSize: '1.1rem', 
+                  fontWeight: '700',
+                  flex: 1,
+                  minWidth: '200px'
+                }}>
                   🎉 Your AI Prompt
                 </h2>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                   <button 
                     onClick={handleRegenerate}
                     disabled={loading}
                     style={{
                       ...styles.button('#10b981'),
                       opacity: loading ? 0.6 : 1,
-                      padding: '10px',
+                      padding: '10px 12px',
                     }}
                     title="Regenerate"
                   >
@@ -1181,7 +1358,7 @@ export default function Home() {
                     onClick={exportTxt}
                     style={{
                       ...styles.button('#8b5cf6'),
-                      padding: '10px',
+                      padding: '10px 12px',
                     }}
                     title="Download"
                   >
@@ -1194,14 +1371,16 @@ export default function Home() {
                 backgroundColor: 'var(--bg-primary, #ffffff)',
                 border: `1px solid var(--border-color, #e2e8f0)`,
                 borderRadius: '12px',
-                padding: '20px',
+                padding: '16px',
                 marginBottom: '16px',
                 position: 'relative',
+                overflow: 'auto',
+                maxHeight: isMobile ? '300px' : '400px',
               }}>
                 <pre style={{
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word',
-                  fontSize: '0.95rem',
+                  fontSize: '0.9rem',
                   lineHeight: '1.5',
                   margin: 0,
                   fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
@@ -1221,8 +1400,10 @@ export default function Home() {
                   border: '1px solid rgba(59, 130, 246, 0.1)',
                   borderRadius: '8px',
                   marginBottom: '16px',
+                  flexWrap: 'wrap',
+                  gap: '8px'
                 }}>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary, #64748b)' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
                     Generated with:
                   </span>
                   <code style={{ 
@@ -1230,7 +1411,7 @@ export default function Home() {
                     color: '#3b82f6',
                     padding: '4px 8px',
                     borderRadius: '6px',
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     fontWeight: '600',
                   }}>
                     {usedModel}
@@ -1248,13 +1429,13 @@ export default function Home() {
                 }}>
                   <p style={{ 
                     margin: '0 0 12px 0',
-                    fontSize: '0.95rem',
+                    fontSize: '0.9rem',
                     fontWeight: '600',
                     color: 'var(--text-primary, #1e293b)'
                   }}>
                     Was this helpful?
                   </p>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <button 
                       onClick={() => handleFeedback(true)}
                       style={styles.button('#22c55e')}
@@ -1278,21 +1459,21 @@ export default function Home() {
             <div style={{
               ...styles.card,
               textAlign: 'center',
-              padding: '40px 24px',
+              padding: isMobile ? '32px 20px' : '40px 24px',
               color: 'var(--text-secondary, #64748b)',
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🚀</div>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', fontWeight: '600' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: '600' }}>
                 Ready to Create Magic?
               </h3>
-              <p style={{ margin: 0, fontSize: '0.95rem' }}>
+              <p style={{ margin: 0, fontSize: '0.9rem' }}>
                 Enter your idea above and watch as AI transforms it into the perfect prompt!
               </p>
               
               {/* History Preview */}
               {promptHistory.length > 0 && (
-                <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: `1px solid var(--border-color, #e2e8f0)` }}>
-                  <p style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: '600' }}>
+                <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: `1px solid var(--border-color, #e2e8f0)` }}>
+                  <p style={{ margin: '0 0 12px 0', fontSize: '0.85rem', fontWeight: '600' }}>
                     📚 Recent Prompts: {promptHistory.length}
                   </p>
                   <button 
@@ -1321,11 +1502,11 @@ export default function Home() {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 2000,
-          padding: isMobile ? '20px' : '0',
+          padding: isMobile ? '16px' : '0',
         }}>
           <div style={{
             backgroundColor: 'var(--bg-primary, #ffffff)',
-            padding: isMobile ? '32px 24px' : '32px',
+            padding: isMobile ? '24px 20px' : '32px',
             borderRadius: '20px',
             textAlign: 'center',
             maxWidth: isMobile ? '100%' : '400px',
@@ -1336,21 +1517,26 @@ export default function Home() {
             <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🎉</div>
             <h3 style={{ 
               margin: '0 0 12px',
-              fontSize: '1.5rem',
+              fontSize: isMobile ? '1.3rem' : '1.5rem',
               fontWeight: '700',
               color: 'var(--text-primary, #1e293b)'
             }}>
               Unlock Unlimited Access!
             </h3>
             <p style={{ 
-              margin: '0 0 32px', 
+              margin: '0 0 24px', 
               color: 'var(--text-secondary, #64748b)',
-              fontSize: '1rem',
+              fontSize: isMobile ? '0.9rem' : '1rem',
               lineHeight: '1.5'
             }}>
               Login with Google to generate unlimited AI prompts and access all features.
             </p>
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: '12px', 
+              justifyContent: 'center', 
+              flexDirection: isMobile ? 'column' : 'row' 
+            }}>
               <button 
                 onClick={handleLogin} 
                 style={{
@@ -1409,7 +1595,7 @@ export default function Home() {
             fontSize: '0.85rem', 
             color: 'var(--text-secondary, #64748b)',
           }}>
-            Powered by Advanced AI • Made with ❤️ for Creators
+            Powered by Advanced AI • Made with ❤️ for Mahendra
           </p>
         </footer>
       )}
@@ -1419,6 +1605,13 @@ export default function Home() {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        
+        /* Prevent horizontal scroll on mobile */
+        @media (max-width: 767px) {
+          body {
+            overflow-x: hidden;
+          }
         }
       `}</style>
     </div>
