@@ -476,7 +476,7 @@ export default function Home() {
     }
   };
 
-  // Professional styling variables - FIXED COLORS AND CENTERED LOGO
+  // SIMPLE FIXED STYLES
   const styles = {
     container: {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -485,283 +485,173 @@ export default function Home() {
       padding: isMobile ? '0 12px' : '0 24px',
       paddingBottom: isMobile ? '80px' : '40px',
       minHeight: '100vh',
-      background: 'var(--bg-primary, #ffffff)',
-      color: 'var(--text-primary, #1e293b)',
+      backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+      color: darkMode ? '#f8fafc' : '#1e293b',
       overflowX: 'hidden',
-      width: '100%',
-      boxSizing: 'border-box',
     },
 
-    // NEW: Centered Header with Logo at Top
+    // SIMPLE HEADER
     header: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: isMobile ? '20px 0 16px 0' : '32px 0 24px 0',
-      borderBottom: `1px solid var(--border-color, #e2e8f0)`,
-      marginBottom: '24px',
-      width: '100%',
-      boxSizing: 'border-box',
-      gap: '16px',
-    },
-
-    // NEW: Centered Logo Container
-    logoContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '8px',
-      width: '100%',
       textAlign: 'center',
+      padding: isMobile ? '20px 0' : '30px 0',
+      borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      marginBottom: '30px',
     },
 
-    // NEW: Big Beautiful Logo
-    logo: {
-      fontSize: isMobile ? '2rem' : '2.5rem',
+    // SIMPLE TEXT LOGO
+    mainTitle: {
+      fontSize: isMobile ? '2rem' : '3rem',
       fontWeight: '900',
-      background: 'linear(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      backgroundClip: 'text',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      textDecoration: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      cursor: 'pointer',
-      flexShrink: 0,
-      textAlign: 'center',
-      lineHeight: '1.2',
+      color: '#3b82f6',
+      margin: '0 0 8px 0',
+      padding: '0',
+      lineHeight: '1.1',
     },
 
-    logoSubtitle: {
-      fontSize: isMobile ? '0.9rem' : '1rem',
-      color: 'var(--text-secondary, #64748b)',
+    subtitle: {
+      fontSize: isMobile ? '1rem' : '1.2rem',
+      color: darkMode ? '#cbd5e1' : '#64748b',
+      margin: '0',
       fontWeight: '500',
-      textAlign: 'center',
-      maxWidth: '400px',
-      lineHeight: '1.4',
     },
 
-    // Navigation Row Below Logo
-    navRow: {
+    // Navigation container
+    navContainer: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      width: '100%',
+      marginTop: '20px',
       flexWrap: 'wrap',
-      gap: '12px',
+      gap: '10px',
     },
 
     button: (bg, color = '#fff') => ({
-      padding: isMobile ? '12px 16px' : '10px 20px',
+      padding: isMobile ? '10px 14px' : '8px 16px',
       backgroundColor: bg,
       color: color,
       border: 'none',
-      borderRadius: '12px',
+      borderRadius: '8px',
       cursor: 'pointer',
       fontSize: isMobile ? '0.9rem' : '0.9rem',
       fontWeight: '600',
-      transition: 'all 0.2s ease',
-      textDecoration: 'none',
       display: 'inline-flex',
       alignItems: 'center',
       gap: '6px',
-      minHeight: isMobile ? '44px' : '44px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      flexShrink: 0,
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      maxWidth: '100%',
-      ':hover': {
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-      },
     }),
 
-    // FIXED: Generate Button with Proper Colors
+    // Generate Button
     generateButton: {
       width: '100%',
-      padding: isMobile ? '18px' : '20px',
-      background: loading || !canGenerate() || !input.trim() 
-        ? 'linear(135deg, #9ca3af, #6b7280)' 
-        : 'linear(135deg, #10b981, #059669, #047857)',
+      padding: '16px',
+      backgroundColor: loading || !canGenerate() || !input.trim() 
+        ? '#9ca3af' 
+        : '#10b981',
       color: '#fff',
       border: 'none',
-      borderRadius: '16px',
-      fontSize: isMobile ? '1.1rem' : '1.2rem',
+      borderRadius: '12px',
+      fontSize: '1.1rem',
       fontWeight: '700',
       cursor: (loading || !canGenerate() || !input.trim()) 
         ? 'not-allowed' 
         : 'pointer',
-      transition: 'all 0.3s ease',
-      minHeight: '64px',
-      opacity: (loading || !canGenerate() || !input.trim()) ? 0.6 : 1,
-      boxShadow: (loading || !canGenerate() || !input.trim()) 
-        ? '0 2px 4px rgba(0,0,0,0.1)' 
-        : '0 4px 12px rgba(16, 185, 129, 0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '12px',
-      ':hover': (loading || !canGenerate() || !input.trim()) 
-        ? {} 
-        : {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
-            background: 'linear(135deg, #059669, #047857, #065f46)',
-          },
+      marginTop: '10px',
     },
 
-    navLink: (isActive = false) => ({
-      color: isActive ? '#3b82f6' : 'var(--text-secondary, #64748b)',
-      textDecoration: 'none',
-      fontWeight: isActive ? '600' : '500',
-      padding: isMobile ? '10px 12px' : '10px 16px',
-      borderRadius: '10px',
-      transition: 'all 0.2s ease',
-      cursor: 'pointer',
-      backgroundColor: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-      fontSize: isMobile ? '0.85rem' : '0.9rem',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      flexShrink: 0,
-      whiteSpace: 'nowrap',
-      ':hover': {
-        backgroundColor: 'rgba(59, 130, 246, 0.05)',
-        color: '#3b82f6',
-      },
-    }),
-
     card: {
-      backgroundColor: 'var(--bg-secondary, #f8fafc)',
-      border: `1px solid var(--border-color, #e2e8f0)`,
-      borderRadius: '16px',
-      padding: isMobile ? '16px' : '24px',
+      backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+      border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      borderRadius: '12px',
+      padding: '20px',
       marginBottom: '20px',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      width: '100%',
-      boxSizing: 'border-box',
     },
 
     input: {
       width: '100%',
-      padding: isMobile ? '14px' : '14px',
-      borderRadius: '12px',
-      border: `1px solid var(--border-color, #e2e8f0)`,
-      backgroundColor: 'var(--bg-primary, #ffffff)',
-      color: 'var(--text-primary, #1e293b)',
+      padding: '12px',
+      borderRadius: '8px',
+      border: `1px solid ${darkMode ? '#334155' : '#d1d5db'}`,
+      backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+      color: darkMode ? '#f8fafc' : '#1e293b',
       fontSize: '16px',
       marginBottom: '16px',
       boxSizing: 'border-box',
-      transition: 'all 0.2s ease',
-      WebkitAppearance: 'none',
-      ':focus': {
-        outline: 'none',
-        borderColor: '#3b82f6',
-        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
-      },
     },
   };
 
   return (
     <div style={styles.container}>
-      {/* NEW: Enhanced Header with Centered Logo */}
+      {/* SIMPLE HEADER */}
       <header style={styles.header}>
-        {/* Logo Container - Centered at Top */}
-        <div style={styles.logoContainer}>
-          <div 
-            onClick={() => navigateTo('/')} 
-            style={styles.logo}
-          >
-            <div style={{ fontSize: isMobile ? '1.8em' : '2em' }}>🚀</div>
-            AI Prompt Maker
-          </div>
-          <div style={styles.logoSubtitle}>
-            Transform your ideas into perfect AI prompts with multiple AI models
-          </div>
-        </div>
-
-        {/* Navigation Row */}
-        <div style={styles.navRow}>
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <nav style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '4px',
-              flexWrap: 'wrap',
+        <h1 style={styles.mainTitle}>
+          AI Prompt Maker
+        </h1>
+        <p style={styles.subtitle}>
+          Transform your ideas into perfect AI prompts
+        </p>
+        
+        {/* Navigation */}
+        <div style={styles.navContainer}>
+          {/* Left side - Navigation links */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span onClick={() => navigateTo('/')} style={{ 
+              color: router.pathname === '/' ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              backgroundColor: router.pathname === '/' ? (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
             }}>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '2px',
-                flexWrap: 'wrap'
-              }}>
-                <span onClick={() => navigateTo('/')} style={styles.navLink(router.pathname === '/')}>
-                  🏠 Home
-                </span>
-                <span onClick={() => navigateTo('/seo')} style={styles.navLink(router.pathname === '/seo')}>
-                  🔍 SEO
-                </span>
-                <span onClick={() => navigateTo('/code')} style={styles.navLink(router.pathname === '/code')}>
-                  💻 Code
-                </span>
-                <span onClick={() => navigateTo('/email')} style={styles.navLink(router.pathname === '/email')}>
-                  ✉️ Email
-                </span>
-                <span onClick={() => navigateTo('/translate')} style={styles.navLink(router.pathname === '/translate')}>
-                  🔄 Translate
-                </span>
-                <span onClick={() => navigateTo('/blog-outline')} style={styles.navLink(router.pathname === '/blog-outline')}>
-                  📝 Outline
-                </span>
-                <span onClick={() => navigateTo('/blog')} style={styles.navLink(router.pathname === '/blog')}>
-                  📚 Blog
-                </span>
-              </div>
-            </nav>
-          )}
+              🏠 Home
+            </span>
+            <span onClick={() => navigateTo('/seo')} style={{ 
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+            }}>
+              🔍 SEO
+            </span>
+            <span onClick={() => navigateTo('/code')} style={{ 
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+            }}>
+              💻 Code
+            </span>
+            <span onClick={() => navigateTo('/email')} style={{ 
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+            }}>
+              ✉️ Email
+            </span>
+            <span onClick={() => navigateTo('/translate')} style={{ 
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+            }}>
+              🔄 Translate
+            </span>
+          </div>
 
-          {/* Right Side Actions */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
-            flexWrap: 'wrap',
-            justifyContent: isMobile ? 'space-between' : 'flex-end',
-            width: isMobile ? '100%' : 'auto',
-          }}>
-            {/* History Button */}
-            {!isMobile && (
-              <button 
-                onClick={() => setShowHistory(!showHistory)}
-                style={styles.button('#8b5cf6')}
-                title="View History"
-              >
-                <span>📚</span>
-                History ({promptHistory.length})
-              </button>
-            )}
+          {/* Right side - Actions */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button 
+              onClick={() => setShowHistory(!showHistory)}
+              style={styles.button('#8b5cf6')}
+            >
+              📚 History
+            </button>
 
             {user ? (
-              <>
-                <span style={{ 
-                  color: 'var(--text-secondary, #64748b)', 
-                  fontSize: '0.85rem',
-                  whiteSpace: 'nowrap'
-                }}>
-                  👋 {user.email?.split('@')[0]}
-                </span>
-                <button onClick={handleLogout} style={styles.button('#6b7280')}>
-                  Logout
-                </button>
-              </>
+              <button onClick={handleLogout} style={styles.button('#6b7280')}>
+                Logout
+              </button>
             ) : (
               <button onClick={handleLogin} style={styles.button('#3b82f6')}>
-                <span>🔐</span>
-                {isMobile ? 'Login' : 'Login'}
+                Login
               </button>
             )}
             
@@ -771,79 +661,19 @@ export default function Home() {
             >
               {darkMode ? '☀️' : '🌙'}
             </button>
-
-            {/* Mobile Menu Button */}
-            {isMobile && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {/* Mobile History Button */}
-                <button 
-                  onClick={() => setShowHistory(!showHistory)}
-                  style={{
-                    ...styles.button('#8b5cf6'),
-                    padding: '10px 12px',
-                  }}
-                  title="History"
-                >
-                  <span>📚</span>
-                  {promptHistory.length > 0 && (
-                    <span style={{ 
-                      background: '#ef4444', 
-                      color: 'white', 
-                      borderRadius: '50%', 
-                      width: '18px', 
-                      height: '18px', 
-                      fontSize: '0.7rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginLeft: '4px'
-                    }}>
-                      {promptHistory.length}
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-primary, #1e293b)',
-                    cursor: 'pointer',
-                    fontSize: '1.5rem',
-                    padding: '8px',
-                    flexShrink: 0,
-                  }}
-                >
-                  {mobileMenuOpen ? '✕' : '☰'}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </header>
 
-      {/* Rest of the components remain the same but with updated generate button */}
-      {/* History Sidebar, Mobile Menu, etc. */}
-
-      {/* Main Content Grid */}
+      {/* MAIN CONTENT */}
       <main style={{ 
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
         gap: '20px',
-        alignItems: 'stretch',
-        marginRight: showHistory && !isMobile ? '400px' : '0',
-        transition: 'margin-right 0.3s ease',
-        width: '100%',
-        boxSizing: 'border-box',
       }}>
         
-        {/* Left Column - Input Section */}
-        <div style={{ 
-          flex: isMobile ? '0 0 auto' : '1',
-          width: '100%',
-          minWidth: 0,
-        }}>
+        {/* Input Section */}
+        <div style={{ flex: 1 }}>
           {/* Usage Alert */}
           {!canGenerate() && !user && (
             <div style={{
@@ -872,216 +702,140 @@ export default function Home() {
             </div>
           )}
 
-          {/* Configuration Card */}
+          {/* Configuration */}
           <div style={styles.card}>
-            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: '700' }}>
-              ⚙️ Configuration
-            </h2>
+            <h2 style={{ margin: '0 0 16px 0' }}>⚙️ Configuration</h2>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Tone & Template Row */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
-                gap: '12px' 
-              }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.9rem' }}>
-                    🎵 Tone
-                  </label>
-                  <select 
-                    value={tone} 
-                    onChange={(e) => setTone(e.target.value)} 
-                    style={styles.input}
-                  >
-                    {TONES.map(toneOption => (
-                      <option key={toneOption} value={toneOption}>{toneOption}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.9rem' }}>
-                    📝 Template
-                  </label>
-                  <select 
-                    value={template} 
-                    onChange={handleTemplateChange} 
-                    style={styles.input}
-                  >
-                    {TEMPLATES.map(template => (
-                      <option key={template.value} value={template.value}>{template.label}</option>
-                    ))}
-                  </select>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                  Tone
+                </label>
+                <select 
+                  value={tone} 
+                  onChange={(e) => setTone(e.target.value)} 
+                  style={styles.input}
+                >
+                  {TONES.map(toneOption => (
+                    <option key={toneOption} value={toneOption}>{toneOption}</option>
+                  ))}
+                </select>
               </div>
 
-              {/* Tokens Slider */}
               <div>
-                <label style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  fontWeight: '600', 
-                  marginBottom: '8px',
-                  fontSize: '0.9rem'
-                }}>
-                  <span>📏 Response Length</span>
-                  <span style={{ color: '#3b82f6' }}>{maxTokens} tokens</span>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                  Template
                 </label>
-                <input
-                  type="range"
-                  min="200"
-                  max="800"
-                  step="200"
-                  value={maxTokens}
-                  onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                  style={{ 
-                    width: '100%',
-                    height: '6px',
-                    borderRadius: '5px',
-                    background: 'linear(90deg, #3b82f6 0%, #3b82f6 ' + ((maxTokens - 200) / 600 * 100) + '%, #e2e8f0 ' + ((maxTokens - 200) / 600 * 100) + '%, #e2e8f0 100%)',
-                  }}
-                />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary, #64748b)', marginTop: '4px' }}>
-                  <span>Short</span>
-                  <span>Long</span>
-                </div>
+                <select 
+                  value={template} 
+                  onChange={handleTemplateChange} 
+                  style={styles.input}
+                >
+                  {TEMPLATES.map(template => (
+                    <option key={template.value} value={template.value}>{template.label}</option>
+                  ))}
+                </select>
               </div>
+            </div>
 
-              {/* Language Selection */}
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '0.9rem' }}>
-                  🌐 Language
+            <div style={{ marginTop: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+                Response Length: {maxTokens} tokens
+              </label>
+              <input
+                type="range"
+                min="200"
+                max="800"
+                step="200"
+                value={maxTokens}
+                onChange={(e) => setMaxTokens(parseInt(e.target.value))}
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div style={{ marginTop: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+                Language
+              </label>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input 
+                    type="radio" 
+                    name="lang" 
+                    checked={language === 'English'} 
+                    onChange={() => setLanguage('English')} 
+                  />
+                  English
                 </label>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input 
-                      type="radio" 
-                      name="lang" 
-                      checked={language === 'English'} 
-                      onChange={() => setLanguage('English')} 
-                      style={{ transform: 'scale(1.1)' }}
-                    />
-                    <span>🇺🇸 English</span>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input 
-                      type="radio" 
-                      name="lang" 
-                      checked={language === 'Hindi'} 
-                      onChange={() => setLanguage('Hindi')} 
-                      style={{ transform: 'scale(1.1)' }}
-                    />
-                    <span>🇮🇳 हिंदी</span>
-                  </label>
-                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input 
+                    type="radio" 
+                    name="lang" 
+                    checked={language === 'Hindi'} 
+                    onChange={() => setLanguage('Hindi')} 
+                  />
+                  हिंदी
+                </label>
               </div>
             </div>
           </div>
 
-          {/* Input Card */}
+          {/* Input Form */}
           <div style={styles.card}>
-            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: '700' }}>
-              💡 Your Idea
-            </h2>
+            <h2 style={{ margin: '0 0 16px 0' }}>💡 Your Idea</h2>
             <form onSubmit={handleSubmit}>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Describe what you want to create... (e.g., 'a social media post about climate change')"
-                rows={isMobile ? 5 : 6}
+                placeholder="Describe what you want to create..."
+                rows="5"
                 style={{
                   ...styles.input,
+                  minHeight: '120px',
                   resize: 'vertical',
-                  minHeight: isMobile ? '120px' : '140px',
-                  fontSize: '16px',
                 }}
                 required
               />
               
-              {/* Generation Status */}
               {loading && generationStatus && (
                 <div style={{
                   padding: '12px',
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
                   borderRadius: '8px',
                   marginBottom: '16px',
-                  fontSize: '0.9rem',
-                  color: '#3b82f6',
                   textAlign: 'center',
                 }}>
                   {generationStatus}
                 </div>
               )}
 
-              {/* FIXED: Generate Button with Proper Colors */}
               <button
                 type="submit"
                 disabled={loading || !canGenerate() || !input.trim()}
                 style={styles.generateButton}
               >
-                {loading ? (
-                  <>
-                    <span style={{ animation: 'spin 1s linear infinite', fontSize: '1.2em' }}>⚡</span>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <span style={{ fontSize: '1.3em' }}>✨</span>
-                    Generate AI Prompt
-                  </>
-                )}
+                {loading ? '⚡ Generating...' : '✨ Generate AI Prompt'}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Right Column - Output Section */}
-        <div style={{ 
-          flex: isMobile ? '0 0 auto' : '1',
-          width: '100%',
-          minWidth: 0,
-        }}>
-          {output && (
+        {/* Output Section */}
+        <div style={{ flex: 1 }}>
+          {output ? (
             <div style={styles.card}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: '16px',
-                flexWrap: 'wrap',
-                gap: '8px'
-              }}>
-                <h2 style={{ 
-                  margin: 0, 
-                  fontSize: '1.1rem', 
-                  fontWeight: '700',
-                  flex: 1,
-                  minWidth: '200px'
-                }}>
-                  🎉 Your AI Prompt
-                </h2>
-                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h2 style={{ margin: 0 }}>🎉 Your AI Prompt</h2>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   <button 
                     onClick={handleRegenerate}
-                    disabled={loading}
-                    style={{
-                      ...styles.button('#10b981'),
-                      opacity: loading ? 0.6 : 1,
-                      padding: '10px 12px',
-                    }}
-                    title="Regenerate"
+                    style={styles.button('#10b981')}
                   >
                     🔄
                   </button>
                   <button 
                     onClick={exportTxt}
-                    style={{
-                      ...styles.button('#8b5cf6'),
-                      padding: '10px 12px',
-                    }}
-                    title="Download"
+                    style={styles.button('#8b5cf6')}
                   >
                     💾
                   </button>
@@ -1089,74 +843,61 @@ export default function Home() {
               </div>
               
               <div style={{
-                backgroundColor: 'var(--bg-primary, #ffffff)',
-                border: `1px solid var(--border-color, #e2e8f0)`,
-                borderRadius: '12px',
+                backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+                border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                borderRadius: '8px',
                 padding: '16px',
                 marginBottom: '16px',
-                position: 'relative',
-                overflow: 'auto',
-                maxHeight: isMobile ? '300px' : '400px',
               }}>
                 <pre style={{
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word',
+                  margin: 0,
                   fontSize: '0.9rem',
                   lineHeight: '1.5',
-                  margin: 0,
-                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
                 }}>
                   {output}
                 </pre>
               </div>
               
-              {/* Model Info */}
               {usedModel && (
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '12px 16px',
-                  backgroundColor: 'rgba(59, 130, 246, 0.05)',
-                  border: '1px solid rgba(59, 130, 246, 0.1)',
+                  padding: '12px',
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   borderRadius: '8px',
                   marginBottom: '16px',
-                  flexWrap: 'wrap',
-                  gap: '8px'
                 }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
-                    Generated with:
-                  </span>
+                  <span>Generated with:</span>
                   <code style={{ 
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    color: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
                     padding: '4px 8px',
-                    borderRadius: '6px',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
+                    borderRadius: '4px',
+                    fontSize: '0.8rem',
                   }}>
                     {usedModel}
                   </code>
                 </div>
               )}
-              
+
               {/* Feedback Section */}
               {feedbackGiven === null && (
                 <div style={{
                   padding: '16px',
                   backgroundColor: 'rgba(248, 250, 252, 0.8)',
-                  border: `1px solid var(--border-color, #e2e8f0)`,
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
                   borderRadius: '12px',
                 }}>
                   <p style={{ 
                     margin: '0 0 12px 0',
                     fontSize: '0.9rem',
                     fontWeight: '600',
-                    color: 'var(--text-primary, #1e293b)'
                   }}>
                     Was this helpful?
                   </p>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     <button 
                       onClick={() => handleFeedback(true)}
                       style={styles.button('#22c55e')}
@@ -1173,54 +914,231 @@ export default function Home() {
                 </div>
               )}
             </div>
-          )}
-
-          {/* Empty State */}
-          {!output && (
+          ) : (
             <div style={{
               ...styles.card,
               textAlign: 'center',
-              padding: isMobile ? '32px 20px' : '40px 24px',
-              color: 'var(--text-secondary, #64748b)',
+              padding: '40px 20px',
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🚀</div>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: '600' }}>
-                Ready to Create Magic?
-              </h3>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                Enter your idea above and watch as AI transforms it into the perfect prompt!
+              <h3 style={{ margin: '0 0 8px 0' }}>Ready to Create?</h3>
+              <p style={{ margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                Enter your idea above to generate AI prompts
               </p>
-              
-              {/* History Preview */}
-              {promptHistory.length > 0 && (
-                <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: `1px solid var(--border-color, #e2e8f0)` }}>
-                  <p style={{ margin: '0 0 12px 0', fontSize: '0.85rem', fontWeight: '600' }}>
-                    📚 Recent Prompts: {promptHistory.length}
-                  </p>
-                  <button 
-                    onClick={() => setShowHistory(true)}
-                    style={styles.button('#8b5cf6')}
-                  >
-                    View History
-                  </button>
-                </div>
-              )}
             </div>
           )}
         </div>
       </main>
 
-      {/* Add CSS for animations */}
+      {/* FOOTER SECTION */}
+      <footer style={{
+        backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+        padding: '40px 20px 20px 20px',
+        marginTop: '50px',
+        borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+          gap: '30px',
+          marginBottom: '30px'
+        }}>
+          
+          {/* Company Info */}
+          <div>
+            <h3 style={{
+              color: darkMode ? '#f8fafc' : '#1e293b',
+              margin: '0 0 15px 0',
+              fontSize: '1.1rem'
+            }}>
+              AI Prompt Maker
+            </h3>
+            <p style={{
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              margin: '0 0 15px 0',
+              fontSize: '0.9rem',
+              lineHeight: '1.5'
+            }}>
+              Transform your ideas into perfect AI prompts with our advanced multi-model AI technology.
+            </p>
+            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              <span style={{ 
+                padding: '8px 12px', 
+                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: '500'
+              }}>
+                🚀 Fast
+              </span>
+              <span style={{ 
+                padding: '8px 12px', 
+                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: '500'
+              }}>
+                🔒 Secure
+              </span>
+              <span style={{ 
+                padding: '8px 12px', 
+                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: '500'
+              }}>
+                🎯 AI Powered
+              </span>
+            </div>
+          </div>
+          
+          {/* Quick Links */}
+          <div>
+            <h3 style={{
+              color: darkMode ? '#f8fafc' : '#1e293b',
+              margin: '0 0 15px 0',
+              fontSize: '1.1rem'
+            }}>
+              Quick Links
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <span onClick={() => navigateTo('/')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}>
+                🏠 Home
+              </span>
+              <span onClick={() => navigateTo('/seo')} style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}>
+                🔍 SEO Tools
+              </span>
+              <span onClick={() => navigateTo('/code')} style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}>
+                💻 Code Assistant
+              </span>
+              <span onClick={() => navigateTo('/email')} style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}>
+                ✉️ Email Writer
+              </span>
+              <span onClick={() => navigateTo('/translate')} style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}>
+                🔄 Translator
+              </span>
+            </div>
+          </div>
+          
+          {/* Support */}
+          <div>
+            <h3 style={{
+              color: darkMode ? '#f8fafc' : '#1e293b',
+              margin: '0 0 15px 0',
+              fontSize: '1.1rem'
+            }}>
+              Support
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <a href="/help" style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                textDecoration: 'none',
+                fontSize: '0.9rem'
+              }}>
+                ❓ Help Center
+              </a>
+              <a href="/contact" style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                textDecoration: 'none',
+                fontSize: '0.9rem'
+              }}>
+                📧 Contact Us
+              </a>
+              <a href="/feedback" style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                textDecoration: 'none',
+                fontSize: '0.9rem'
+              }}>
+                💬 Feedback
+              </a>
+              <a href="/blog" style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                textDecoration: 'none',
+                fontSize: '0.9rem'
+              }}>
+                📚 Blog
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom Section */}
+        <div style={{
+          borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+          paddingTop: '20px',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '20px',
+            marginBottom: '15px',
+            flexWrap: 'wrap'
+          }}>
+            <a href="/privacy" style={{
+              color: darkMode ? '#93c5fd' : '#3b82f6',
+              textDecoration: 'none',
+              fontSize: '0.8rem'
+            }}>
+              Privacy Policy
+            </a>
+            <a href="/terms" style={{
+              color: darkMode ? '#93c5fd' : '#3b82f6',
+              textDecoration: 'none',
+              fontSize: '0.8rem'
+            }}>
+              Terms of Service
+            </a>
+            <a href="/cookies" style={{
+              color: darkMode ? '#93c5fd' : '#3b82f6',
+              textDecoration: 'none',
+              fontSize: '0.8rem'
+            }}>
+              Cookie Policy
+            </a>
+          </div>
+          
+          <p style={{ 
+            margin: '0', 
+            color: darkMode ? '#94a3b8' : '#475569',
+            fontSize: '0.8rem',
+            lineHeight: '1.5'
+          }}>
+            © 2024 AI Prompt Maker. All rights reserved. 
+            <br />
+            Powered by multiple AI models • Made with ❤️ for creators worldwide
+          </p>
+        </div>
+      </footer>
+
+      {/* Add basic CSS */}
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 767px) {
-          body {
-            overflow-x: hidden;
-          }
         }
       `}</style>
     </div>
