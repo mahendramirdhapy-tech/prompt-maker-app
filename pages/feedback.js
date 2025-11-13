@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -13,7 +12,7 @@ export default function Feedback() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    rating: 5,
+    rating: true, // boolean - true = like, false = dislike
     category: 'general',
     message: ''
   });
@@ -29,24 +28,32 @@ export default function Feedback() {
     }));
   };
 
+  const handleRatingChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      rating: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('');
 
     try {
-      // Insert feedback into Supabase
+      // Aapke existing table structure ke hisaab se insert
       const { data, error } = await supabase
         .from('feedback')
         .insert([
           {
             name: formData.name,
             email: formData.email,
-            rating: parseInt(formData.rating),
+            rating: formData.rating, // boolean value
             category: formData.category,
-            message: formData.message,
+            comment: formData.message, // 'comment' column mein save hoga
+            status: 'new',
             created_at: new Date().toISOString(),
-            ip_address: '' // You can add IP tracking if needed
+            ip_address: '' // optional
           }
         ])
         .select();
@@ -59,13 +66,10 @@ export default function Feedback() {
       setFormData({
         name: '',
         email: '',
-        rating: 5,
+        rating: true,
         category: 'general',
         message: ''
       });
-
-      // Log success (optional)
-      console.log('Feedback submitted successfully:', data);
 
     } catch (error) {
       console.error('Error submitting feedback:', error);
@@ -73,40 +77,6 @@ export default function Feedback() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const StarRating = ({ rating, onRatingChange }) => {
-    return (
-      <div className="star-rating">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            className={`star ${star <= rating ? 'active' : ''}`}
-            onClick={() => onRatingChange(star)}
-            onMouseEnter={() => {
-              if (!isSubmitting) {
-                const stars = document.querySelectorAll('.star');
-                stars.forEach((s, index) => {
-                  if (index < star) {
-                    s.classList.add('hover');
-                  } else {
-                    s.classList.remove('hover');
-                  }
-                });
-              }
-            }}
-            onMouseLeave={() => {
-              const stars = document.querySelectorAll('.star');
-              stars.forEach(star => star.classList.remove('hover'));
-            }}
-            disabled={isSubmitting}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-    );
   };
 
   return (
@@ -204,18 +174,28 @@ export default function Feedback() {
 
             <div className="form-group">
               <label className="form-label">
-                How would you rate your experience? *
+                How was your experience? *
               </label>
-              <StarRating 
-                rating={parseInt(formData.rating)}
-                onRatingChange={(rating) => setFormData(prev => ({ ...prev, rating }))}
-              />
-              <input
-                type="hidden"
-                name="rating"
-                value={formData.rating}
-                onChange={handleChange}
-              />
+              <div className="rating-buttons">
+                <button
+                  type="button"
+                  className={`rating-btn like-btn ${formData.rating ? 'active' : ''}`}
+                  onClick={() => handleRatingChange(true)}
+                  disabled={isSubmitting}
+                >
+                  <span className="rating-emoji">👍</span>
+                  <span className="rating-text">Satisfied</span>
+                </button>
+                <button
+                  type="button"
+                  className={`rating-btn dislike-btn ${!formData.rating ? 'active' : ''}`}
+                  onClick={() => handleRatingChange(false)}
+                  disabled={isSubmitting}
+                >
+                  <span className="rating-emoji">👎</span>
+                  <span className="rating-text">Needs Improvement</span>
+                </button>
+              </div>
             </div>
 
             <div className="form-group">
@@ -469,34 +449,59 @@ export default function Feedback() {
           resize: vertical;
         }
 
-        .star-rating {
+        .rating-buttons {
           display: flex;
-          gap: 8px;
-          margin-top: 5px;
+          gap: 15px;
+          margin-top: 10px;
         }
 
-        .star {
-          background: none;
-          border: none;
-          font-size: 2rem;
-          color: #e2e8f0;
+        .rating-btn {
+          flex: 1;
+          padding: 20px;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
+          background: white;
           cursor: pointer;
-          transition: all 0.2s ease;
-          padding: 0;
+          transition: all 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
         }
 
-        .star.active {
-          color: #fbbf24;
+        .rating-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .star.hover {
-          color: #fbbf24;
-          transform: scale(1.1);
+        .rating-btn.active {
+          border-color: #3b82f6;
+          background: #dbeafe;
         }
 
-        .star:disabled {
-          cursor: not-allowed;
+        .like-btn.active {
+          border-color: #10b981;
+          background: #d1fae5;
+        }
+
+        .dislike-btn.active {
+          border-color: #ef4444;
+          background: #fee2e2;
+        }
+
+        .rating-btn:disabled {
           opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .rating-emoji {
+          font-size: 2rem;
+        }
+
+        .rating-text {
+          font-weight: 600;
+          color: #374151;
         }
 
         .submit-button {
