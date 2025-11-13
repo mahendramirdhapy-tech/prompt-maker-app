@@ -40,6 +40,9 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [generationStatus, setGenerationStatus] = useState('');
+  const [promptHistory, setPromptHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState(null);
   const router = useRouter();
 
   // Cache system
@@ -62,6 +65,25 @@ export default function Home() {
     const isDark = localStorage.getItem('darkMode') === 'true';
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
+  }, []);
+
+  // Load history from localStorage on component mount
+  useEffect(() => {
+    const loadHistory = () => {
+      try {
+        const savedHistory = localStorage.getItem('promptHistory');
+        if (savedHistory) {
+          const history = JSON.parse(savedHistory);
+          // Sort by timestamp descending (newest first)
+          history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          setPromptHistory(history);
+        }
+      } catch (error) {
+        console.error('Error loading history:', error);
+      }
+    };
+
+    loadHistory();
   }, []);
 
   const updateDarkModeStyles = (isDark) => {
@@ -112,6 +134,19 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Save history to localStorage whenever promptHistory changes
+  useEffect(() => {
+    const saveHistory = () => {
+      try {
+        localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
+      } catch (error) {
+        console.error('Error saving history:', error);
+      }
+    };
+
+    saveHistory();
+  }, [promptHistory]);
+
   // Enhanced cache management
   const saveToCache = (key, data) => {
     const newCache = new Map(responseCache);
@@ -137,6 +172,54 @@ export default function Home() {
       return cached.data;
     }
     return null;
+  };
+
+  // Add to history function
+  const addToHistory = (promptData) => {
+    const historyItem = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      input: promptData.input,
+      output: promptData.output,
+      model: promptData.model,
+      tone: promptData.tone,
+      language: promptData.language,
+      template: promptData.template,
+      maxTokens: promptData.maxTokens
+    };
+
+    setPromptHistory(prev => {
+      const newHistory = [historyItem, ...prev];
+      // Keep only last 100 items to prevent localStorage overflow
+      return newHistory.slice(0, 100);
+    });
+  };
+
+  // Load from history function
+  const loadFromHistory = (historyItem) => {
+    setInput(historyItem.input);
+    setOutput(historyItem.output);
+    setUsedModel(historyItem.model);
+    setTone(historyItem.tone);
+    setLanguage(historyItem.language);
+    setTemplate(historyItem.template);
+    setMaxTokens(historyItem.maxTokens);
+    setSelectedHistory(historyItem);
+    setShowHistory(false);
+  };
+
+  // Clear history function
+  const clearHistory = () => {
+    if (confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
+      setPromptHistory([]);
+      localStorage.removeItem('promptHistory');
+    }
+  };
+
+  // Delete single history item
+  const deleteHistoryItem = (id, e) => {
+    e.stopPropagation();
+    setPromptHistory(prev => prev.filter(item => item.id !== id));
   };
 
   // Enhanced generation with multiple fallbacks
@@ -252,6 +335,17 @@ export default function Home() {
         type: 'prompt',
       });
 
+      // Add to local history
+      addToHistory({
+        input: input.trim(),
+        output: result.prompt,
+        model: result.modelLabel,
+        tone,
+        language,
+        template,
+        maxTokens
+      });
+
       // Update usage for guests
       if (!user) {
         const newCount = usageCount + 1;
@@ -362,6 +456,24 @@ export default function Home() {
   const navigateTo = (path) => {
     router.push(path);
     setMobileMenuOpen(false);
+  };
+
+  // Format date for history display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return 'Today ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    } else if (diffDays === 1) {
+      return 'Yesterday ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    } else if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    } else {
+      return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
   };
 
   // Professional styling variables
@@ -506,6 +618,16 @@ export default function Home() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '20px' }}>
+              {/* History Button */}
+              <button 
+                onClick={() => setShowHistory(!showHistory)}
+                style={styles.button('#8b5cf6')}
+                title="View History"
+              >
+                <span>📚</span>
+                History ({promptHistory.length})
+              </button>
+
               {user ? (
                 <>
                   <span style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.9rem' }}>
@@ -534,21 +656,211 @@ export default function Home() {
 
         {/* Mobile Menu Button */}
         {isMobile && (
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-primary, #1e293b)',
-              cursor: 'pointer',
-              fontSize: '1.5rem',
-              padding: '8px',
-            }}
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Mobile History Button */}
+            <button 
+              onClick={() => setShowHistory(!showHistory)}
+              style={{
+                ...styles.button('#8b5cf6'),
+                padding: '10px',
+              }}
+              title="History"
+            >
+              <span>📚</span>
+              {promptHistory.length > 0 && (
+                <span style={{ 
+                  background: '#ef4444', 
+                  color: 'white', 
+                  borderRadius: '50%', 
+                  width: '18px', 
+                  height: '18px', 
+                  fontSize: '0.7rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {promptHistory.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-primary, #1e293b)',
+                cursor: 'pointer',
+                fontSize: '1.5rem',
+                padding: '8px',
+              }}
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
         )}
       </header>
+
+      {/* History Sidebar */}
+      {showHistory && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: isMobile ? '100%' : '400px',
+          backgroundColor: 'var(--bg-primary, #ffffff)',
+          borderLeft: isMobile ? 'none' : `1px solid var(--border-color, #e2e8f0)`,
+          boxShadow: '0 0 20px rgba(0,0,0,0.1)',
+          zIndex: 1001,
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+          {/* History Header */}
+          <div style={{
+            padding: '20px',
+            borderBottom: `1px solid var(--border-color, #e2e8f0)`,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700' }}>
+              📚 Prompt History
+            </h2>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {promptHistory.length > 0 && (
+                <button
+                  onClick={clearHistory}
+                  style={{
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: '1px solid #ef4444',
+                    color: '#ef4444',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  Clear All
+                </button>
+              )}
+              <button
+                onClick={() => setShowHistory(false)}
+                style={{
+                  padding: '8px 12px',
+                  background: 'none',
+                  border: '1px solid var(--border-color, #e2e8f0)',
+                  color: 'var(--text-secondary, #64748b)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* History List */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+            {promptHistory.length === 0 ? (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px 20px',
+                color: 'var(--text-secondary, #64748b)'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📝</div>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem' }}>
+                  No History Yet
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                  Your generated prompts will appear here
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {promptHistory.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => loadFromHistory(item)}
+                    style={{
+                      padding: '16px',
+                      backgroundColor: selectedHistory?.id === item.id 
+                        ? 'rgba(59, 130, 246, 0.1)' 
+                        : 'var(--bg-secondary, #f8fafc)',
+                      border: `1px solid ${
+                        selectedHistory?.id === item.id 
+                          ? '#3b82f6' 
+                          : 'var(--border-color, #e2e8f0)'
+                      }`,
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      position: 'relative',
+                      ':hover': {
+                        borderColor: '#3b82f6',
+                        transform: 'translateY(-1px)',
+                      },
+                    }}
+                  >
+                    {/* Delete Button */}
+                    <button
+                      onClick={(e) => deleteHistoryItem(item.id, e)}
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#ef4444',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem',
+                      }}
+                      title="Delete this item"
+                    >
+                      🗑️
+                    </button>
+
+                    {/* History Item Content */}
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ 
+                        fontSize: '0.85rem', 
+                        color: 'var(--text-secondary, #64748b)',
+                        marginBottom: '4px'
+                      }}>
+                        {formatDate(item.timestamp)}
+                      </div>
+                      <div style={{ 
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {item.input}
+                      </div>
+                    </div>
+
+                    <div style={{ 
+                      fontSize: '0.8rem', 
+                      color: 'var(--text-secondary, #64748b)',
+                      display: 'flex',
+                      gap: '12px'
+                    }}>
+                      <span>🎵 {item.tone}</span>
+                      <span>🌐 {item.language}</span>
+                      {item.model && <span>🤖 {item.model}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu */}
       {isMobile && mobileMenuOpen && (
@@ -626,8 +938,10 @@ export default function Home() {
       <main style={{ 
         display: 'grid', 
         gap: '24px',
-        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-        alignItems: 'start'
+        gridTemplateColumns: isMobile ? '1fr' : showHistory ? '1fr' : '1fr 1fr',
+        alignItems: 'start',
+        marginRight: showHistory && !isMobile ? '400px' : '0',
+        transition: 'margin-right 0.3s ease',
       }}>
         
         {/* Left Column - Input Section */}
@@ -974,6 +1288,21 @@ export default function Home() {
               <p style={{ margin: 0, fontSize: '0.95rem' }}>
                 Enter your idea above and watch as AI transforms it into the perfect prompt!
               </p>
+              
+              {/* History Preview */}
+              {promptHistory.length > 0 && (
+                <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: `1px solid var(--border-color, #e2e8f0)` }}>
+                  <p style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: '600' }}>
+                    📚 Recent Prompts: {promptHistory.length}
+                  </p>
+                  <button 
+                    onClick={() => setShowHistory(true)}
+                    style={styles.button('#8b5cf6')}
+                  >
+                    View History
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1067,6 +1396,9 @@ export default function Home() {
             </span>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary, #64748b)' }}>
               ⚡ Multiple AI Models
+            </span>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary, #64748b)' }}>
+              📚 Local History
             </span>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary, #64748b)' }}>
               🎯 Professional Quality
