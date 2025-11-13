@@ -602,185 +602,14 @@ export default function Home() {
             }}>
               Home
             </span>
-           <footer style={{
-  backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-  padding: '40px 20px 20px 20px',
-  marginTop: '50px',
-  borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-}}>
-  <div style={{
-    maxWidth: '1200px',
-    margin: '0 auto',
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-    gap: '30px',
-    marginBottom: '30px'
-  }}>
-    
-    {/* Company Info */}
-    <div>
-      <h3 style={{
-        color: darkMode ? '#f8fafc' : '#1e293b',
-        margin: '0 0 15px 0',
-        fontSize: '1.1rem'
-      }}>
-        AI Prompt Maker
-      </h3>
-      <p style={{
-        color: darkMode ? '#cbd5e1' : '#64748b',
-        margin: '0 0 15px 0',
-        fontSize: '0.9rem',
-        lineHeight: '1.5'
-      }}>
-        Transform your ideas into perfect AI prompts with our advanced multi-model AI technology.
-      </p>
-      <div style={{ display: 'flex', gap: '15px' }}>
-        <span style={{ 
-          padding: '8px 12px', 
-          backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-          borderRadius: '6px',
-          fontSize: '0.8rem',
-          fontWeight: '500'
-        }}>
-          🚀 Fast
-        </span>
-        <span style={{ 
-          padding: '8px 12px', 
-          backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-          borderRadius: '6px',
-          fontSize: '0.8rem',
-          fontWeight: '500'
-        }}>
-          🔒 Secure
-        </span>
-      </div>
-    </div>
-    
-    {/* Quick Links */}
-    <div>
-      <h3 style={{
-        color: darkMode ? '#f8fafc' : '#1e293b',
-        margin: '0 0 15px 0',
-        fontSize: '1.1rem'
-      }}>
-        Quick Links
-      </h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <a href="/" style={{
-          color: darkMode ? '#93c5fd' : '#3b82f6',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          🏠 Home
-        </a>
-        <a href="/seo" style={{
-          color: darkMode ? '#cbd5e1' : '#64748b',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          🔍 SEO Tools
-        </a>
-        <a href="/code" style={{
-          color: darkMode ? '#cbd5e1' : '#64748b',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          💻 Code Assistant
-        </a>
-        <a href="/blog" style={{
-          color: darkMode ? '#cbd5e1' : '#64748b',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          📚 Blog
-        </a>
-      </div>
-    </div>
-    
-    {/* Support */}
-    <div>
-      <h3 style={{
-        color: darkMode ? '#f8fafc' : '#1e293b',
-        margin: '0 0 15px 0',
-        fontSize: '1.1rem'
-      }}>
-        Support
-      </h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <a href="/help" style={{
-          color: darkMode ? '#cbd5e1' : '#64748b',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          ❓ Help Center
-        </a>
-        <a href="/contact" style={{
-          color: darkMode ? '#cbd5e1' : '#64748b',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          📧 Contact Us
-        </a>
-        <a href="/feedback" style={{
-          color: darkMode ? '#cbd5e1' : '#64748b',
-          textDecoration: 'none',
-          fontSize: '0.9rem'
-        }}>
-          💬 Feedback
-        </a>
-      </div>
-    </div>
-  </div>
-  
-  {/* Bottom Section */}
-  <div style={{
-    borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-    paddingTop: '20px',
-    textAlign: 'center'
-  }}>
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: '20px',
-      marginBottom: '15px',
-      flexWrap: 'wrap'
-    }}>
-      <a href="/privacy" style={{
-        color: darkMode ? '#93c5fd' : '#3b82f6',
-        textDecoration: 'none',
-        fontSize: '0.8rem'
-      }}>
-        Privacy Policy
-      </a>
-      <a href="/terms" style={{
-        color: darkMode ? '#93c5fd' : '#3b82f6',
-        textDecoration: 'none',
-        fontSize: '0.8rem'
-      }}>
-        Terms of Service
-      </a>
-      <a href="/cookies" style={{
-        color: darkMode ? '#93c5fd' : '#3b82f6',
-        textDecoration: 'none',
-        fontSize: '0.8rem'
-      }}>
-        Cookie Policy
-      </a>
-    </div>
-    
-    <p style={{ 
-      margin: '0', 
-      color: darkMode ? '#94a3b8' : '#475569',
-      fontSize: '0.8rem',
-      lineHeight: '1.5'
-    }}>
-      © 2024 AI Prompt Maker. All rights reserved. 
-      <br />
-      Powered by multiple AI models • Made with ❤️ for creators worldwide
-    </p>
-  </div>
-</footer>
+            <span onClick={() => navigateTo('/seo')} style={{ 
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              borderRadius: '6px',
+            }}>
+              SEO
+            </span>
             <span onClick={() => navigateTo('/code')} style={{ 
               color: darkMode ? '#cbd5e1' : '#64748b',
               cursor: 'pointer',
@@ -1026,6 +855,16 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Add basic CSS */}
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+
+
 <footer style={{
   backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
   padding: '40px 20px 20px 20px',
@@ -1201,18 +1040,12 @@ export default function Home() {
     }}>
       © 2024 AI Prompt Maker. All rights reserved. 
       <br />
-      Powered by multiple AI models • Made with ❤️ Mahendra
+      Powered by multiple AI models • Made with ❤️ for creators worldwide
     </p>
   </div>
 </footer>
 
-      {/* Add basic CSS */}
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+
+
   );
 }
