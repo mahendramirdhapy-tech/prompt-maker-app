@@ -60,12 +60,16 @@ export default function Home() {
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
+      // Auto-close mobile menu when switching to desktop
+      if (!mobile && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
     };
 
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  }, [mobileMenuOpen]);
 
   // Enhanced dark mode with professional theme
   useEffect(() => {
@@ -465,6 +469,11 @@ export default function Home() {
     setMobileMenuOpen(false);
   };
 
+  // Mobile menu toggle
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   // Format date for history display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -503,6 +512,7 @@ export default function Home() {
       padding: isMobile ? '15px 0' : '30px 0',
       borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
       marginBottom: '20px',
+      position: 'relative',
     },
 
     // SIMPLE TEXT LOGO
@@ -522,14 +532,41 @@ export default function Home() {
       fontWeight: '500',
     },
 
+    // Mobile Menu Button
+    mobileMenuButton: {
+      position: 'absolute',
+      top: isMobile ? '15px' : '25px',
+      left: '15px',
+      background: 'none',
+      border: 'none',
+      fontSize: '1.5rem',
+      cursor: 'pointer',
+      color: darkMode ? '#f8fafc' : '#1e293b',
+      zIndex: 100,
+      padding: '8px',
+      borderRadius: '6px',
+      backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+    },
+
     // Navigation container
     navContainer: {
-      display: 'flex',
+      display: isMobile ? (mobileMenuOpen ? 'flex' : 'none') : 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: '15px',
+      gap: isMobile ? '12px' : '8px',
       flexWrap: 'wrap',
-      gap: '8px',
+      position: isMobile ? 'absolute' : 'static',
+      top: isMobile ? '100%' : 'auto',
+      left: isMobile ? '0' : 'auto',
+      right: isMobile ? '0' : 'auto',
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      padding: isMobile ? '16px' : '0',
+      borderRadius: isMobile ? '0 0 12px 12px' : '0',
+      boxShadow: isMobile ? '0 4px 6px rgba(0,0,0,0.1)' : 'none',
+      zIndex: isMobile ? 99 : 'auto',
+      border: isMobile ? `1px solid ${darkMode ? '#334155' : '#e2e8f0'}` : 'none',
     },
 
     button: (bg, color = '#fff') => ({
@@ -544,7 +581,41 @@ export default function Home() {
       display: 'inline-flex',
       alignItems: 'center',
       gap: '4px',
+      textDecoration: 'none',
     }),
+
+    // Navigation Links Container
+    navLinks: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: isMobile ? '8px' : '12px',
+      alignItems: 'center',
+      width: isMobile ? '100%' : 'auto',
+    },
+
+    navLink: (isActive = false) => ({
+      color: isActive ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
+      cursor: 'pointer',
+      padding: isMobile ? '10px 12px' : '6px 12px',
+      borderRadius: '8px',
+      fontSize: isMobile ? '0.9rem' : '0.9rem',
+      backgroundColor: isActive ? (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
+      textAlign: isMobile ? 'left' : 'center',
+      width: isMobile ? '100%' : 'auto',
+      display: 'block',
+      border: 'none',
+      background: 'none',
+      fontFamily: 'inherit',
+    }),
+
+    // Action Buttons Container
+    actionButtons: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: isMobile ? '8px' : '12px',
+      alignItems: 'center',
+      width: isMobile ? '100%' : 'auto',
+    },
 
     // Generate Button
     generateButton: {
@@ -663,6 +734,17 @@ export default function Home() {
       <div style={styles.container}>
         {/* SIMPLE HEADER */}
         <header style={styles.header}>
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <button
+              onClick={toggleMobileMenu}
+              style={styles.mobileMenuButton}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+          )}
+
           <h1 style={styles.mainTitle}>
             AI Prompt Maker
           </h1>
@@ -672,80 +754,48 @@ export default function Home() {
           
           {/* Navigation */}
           <div style={styles.navContainer}>
-            {/* Left side - Navigation links */}
-            <div style={{ 
-              display: 'flex', 
-              gap: isMobile ? '4px' : '8px', 
-              flexWrap: 'wrap',
-              justifyContent: isMobile ? 'center' : 'flex-start',
-              flex: isMobile ? '1' : 'auto'
-            }}>
-              <span onClick={() => navigateTo('/')} style={{ 
-                color: router.pathname === '/' ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
-                cursor: 'pointer',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                backgroundColor: router.pathname === '/' ? (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
-              }}>
+            {/* Navigation Links */}
+            <div style={styles.navLinks}>
+              <button 
+                onClick={() => navigateTo('/')} 
+                style={styles.navLink(router.pathname === '/')}
+              >
                 🏠 Home
-              </span>
-              <span onClick={() => navigateTo('/seo')} style={{ 
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                cursor: 'pointer',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-              }}>
+              </button>
+              <button 
+                onClick={() => navigateTo('/seo')} 
+                style={styles.navLink(router.pathname === '/seo')}
+              >
                 🔍 SEO
-              </span>
-              <span onClick={() => navigateTo('/code')} style={{ 
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                cursor: 'pointer',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-              }}>
+              </button>
+              <button 
+                onClick={() => navigateTo('/code')} 
+                style={styles.navLink(router.pathname === '/code')}
+              >
                 💻 Code
-              </span>
-              <span onClick={() => navigateTo('/email')} style={{ 
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                cursor: 'pointer',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-              }}>
+              </button>
+              <button 
+                onClick={() => navigateTo('/email')} 
+                style={styles.navLink(router.pathname === '/email')}
+              >
                 ✉️ Email
-              </span>
-              <span onClick={() => navigateTo('/translate')} style={{ 
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                cursor: 'pointer',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-              }}>
+              </button>
+              <button 
+                onClick={() => navigateTo('/translate')} 
+                style={styles.navLink(router.pathname === '/translate')}
+              >
                 🔄 Translate
-              </span>
-              <span onClick={() => navigateTo('/prompts')} style={{ 
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                cursor: 'pointer',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-              }}>
+              </button>
+              <button 
+                onClick={() => navigateTo('/prompts')} 
+                style={styles.navLink(router.pathname === '/prompts')}
+              >
                 📚 Library
-              </span>
+              </button>
             </div>
 
-            {/* Right side - Actions */}
-            <div style={{ 
-              display: 'flex', 
-              gap: isMobile ? '6px' : '8px', 
-              alignItems: 'center',
-              justifyContent: isMobile ? 'center' : 'flex-end',
-              flex: isMobile ? '1' : 'auto',
-              marginTop: isMobile ? '8px' : '0'
-            }}>
+            {/* Action Buttons */}
+            <div style={styles.actionButtons}>
               <button 
                 onClick={() => setShowHistory(!showHistory)}
                 style={styles.button('#8b5cf6')}
@@ -1130,41 +1180,61 @@ export default function Home() {
                 Quick Links
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <span onClick={() => navigateTo('/')} style={{
+                <button onClick={() => navigateTo('/')} style={{
                   color: darkMode ? '#93c5fd' : '#3b82f6',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   🏠 Home
-                </span>
-                <span onClick={() => navigateTo('/seo')} style={{
+                </button>
+                <button onClick={() => navigateTo('/seo')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   🔍 SEO Tools
-                </span>
-                <span onClick={() => navigateTo('/code')} style={{
+                </button>
+                <button onClick={() => navigateTo('/code')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   💻 Code Assistant
-                </span>
-                <span onClick={() => navigateTo('/email')} style={{
+                </button>
+                <button onClick={() => navigateTo('/email')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   ✉️ Email Writer
-                </span>
-                <span onClick={() => navigateTo('/translate')} style={{
+                </button>
+                <button onClick={() => navigateTo('/translate')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   🔄 Translator
-                </span>
+                </button>
               </div>
             </div>
             
@@ -1178,34 +1248,50 @@ export default function Home() {
                 Support
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <span onClick={() => navigateTo('/help')} style={{
+                <button onClick={() => navigateTo('/help')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   ❓ Help Center
-                </span>
-                <span onClick={() => navigateTo('/contact')} style={{
+                </button>
+                <button onClick={() => navigateTo('/contact')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   📧 Contact Us
-                </span>
-                <span onClick={() => navigateTo('/feedback')} style={{
+                </button>
+                <button onClick={() => navigateTo('/feedback')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   💬 Feedback
-                </span>
-                <span onClick={() => navigateTo('/blog')} style={{
+                </button>
+                <button onClick={() => navigateTo('/blog')} style={{
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
                 }}>
                   📚 Blog
-                </span>
+                </button>
               </div>
             </div>
           </div>
@@ -1224,27 +1310,36 @@ export default function Home() {
               marginBottom: isMobile ? '12px' : '15px',
               flexWrap: 'wrap'
             }}>
-              <span onClick={() => navigateTo('/privacy')} style={{
+              <button onClick={() => navigateTo('/privacy')} style={{
                 color: darkMode ? '#93c5fd' : '#3b82f6',
                 cursor: 'pointer',
-                fontSize: isMobile ? '0.75rem' : '0.8rem'
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
               }}>
                 Privacy Policy
-              </span>
-              <span onClick={() => navigateTo('/terms')} style={{
+              </button>
+              <button onClick={() => navigateTo('/terms')} style={{
                 color: darkMode ? '#93c5fd' : '#3b82f6',
                 cursor: 'pointer',
-                fontSize: isMobile ? '0.75rem' : '0.8rem'
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
               }}>
                 Terms of Service
-              </span>
-              <span onClick={() => navigateTo('/cookies')} style={{
+              </button>
+              <button onClick={() => navigateTo('/cookies')} style={{
                 color: darkMode ? '#93c5fd' : '#3b82f6',
                 cursor: 'pointer',
-                fontSize: isMobile ? '0.75rem' : '0.8rem'
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
               }}>
                 Cookie Policy
-              </span>
+              </button>
             </div>
             
             <p style={{ 
@@ -1488,4 +1583,4 @@ export default function Home() {
       </div>
     </>
   );
-                              }
+}
