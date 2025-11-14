@@ -119,7 +119,17 @@ export default function EmailGenerator() {
           content="email generator, ai email writer, professional email template, business email, marketing email, sales email, email writing tool" 
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="author" content="Your Company Name" />
+        <meta name="author" content="AI Prompt Maker" />
+
+            <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ELVB6G7Z42"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ELVB6G7Z42');
+</script>
         
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content="AI Email Generator | Professional Email Writing Tool" />
