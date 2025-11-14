@@ -495,7 +495,7 @@ export default function Home() {
   // SIMPLE FIXED STYLES
   const styles = {
     container: {
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontFamily: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       maxWidth: '1200px',
       margin: '0 auto',
       padding: isMobile ? '12px' : '24px',
