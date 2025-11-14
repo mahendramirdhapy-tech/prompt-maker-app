@@ -786,12 +786,6 @@ export default function Home() {
               >
                 🔄 Translate
               </button>
-              <button 
-                onClick={() => navigateTo('/audio')} 
-                style={styles.navLink(router.pathname === '/audio')}
-              >
-                🔇 Audio Silent Remover
-              </button>
                   
               <button 
                 onClick={() => navigateTo('/prompts')} 
