@@ -133,7 +133,7 @@ export default function Translator() {
         position: 'relative'
       }}>
         {/* Back to Home Button */}
-        <Link href="/index" passHref>
+        <Link href="index" passHref>
           <button
             style={{
               position: 'absolute',
@@ -153,8 +153,12 @@ export default function Translator() {
               textDecoration: 'none',
               transition: 'background-color 0.2s'
             }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#475569'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#64748b'}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = '#475569';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = '#64748b';
+            }}
           >
             ← Back to Home
           </button>
@@ -199,7 +203,7 @@ export default function Translator() {
             style={{
               padding: '10px',
               backgroundColor: '#f1f5f9',
-              border: '1px solid '#cbd5e1',
+              border: '1px solid #cbd5e1',
               borderRadius: '8px',
               cursor: 'pointer',
               display: 'flex',
