@@ -786,6 +786,12 @@ export default function Home() {
               >
                 🔄 Translate
               </button>
+              <button 
+                onClick={() => navigateTo('/audio-silence-remover')} 
+                style={styles.navLink(router.pathname === '/audio-silence-remover')}
+              >
+                🎵 Audio Tool
+              </button>
                   
               <button 
                 onClick={() => navigateTo('/prompts')} 
@@ -1236,6 +1242,17 @@ export default function Home() {
                 }}>
                   🔄 Translator
                 </button>
+                <button onClick={() => navigateTo('/audio-silence-remover')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🎵 Audio Tool
+                </button>
               </div>
             </div>
             
@@ -1584,4 +1601,4 @@ export default function Home() {
       </div>
     </>
   );
-}
+                     }
