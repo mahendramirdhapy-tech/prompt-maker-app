@@ -12,18 +12,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Google Analytics Code यहाँ Paste करें */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-ELVB6G7Z42"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-ELVB6G7Z42');
-            `,
-          }}
-        />
+      <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQXC7722KC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-EQXC7722KC');
+</script>
       </head>
       <body className={inter.className}>
         {children}
