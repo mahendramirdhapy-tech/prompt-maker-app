@@ -12,12 +12,12 @@ export default function App({ Component, pageProps }) {
           content="Generate optimized AI prompts for free! Supports Hindi & English. Uses OpenRouter's free models with auto-fallback. No login needed. Try now!"
         />
         <meta name="keywords" content="ai prompt generator, free prompt maker, openrouter prompt, hindi ai prompt, gpt prompt, llama prompt, mistral prompt" />
-        <meta name="author" content="Your Name" />
+        <meta name="author" content="Your Mahendra" />
         <meta name="robots" content="index, follow" />
 
         {/* Open Graph / Social Media */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yourdomain.com/" />
+        <meta property="og:url" content="https://aipromptmaker.online/" />
         <meta property="og:title" content="AI Prompt Maker - Free & Open Source" />
         <meta
           property="og:description"
