@@ -1,6 +1,5 @@
 // pages/blog.js
 import Head from 'next/head';
-import './analytics';
 
 export default function Blog() {
   const articles = [
