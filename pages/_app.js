@@ -1,4 +1,6 @@
+// pages/_app.js
 import Head from 'next/head';
+import Script from 'next/script';
 
 export default function App({ Component, pageProps }) {
   return (
@@ -35,10 +37,34 @@ export default function App({ Component, pageProps }) {
         />
         <meta property="twitter:image" content="https://yourdomain.com/og-image.jpg" />
 
-        {/* Favicon (optional) */}
-        <link rel="icon" href="/favicon.ico" />
-            <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        
+        {/* Google Site Verification */}
+        <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
       </Head>
+
+      {/* Google Analytics */}
+      <Script
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-EQXC7722KC"
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EQXC7722KC');
+          `,
+        }}
+      />
+
       <Component {...pageProps} />
     </>
   );
