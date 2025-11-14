@@ -214,7 +214,7 @@ export default function PromptLibrary() {
         )}
 
         <footer className="library-footer">
-          <p>Need a custom prompt? <a href="/prompt-builder">Create your own →</a></p>
+          <p>Need a custom prompt? <a href="/index">Create your own →</a></p>
         </footer>
       </div>
 
