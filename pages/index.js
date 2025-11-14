@@ -591,16 +591,6 @@ export default function Home() {
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ELVB6G7Z42"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-ELVB6G7Z42');
-</script>
         
         {/* Canonical URL */}
         <link rel="canonical" href={pageUrl} />
