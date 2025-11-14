@@ -95,15 +95,7 @@ console.log(result);`;
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="author" content="AI Prompt Maker" />
 
-            <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ELVB6G7Z42"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-ELVB6G7Z42');
-</script>
+ 
         
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content="Code Interpreter & Explainer | Free AI-Powered Code Analysis" />
