@@ -787,6 +787,13 @@ export default function Home() {
                 🔄 Translate
               </button>
               <button 
+                onClick={() => navigateTo('/audio-silence-remover')} 
+                style={styles.navLink(router.pathname === '/translate')}
+              >
+                🔇 Translate
+              </button>
+                  
+              <button 
                 onClick={() => navigateTo('/prompts')} 
                 style={styles.navLink(router.pathname === '/prompts')}
               >
