@@ -1,5 +1,6 @@
 // pages/index.js
 import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase.js';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
@@ -65,35 +66,28 @@ export default function Home() {
       }
     };
 
-    // Only run in browser
-    if (typeof window !== 'undefined') {
-      checkScreenSize();
-      window.addEventListener('resize', checkScreenSize);
-      return () => window.removeEventListener('resize', checkScreenSize);
-    }
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, [mobileMenuOpen]);
 
   // Enhanced dark mode with professional theme
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const isDark = localStorage.getItem('darkMode') === 'true';
-      setDarkMode(isDark);
-      updateDarkModeStyles(isDark);
-    }
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    updateDarkModeStyles(isDark);
   }, []);
 
   // Load history from localStorage on component mount
   useEffect(() => {
     const loadHistory = () => {
       try {
-        if (typeof window !== 'undefined') {
-          const savedHistory = localStorage.getItem('promptHistory');
-          if (savedHistory) {
-            const history = JSON.parse(savedHistory);
-            // Sort by timestamp descending (newest first)
-            history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            setPromptHistory(history);
-          }
+        const savedHistory = localStorage.getItem('promptHistory');
+        if (savedHistory) {
+          const history = JSON.parse(savedHistory);
+          // Sort by timestamp descending (newest first)
+          history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          setPromptHistory(history);
         }
       } catch (error) {
         console.error('Error loading history:', error);
@@ -104,54 +98,58 @@ export default function Home() {
   }, []);
 
   const updateDarkModeStyles = (isDark) => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      if (isDark) {
-        root.style.setProperty('--bg-primary', '#0f172a');
-        root.style.setProperty('--bg-secondary', '#1e293b');
-        root.style.setProperty('--text-primary', '#f8fafc');
-        root.style.setProperty('--text-secondary', '#cbd5e1');
-        root.style.setProperty('--border-color', '#334155');
-      } else {
-        root.style.setProperty('--bg-primary', '#ffffff');
-        root.style.setProperty('--bg-secondary', '#f8fafc');
-        root.style.setProperty('--text-primary', '#1e293b');
-        root.style.setProperty('--text-secondary', '#64748b');
-        root.style.setProperty('--border-color', '#e2e8f0');
-      }
+    const root = document.documentElement;
+    if (isDark) {
+      root.style.setProperty('--bg-primary', '#0f172a');
+      root.style.setProperty('--bg-secondary', '#1e293b');
+      root.style.setProperty('--text-primary', '#f8fafc');
+      root.style.setProperty('--text-secondary', '#cbd5e1');
+      root.style.setProperty('--border-color', '#334155');
+    } else {
+      root.style.setProperty('--bg-primary', '#ffffff');
+      root.style.setProperty('--bg-secondary', '#f8fafc');
+      root.style.setProperty('--text-primary', '#1e293b');
+      root.style.setProperty('--text-secondary', '#64748b');
+      root.style.setProperty('--border-color', '#e2e8f0');
     }
   };
 
   // Enhanced user initialization
   useEffect(() => {
     const initUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+      
       // Load usage count
-      if (typeof window !== 'undefined') {
-        const count = parseInt(localStorage.getItem('guestUsage') || '0');
-        setUsageCount(count);
-        
-        // Load cache from localStorage
-        const savedCache = localStorage.getItem('responseCache');
-        if (savedCache) {
-          try {
-            setResponseCache(new Map(JSON.parse(savedCache)));
-          } catch (error) {
-            console.error('Error loading cache:', error);
-          }
-        }
+      const count = parseInt(localStorage.getItem('guestUsage') || '0');
+      setUsageCount(count);
+      
+      // Load cache from localStorage
+      const savedCache = localStorage.getItem('responseCache');
+      if (savedCache) {
+        setResponseCache(new Map(JSON.parse(savedCache)));
       }
     };
 
     initUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user || null);
+        if (event === 'SIGNED_IN') {
+          setShowLoginModal(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Save history to localStorage whenever promptHistory changes
   useEffect(() => {
     const saveHistory = () => {
       try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
-        }
+        localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
       } catch (error) {
         console.error('Error saving history:', error);
       }
@@ -176,14 +174,7 @@ export default function Home() {
     }
     
     setResponseCache(newCache);
-    
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('responseCache', JSON.stringify(Array.from(newCache.entries())));
-      } catch (error) {
-        console.error('Error saving cache:', error);
-      }
-    }
+    localStorage.setItem('responseCache', JSON.stringify(Array.from(newCache.entries())));
   };
 
   const getFromCache = (key) => {
@@ -232,9 +223,7 @@ export default function Home() {
   const clearHistory = () => {
     if (confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
       setPromptHistory([]);
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('promptHistory');
-      }
+      localStorage.removeItem('promptHistory');
     }
   };
 
@@ -345,6 +334,18 @@ export default function Home() {
       setOutput(result.prompt);
       setUsedModel(result.modelLabel);
 
+      // Save to database
+      await supabase.from('prompts').insert({
+        user_id: user?.id || null,
+        input: input.trim(),
+        output: result.prompt,
+        model_used: result.modelUsed,
+        language,
+        tone,
+        max_tokens: maxTokens,
+        type: 'prompt',
+      });
+
       // Add to local history
       addToHistory({
         input: input.trim(),
@@ -357,7 +358,7 @@ export default function Home() {
       });
 
       // Update usage for guests
-      if (!user && typeof window !== 'undefined') {
+      if (!user) {
         const newCount = usageCount + 1;
         setUsageCount(newCount);
         localStorage.setItem('guestUsage', newCount.toString());
@@ -392,8 +393,13 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      // Simple login redirect - you can implement proper auth later
-      alert('Login functionality will be implemented soon. For now, enjoy the free usage!');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { 
+          redirectTo: `${window.location.origin}/auth/callback`
+        },
+      });
+      if (error) throw error;
     } catch (error) {
       console.error('Login error:', error);
       alert('Login failed: ' + error.message);
@@ -401,6 +407,7 @@ export default function Home() {
   };
 
   const handleLogout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
   };
 
@@ -420,9 +427,24 @@ export default function Home() {
 
   const handleFeedback = async (rating) => {
     setFeedbackGiven(rating);
-    // Simple feedback handling without database
-    console.log('Feedback:', { rating, comment: feedbackComment });
-    alert('Thank you for your feedback!');
+    
+    try {
+      const { data: prompts, error } = await supabase
+        .from('prompts')
+        .select('id')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      
+      if (prompts?.length && !error) {
+        await supabase.from('feedback').insert({ 
+          prompt_id: prompts[0].id, 
+          rating, 
+          comment: feedbackComment 
+        });
+      }
+    } catch (error) {
+      console.error('Feedback error:', error);
+    }
   };
 
   const handleTemplateChange = (e) => {
@@ -438,9 +460,7 @@ export default function Home() {
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', newDarkMode.toString());
-    }
+    localStorage.setItem('darkMode', newDarkMode.toString());
     updateDarkModeStyles(newDarkMode);
   };
 
@@ -768,9 +788,9 @@ export default function Home() {
               </button>
               <button 
                 onClick={() => navigateTo('/audio')} 
-                style={styles.navLink(router.pathname === '/audio-silence-remover')}
+                style={styles.navLink(router.pathname === '/translate')}
               >
-                🎵 Audio Tool
+                🔇 Audio Silent Remover
               </button>
                   
               <button 
@@ -1570,4 +1590,4 @@ export default function Home() {
       </div>
     </>
   );
-  }
+}
