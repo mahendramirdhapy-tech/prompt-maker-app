@@ -1,6 +1,6 @@
 // pages/blog.js
 import Head from 'next/head';
-import { initGA } from './analytics';
+import './analytics';
 
 export default function Blog() {
   const articles = [
