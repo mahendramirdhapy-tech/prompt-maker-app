@@ -1,4 +1,4 @@
-// pages/audio-silence-remover.js
+// pages/audio.js
 import { useState, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -522,7 +522,7 @@ export default function AudioSilenceRemover() {
               padding: '1rem',
               borderRadius: '8px',
               textAlign: 'center',
-              borderLeft: '4px solid '#ef4444'
+              borderLeft: '4px solid #ef4444'
             }}>
               <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#ef4444' }}>
                 {stats.fileSize}
@@ -622,4 +622,4 @@ export default function AudioSilenceRemover() {
       `}</style>
     </>
   );
-    }
+}
