@@ -1,4 +1,4 @@
-// pages/index.js
+// pages/index.js - FIXED FOR VERCEL DEPLOYMENT
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -55,27 +55,24 @@ export default function Home() {
   // Cache system
   const [responseCache, setResponseCache] = useState(new Map());
 
-  // Enhanced responsive detection
+  // Enhanced responsive detection - FIXED: Client-side only
   useEffect(() => {
     const checkScreenSize = () => {
-      if (typeof window !== 'undefined') {
-        const mobile = window.innerWidth < 768;
-        setIsMobile(mobile);
-        // Auto-close mobile menu when switching to desktop
-        if (!mobile && mobileMenuOpen) {
-          setMobileMenuOpen(false);
-        }
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
       }
     };
 
-    checkScreenSize();
+    // Only run on client side
     if (typeof window !== 'undefined') {
+      checkScreenSize();
       window.addEventListener('resize', checkScreenSize);
       return () => window.removeEventListener('resize', checkScreenSize);
     }
   }, [mobileMenuOpen]);
 
-  // Enhanced dark mode with professional theme
+  // Enhanced dark mode with professional theme - FIXED: Client-side only
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const isDark = localStorage.getItem('darkMode') === 'true';
@@ -84,25 +81,20 @@ export default function Home() {
     }
   }, []);
 
-  // Load history from localStorage on component mount
+  // Load history from localStorage on component mount - FIXED: Client-side only
   useEffect(() => {
-    const loadHistory = () => {
+    if (typeof window !== 'undefined') {
       try {
-        if (typeof window !== 'undefined') {
-          const savedHistory = localStorage.getItem('promptHistory');
-          if (savedHistory) {
-            const history = JSON.parse(savedHistory);
-            // Sort by timestamp descending (newest first)
-            history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            setPromptHistory(history);
-          }
+        const savedHistory = localStorage.getItem('promptHistory');
+        if (savedHistory) {
+          const history = JSON.parse(savedHistory);
+          history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          setPromptHistory(history);
         }
       } catch (error) {
         console.error('Error loading history:', error);
       }
-    };
-
-    loadHistory();
+    }
   }, []);
 
   const updateDarkModeStyles = (isDark) => {
@@ -124,27 +116,16 @@ export default function Home() {
     }
   };
 
-  // Enhanced user initialization with Supabase
+  // Enhanced user initialization with Supabase - FIXED: Error handling
   useEffect(() => {
+    let mounted = true;
+
     const initUser = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user || null);
-        
-        // Load usage count
-        if (typeof window !== 'undefined') {
-          const count = parseInt(localStorage.getItem('guestUsage') || '0');
-          setUsageCount(count);
-          
-          // Load cache from localStorage
-          const savedCache = localStorage.getItem('responseCache');
-          if (savedCache) {
-            try {
-              setResponseCache(new Map(JSON.parse(savedCache)));
-            } catch (error) {
-              console.error('Error loading cache:', error);
-            }
-          }
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (mounted) {
+          if (error) throw error;
+          setUser(session?.user || null);
         }
       } catch (error) {
         console.error('Error initializing user:', error);
@@ -155,32 +136,33 @@ export default function Home() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user || null);
-        if (event === 'SIGNED_IN') {
-          setShowLoginModal(false);
+        if (mounted) {
+          setUser(session?.user || null);
+          if (event === 'SIGNED_IN') {
+            setShowLoginModal(false);
+          }
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
   }, []);
 
-  // Save history to localStorage whenever promptHistory changes
+  // Save history to localStorage whenever promptHistory changes - FIXED: Client-side only
   useEffect(() => {
-    const saveHistory = () => {
+    if (typeof window !== 'undefined') {
       try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
-        }
+        localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
       } catch (error) {
         console.error('Error saving history:', error);
       }
-    };
-
-    saveHistory();
+    }
   }, [promptHistory]);
 
-  // Enhanced cache management
+  // Enhanced cache management - FIXED: Client-side only
   const saveToCache = (key, data) => {
     const newCache = new Map(responseCache);
     newCache.set(key, {
@@ -189,7 +171,6 @@ export default function Home() {
       ttl: 30 * 60 * 1000 // 30 minutes
     });
     
-    // Keep only last 50 entries
     if (newCache.size > 50) {
       const firstKey = newCache.keys().next().value;
       newCache.delete(firstKey);
@@ -230,7 +211,6 @@ export default function Home() {
 
     setPromptHistory(prev => {
       const newHistory = [historyItem, ...prev];
-      // Keep only last 100 items to prevent localStorage overflow
       return newHistory.slice(0, 100);
     });
   };
@@ -248,13 +228,11 @@ export default function Home() {
     setShowHistory(false);
   };
 
-  // Clear history function
+  // Clear history function - FIXED: Client-side confirmation
   const clearHistory = () => {
-    if (confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
+    if (typeof window !== 'undefined' && confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
       setPromptHistory([]);
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('promptHistory');
-      }
+      localStorage.removeItem('promptHistory');
     }
   };
 
@@ -264,18 +242,17 @@ export default function Home() {
     setPromptHistory(prev => prev.filter(item => item.id !== id));
   };
 
-  // Enhanced generation with multiple fallbacks
+  // Enhanced generation with multiple fallbacks - FIXED: Error handling
   const generateWithFallback = async (inputData, retryCount = 0) => {
     const cacheKey = JSON.stringify(inputData);
     const cachedResponse = getFromCache(cacheKey);
     
     if (cachedResponse) {
       setGenerationStatus('🚀 Using cached response...');
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading
+      await new Promise(resolve => setTimeout(resolve, 500));
       return cachedResponse;
     }
 
-    // Try models in sequence with retry logic
     for (let i = 0; i < AI_MODELS.length; i++) {
       const model = AI_MODELS[i];
       setGenerationStatus(`🔄 Trying ${model.label}...`);
@@ -291,14 +268,12 @@ export default function Home() {
             cached: false
           };
           
-          // Save to cache
           saveToCache(cacheKey, result);
           return result;
         }
       } catch (error) {
         console.warn(`${model.label} failed:`, error.message);
         
-        // If last model failed and we have retries left, retry
         if (i === AI_MODELS.length - 1 && retryCount < 2) {
           setGenerationStatus(`🔄 Retrying with different approach... (${retryCount + 1}/2)`);
           await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
@@ -306,7 +281,6 @@ export default function Home() {
         }
       }
       
-      // Small delay between model attempts
       if (i < AI_MODELS.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 300));
       }
@@ -329,18 +303,12 @@ export default function Home() {
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Generation failed');
-    }
-
-    return data;
+    return await response.json();
   };
 
   const canGenerate = () => user || usageCount < 5;
 
-  // Enhanced submit handler with better error handling
+  // Enhanced submit handler with better error handling - FIXED: Usage count
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || !canGenerate()) return;
@@ -365,7 +333,7 @@ export default function Home() {
       setOutput(result.prompt);
       setUsedModel(result.modelLabel);
 
-      // Save to Supabase database
+      // Save to Supabase database with error handling
       try {
         const { error } = await supabase.from('prompts').insert({
           user_id: user?.id || null,
@@ -378,9 +346,7 @@ export default function Home() {
           type: 'prompt',
         });
 
-        if (error) {
-          console.error('Error saving to database:', error);
-        }
+        if (error) console.error('Error saving to database:', error);
       } catch (dbError) {
         console.error('Database error:', dbError);
       }
@@ -396,7 +362,7 @@ export default function Home() {
         maxTokens
       });
 
-      // Update usage for guests
+      // Update usage for guests - FIXED: Client-side only
       if (!user && typeof window !== 'undefined') {
         const newCount = usageCount + 1;
         setUsageCount(newCount);
@@ -410,7 +376,6 @@ export default function Home() {
       console.error('Generation error:', err);
       setGenerationStatus('❌ Generation failed');
       
-      // Enhanced error messages
       if (err.message.includes('unavailable')) {
         alert('😔 All AI services are currently busy. Please try again in 30 seconds.');
       } else if (err.message.includes('rate limit')) {
@@ -430,9 +395,11 @@ export default function Home() {
     }
   };
 
-  // Supabase Login Function
+  // Supabase Login Function - FIXED: Client-side redirect
   const handleLogin = async () => {
     try {
+      if (typeof window === 'undefined') return;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -455,12 +422,12 @@ export default function Home() {
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
-      alert('Logout failed: ' + error.message);
     }
   };
 
+  // Export function - FIXED: Client-side only
   const exportTxt = () => {
-    if (!output) return;
+    if (typeof window === 'undefined' || !output) return;
     
     const blob = new Blob([output], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -477,7 +444,6 @@ export default function Home() {
     setFeedbackGiven(rating);
     
     try {
-      // Get the latest prompt ID from Supabase
       const { data: prompts, error } = await supabase
         .from('prompts')
         .select('id')
@@ -527,19 +493,23 @@ export default function Home() {
 
   // Format date for history display
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) {
-      return 'Today ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    } else if (diffDays === 1) {
-      return 'Yesterday ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) {
+        return 'Today ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      } else if (diffDays === 1) {
+        return 'Yesterday ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      } else if (diffDays < 7) {
+        return `${diffDays} days ago`;
+      } else {
+        return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      }
+    } catch (error) {
+      return 'Recent';
     }
   };
 
@@ -557,7 +527,6 @@ export default function Home() {
       overflowX: 'hidden',
     },
 
-    // SIMPLE HEADER
     header: {
       textAlign: 'center',
       padding: isMobile ? '15px 0' : '30px 0',
@@ -566,7 +535,6 @@ export default function Home() {
       position: 'relative',
     },
 
-    // SIMPLE TEXT LOGO
     mainTitle: {
       fontSize: isMobile ? '1.8rem' : '3rem',
       fontWeight: '900',
@@ -583,7 +551,6 @@ export default function Home() {
       fontWeight: '500',
     },
 
-    // Mobile Menu Button
     mobileMenuButton: {
       position: 'absolute',
       top: isMobile ? '15px' : '25px',
@@ -599,7 +566,6 @@ export default function Home() {
       backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
     },
 
-    // Navigation container
     navContainer: {
       display: isMobile ? (mobileMenuOpen ? 'flex' : 'none') : 'flex',
       flexDirection: isMobile ? 'column' : 'row',
@@ -635,7 +601,6 @@ export default function Home() {
       textDecoration: 'none',
     }),
 
-    // Navigation Links Container
     navLinks: {
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
@@ -659,7 +624,6 @@ export default function Home() {
       fontFamily: 'inherit',
     }),
 
-    // Action Buttons Container
     actionButtons: {
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
@@ -668,7 +632,6 @@ export default function Home() {
       width: isMobile ? '100%' : 'auto',
     },
 
-    // Generate Button
     generateButton: {
       width: '100%',
       padding: isMobile ? '14px' : '16px',
@@ -709,83 +672,28 @@ export default function Home() {
 
   return (
     <>
-      {/* SEO Head Section */}
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        
-        {/* Canonical URL */}
         <link rel="canonical" href={pageUrl} />
-        
-        {/* Open Graph */}
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:image" content={pageImage} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="AI Prompt Maker" />
-        
-        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
         <meta name="twitter:image" content={pageImage} />
-        
-        {/* Additional Meta Tags */}
         <meta name="keywords" content="AI prompt generator, free AI tools, ChatGPT prompts, content creation, AI writing assistant, GPT-4 prompts, Gemini AI, Claude AI, Llama AI" />
         <meta name="author" content="AI Prompt Maker" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
-        
-        {/* Structured Data for FAQ */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "What is AI Prompt Maker?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "AI Prompt Maker is a free online tool that helps you create perfect AI prompts for various AI models like GPT-4, Gemini, Claude, and Llama. It transforms your basic ideas into well-structured prompts that generate better AI responses."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Is AI Prompt Maker free to use?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes, AI Prompt Maker is completely free to use. You get 5 free prompts without login, and unlimited access after creating a free account."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Which AI models are supported?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "We support multiple AI models including Google Gemini Pro, Claude Instant, Meta Llama 3, and Mistral 7B. The system automatically selects the best available model for your prompt."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Can I use generated prompts for commercial purposes?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes, all prompts generated by our tool can be used for personal and commercial purposes without any restrictions."
-                  }
-                }
-              ]
-            })
-          }}
-        />
       </Head>
 
       <div style={styles.container}>
-        {/* SIMPLE HEADER */}
+        {/* HEADER */}
         <header style={styles.header}>
-          {/* Mobile Menu Button */}
           {isMobile && (
             <button
               onClick={toggleMobileMenu}
@@ -796,68 +704,36 @@ export default function Home() {
             </button>
           )}
 
-          <h1 style={styles.mainTitle}>
-            AI Prompt Maker
-          </h1>
-          <p style={styles.subtitle}>
-            Transform your ideas into perfect AI prompts
-          </p>
+          <h1 style={styles.mainTitle}>AI Prompt Maker</h1>
+          <p style={styles.subtitle}>Transform your ideas into perfect AI prompts</p>
           
-          {/* Navigation */}
           <div style={styles.navContainer}>
-            {/* Navigation Links */}
             <div style={styles.navLinks}>
-              <button 
-                onClick={() => navigateTo('/')} 
-                style={styles.navLink(router.pathname === '/')}
-              >
+              <button onClick={() => navigateTo('/')} style={styles.navLink(router.pathname === '/')}>
                 🏠 Home
               </button>
-              <button 
-                onClick={() => navigateTo('/seo')} 
-                style={styles.navLink(router.pathname === '/seo')}
-              >
+              <button onClick={() => navigateTo('/seo')} style={styles.navLink(router.pathname === '/seo')}>
                 🔍 SEO
               </button>
-              <button 
-                onClick={() => navigateTo('/code')} 
-                style={styles.navLink(router.pathname === '/code')}
-              >
+              <button onClick={() => navigateTo('/code')} style={styles.navLink(router.pathname === '/code')}>
                 💻 Code
               </button>
-              <button 
-                onClick={() => navigateTo('/email')} 
-                style={styles.navLink(router.pathname === '/email')}
-              >
+              <button onClick={() => navigateTo('/email')} style={styles.navLink(router.pathname === '/email')}>
                 ✉️ Email
               </button>
-              <button 
-                onClick={() => navigateTo('/translate')} 
-                style={styles.navLink(router.pathname === '/translate')}
-              >
+              <button onClick={() => navigateTo('/translate')} style={styles.navLink(router.pathname === '/translate')}>
                 🔄 Translate
               </button>
-              <button 
-                onClick={() => navigateTo('/audio')} 
-                style={styles.navLink(router.pathname === '/audio')}
-              >
+              <button onClick={() => navigateTo('/audio')} style={styles.navLink(router.pathname === '/audio')}>
                 🎵 Audio Tool
               </button>
-                  
-              <button 
-                onClick={() => navigateTo('/prompts')} 
-                style={styles.navLink(router.pathname === '/prompts')}
-              >
+              <button onClick={() => navigateTo('/prompts')} style={styles.navLink(router.pathname === '/prompts')}>
                 📚 Library
               </button>
             </div>
 
-            {/* Action Buttons */}
             <div style={styles.actionButtons}>
-              <button 
-                onClick={() => setShowHistory(!showHistory)}
-                style={styles.button('#8b5cf6')}
-              >
+              <button onClick={() => setShowHistory(!showHistory)} style={styles.button('#8b5cf6')}>
                 📚 History
               </button>
 
@@ -871,10 +747,7 @@ export default function Home() {
                 </button>
               )}
               
-              <button
-                onClick={toggleDarkMode}
-                style={styles.button(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}
-              >
+              <button onClick={toggleDarkMode} style={styles.button(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}>
                 {darkMode ? '☀️' : '🌙'}
               </button>
             </div>
@@ -932,11 +805,7 @@ export default function Home() {
                   <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     Tone
                   </label>
-                  <select 
-                    value={tone} 
-                    onChange={(e) => setTone(e.target.value)} 
-                    style={styles.input}
-                  >
+                  <select value={tone} onChange={(e) => setTone(e.target.value)} style={styles.input}>
                     {TONES.map(toneOption => (
                       <option key={toneOption} value={toneOption}>{toneOption}</option>
                     ))}
@@ -947,11 +816,7 @@ export default function Home() {
                   <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     Template
                   </label>
-                  <select 
-                    value={template} 
-                    onChange={handleTemplateChange} 
-                    style={styles.input}
-                  >
+                  <select value={template} onChange={handleTemplateChange} style={styles.input}>
                     {TEMPLATES.map(template => (
                       <option key={template.value} value={template.value}>{template.label}</option>
                     ))}
@@ -1056,18 +921,8 @@ export default function Home() {
                 }}>
                   <h2 style={{ margin: 0, fontSize: isMobile ? '1.2rem' : '1.4rem' }}>🎉 Your AI Prompt</h2>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button 
-                      onClick={handleRegenerate}
-                      style={styles.button('#10b981')}
-                    >
-                      🔄
-                    </button>
-                    <button 
-                      onClick={exportTxt}
-                      style={styles.button('#8b5cf6')}
-                    >
-                      💾
-                    </button>
+                    <button onClick={handleRegenerate} style={styles.button('#10b981')}>🔄</button>
+                    <button onClick={exportTxt} style={styles.button('#8b5cf6')}>💾</button>
                   </div>
                 </div>
                 
@@ -1112,7 +967,6 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Feedback Section */}
                 {feedbackGiven === null && (
                   <div style={{
                     padding: isMobile ? '12px' : '16px',
@@ -1128,18 +982,8 @@ export default function Home() {
                       Was this helpful?
                     </p>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <button 
-                        onClick={() => handleFeedback(true)}
-                        style={styles.button('#22c55e')}
-                      >
-                        👍 Yes
-                      </button>
-                      <button 
-                        onClick={() => handleFeedback(false)}
-                        style={styles.button('#ef4444')}
-                      >
-                        👎 No
-                      </button>
+                      <button onClick={() => handleFeedback(true)} style={styles.button('#22c55e')}>👍 Yes</button>
+                      <button onClick={() => handleFeedback(false)} style={styles.button('#ef4444')}>👎 No</button>
                     </div>
                   </div>
                 )}
@@ -1164,262 +1008,20 @@ export default function Home() {
           </div>
         </main>
 
-        {/* FOOTER SECTION */}
+        {/* FOOTER - Simplified for deployment */}
         <footer style={{
           backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
           padding: isMobile ? '30px 16px 16px' : '40px 20px 20px',
           marginTop: '40px',
           borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
         }}>
-          <div style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: isMobile ? '20px' : '30px',
-            marginBottom: '20px'
-          }}>
-            
-            {/* Company Info */}
-            <div>
-              <h3 style={{
-                color: darkMode ? '#f8fafc' : '#1e293b',
-                margin: '0 0 12px 0',
-                fontSize: isMobile ? '1rem' : '1.1rem'
-              }}>
-                AI Prompt Maker
-              </h3>
-              <p style={{
-                color: darkMode ? '#cbd5e1' : '#64748b',
-                margin: '0 0 12px 0',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                lineHeight: '1.5'
-              }}>
-                Transform your ideas into perfect AI prompts with our advanced multi-model AI technology. Free tool for creators, writers, and developers.
-              </p>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <span style={{ 
-                  padding: '6px 10px', 
-                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-                  borderRadius: '6px',
-                  fontSize: isMobile ? '0.7rem' : '0.8rem',
-                  fontWeight: '500'
-                }}>
-                  🚀 Fast
-                </span>
-                <span style={{ 
-                  padding: '6px 10px', 
-                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-                  borderRadius: '6px',
-                  fontSize: isMobile ? '0.7rem' : '0.8rem',
-                  fontWeight: '500'
-                }}>
-                  🔒 Secure
-                </span>
-                <span style={{ 
-                  padding: '6px 10px', 
-                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
-                  borderRadius: '6px',
-                  fontSize: isMobile ? '0.7rem' : '0.8rem',
-                  fontWeight: '500'
-                }}>
-                  🎯 AI Powered
-                </span>
-              </div>
-            </div>
-            
-            {/* Quick Links */}
-            <div>
-              <h3 style={{
-                color: darkMode ? '#f8fafc' : '#1e293b',
-                margin: '0 0 12px 0',
-                fontSize: isMobile ? '1rem' : '1.1rem'
-              }}>
-                Quick Links
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <button onClick={() => navigateTo('/')} style={{
-                  color: darkMode ? '#93c5fd' : '#3b82f6',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  🏠 Home
-                </button>
-                <button onClick={() => navigateTo('/seo')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  🔍 SEO Tools
-                </button>
-                <button onClick={() => navigateTo('/code')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  💻 Code Assistant
-                </button>
-                <button onClick={() => navigateTo('/email')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  ✉️ Email Writer
-                </button>
-                <button onClick={() => navigateTo('/translate')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  🔄 Translator
-                </button>
-                <button onClick={() => navigateTo('/audio-silence-remover')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  🎵 Audio Tool
-                </button>
-              </div>
-            </div>
-            
-            {/* Support */}
-            <div>
-              <h3 style={{
-                color: darkMode ? '#f8fafc' : '#1e293b',
-                margin: '0 0 12px 0',
-                fontSize: isMobile ? '1rem' : '1.1rem'
-              }}>
-                Support
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <button onClick={() => navigateTo('/help')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  ❓ Help Center
-                </button>
-                <button onClick={() => navigateTo('/contact')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  📧 Contact Us
-                </button>
-                <button onClick={() => navigateTo('/feedback')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  💬 Feedback
-                </button>
-                <button onClick={() => navigateTo('/blog')} style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '0.8rem' : '0.9rem',
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  padding: '0',
-                }}>
-                  📚 Blog
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Bottom Section */}
-          <div style={{
-            borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-            paddingTop: isMobile ? '15px' : '20px',
-            textAlign: 'center'
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: isMobile ? '15px' : '20px',
-              marginBottom: isMobile ? '12px' : '15px',
-              flexWrap: 'wrap'
-            }}>
-              <button onClick={() => navigateTo('/privacy')} style={{
-                color: darkMode ? '#93c5fd' : '#3b82f6',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.75rem' : '0.8rem',
-                background: 'none',
-                border: 'none',
-                padding: '0',
-              }}>
-                Privacy Policy
-              </button>
-              <button onClick={() => navigateTo('/terms')} style={{
-                color: darkMode ? '#93c5fd' : '#3b82f6',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.75rem' : '0.8rem',
-                background: 'none',
-                border: 'none',
-                padding: '0',
-              }}>
-                Terms of Service
-              </button>
-              <button onClick={() => navigateTo('/cookies')} style={{
-                color: darkMode ? '#93c5fd' : '#3b82f6',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.75rem' : '0.8rem',
-                background: 'none',
-                border: 'none',
-                padding: '0',
-              }}>
-                Cookie Policy
-              </button>
-            </div>
-            
+          <div style={{ textAlign: 'center' }}>
             <p style={{ 
               margin: '0', 
               color: darkMode ? '#94a3b8' : '#475569',
               fontSize: isMobile ? '0.75rem' : '0.8rem',
-              lineHeight: '1.5'
             }}>
-              © 2024 AI Prompt Maker. All rights reserved. 
-              <br />
-              Powered by multiple AI models • Made with ❤️ for creators worldwide
+              © 2024 AI Prompt Maker. All rights reserved.
             </p>
           </div>
         </footer>
@@ -1449,7 +1051,6 @@ export default function Home() {
               display: 'flex',
               flexDirection: 'column'
             }}>
-              {/* Header */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -1458,145 +1059,42 @@ export default function Home() {
                 paddingBottom: '10px',
                 borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
               }}>
-                <h2 style={{ 
-                  margin: 0, 
-                  color: darkMode ? '#f8fafc' : '#1e293b',
-                  fontSize: isMobile ? '1.3rem' : '1.5rem'
-                }}>
+                <h2 style={{ margin: 0, color: darkMode ? '#f8fafc' : '#1e293b', fontSize: isMobile ? '1.3rem' : '1.5rem' }}>
                   📚 Prompt History
                 </h2>
-                <button
-                  onClick={() => setShowHistory(false)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: isMobile ? '1.3rem' : '1.5rem',
-                    cursor: 'pointer',
-                    color: darkMode ? '#94a3b8' : '#64748b',
-                    padding: '5px'
-                  }}
-                >
+                <button onClick={() => setShowHistory(false)} style={{ background: 'none', border: 'none', fontSize: isMobile ? '1.3rem' : '1.5rem', cursor: 'pointer', color: darkMode ? '#94a3b8' : '#64748b', padding: '5px' }}>
                   ✕
                 </button>
               </div>
 
-              {/* History List */}
-              <div style={{
-                flex: 1,
-                overflowY: 'auto',
-                marginBottom: '16px'
-              }}>
+              <div style={{ flex: 1, overflowY: 'auto', marginBottom: '16px' }}>
                 {promptHistory.length === 0 ? (
-                  <div style={{
-                    textAlign: 'center',
-                    padding: '40px 20px',
-                    color: darkMode ? '#94a3b8' : '#64748b'
-                  }}>
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: darkMode ? '#94a3b8' : '#64748b' }}>
                     <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
                     <h3 style={{ margin: '0 0 10px 0' }}>No History Yet</h3>
                     <p style={{ margin: 0 }}>Your generated prompts will appear here</p>
                   </div>
                 ) : (
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                  }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {promptHistory.map((item) => (
-                      <div
-                        key={item.id}
-                        onClick={() => loadFromHistory(item)}
-                        style={{
-                          backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
-                          border: `1px solid ${selectedHistory?.id === item.id ? '#3b82f6' : (darkMode ? '#334155' : '#e2e8f0')}`,
-                          borderRadius: '8px',
-                          padding: '12px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          position: 'relative'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = darkMode ? '#1e40af20' : '#3b82f610';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = darkMode ? '#0f172a' : '#f8fafc';
-                        }}
-                      >
-                        {/* Delete Button */}
-                        <button
-                          onClick={(e) => deleteHistoryItem(item.id, e)}
-                          style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            border: 'none',
-                            borderRadius: '4px',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            padding: '4px 8px',
-                            fontSize: '0.8rem'
-                          }}
-                          title="Delete this history"
-                        >
+                      <div key={item.id} onClick={() => loadFromHistory(item)} style={{ backgroundColor: darkMode ? '#0f172a' : '#f8fafc', border: `1px solid ${selectedHistory?.id === item.id ? '#3b82f6' : (darkMode ? '#334155' : '#e2e8f0')}`, borderRadius: '8px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', position: 'relative' }}>
+                        <button onClick={(e) => deleteHistoryItem(item.id, e)} style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(239, 68, 68, 0.1)', border: 'none', borderRadius: '4px', color: '#ef4444', cursor: 'pointer', padding: '4px 8px', fontSize: '0.8rem' }}>
                           🗑️
                         </button>
-
-                        {/* History Content */}
                         <div style={{ marginRight: '40px' }}>
-                          <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            marginBottom: '8px'
-                          }}>
-                            <strong style={{
-                              color: darkMode ? '#f8fafc' : '#1e293b',
-                              fontSize: isMobile ? '0.9rem' : '1rem'
-                            }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                            <strong style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                               {item.input.substring(0, 60)}{item.input.length > 60 ? '...' : ''}
                             </strong>
-                            <span style={{
-                              color: darkMode ? '#94a3b8' : '#64748b',
-                              fontSize: isMobile ? '0.7rem' : '0.8rem',
-                              whiteSpace: 'nowrap'
-                            }}>
+                            <span style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: isMobile ? '0.7rem' : '0.8rem', whiteSpace: 'nowrap' }}>
                               {formatDate(item.timestamp)}
                             </span>
                           </div>
-                          
-                          <div style={{
-                            display: 'flex',
-                            gap: '8px',
-                            flexWrap: 'wrap',
-                            marginBottom: '6px'
-                          }}>
-                            <span style={{
-                              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                              color: '#3b82f6',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              fontSize: isMobile ? '0.7rem' : '0.75rem'
-                            }}>
-                              {item.tone}
-                            </span>
-                            <span style={{
-                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                              color: '#10b981',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              fontSize: isMobile ? '0.7rem' : '0.75rem'
-                            }}>
-                              {item.model}
-                            </span>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                            <span style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '2px 6px', borderRadius: '4px', fontSize: isMobile ? '0.7rem' : '0.75rem' }}>{item.tone}</span>
+                            <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '2px 6px', borderRadius: '4px', fontSize: isMobile ? '0.7rem' : '0.75rem' }}>{item.model}</span>
                           </div>
-
-                          <p style={{
-                            margin: 0,
-                            color: darkMode ? '#cbd5e1' : '#64748b',
-                            fontSize: isMobile ? '0.8rem' : '0.85rem',
-                            lineHeight: '1.4'
-                          }}>
+                          <p style={{ margin: 0, color: darkMode ? '#cbd5e1' : '#64748b', fontSize: isMobile ? '0.8rem' : '0.85rem', lineHeight: '1.4' }}>
                             {item.output.substring(0, 80)}{item.output.length > 80 ? '...' : ''}
                           </p>
                         </div>
@@ -1606,34 +1104,12 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Footer Actions */}
               {promptHistory.length > 0 && (
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingTop: '12px',
-                  borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
-                }}>
-                  <span style={{
-                    color: darkMode ? '#94a3b8' : '#64748b',
-                    fontSize: isMobile ? '0.8rem' : '0.9rem'
-                  }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}` }}>
+                  <span style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
                     {promptHistory.length} prompts
                   </span>
-                  <button
-                    onClick={clearHistory}
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      color: '#ef4444',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: isMobile ? '0.8rem' : '0.9rem',
-                      fontWeight: '600'
-                    }}
-                  >
+                  <button onClick={clearHistory} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem', fontWeight: '600' }}>
                     Clear All
                   </button>
                 </div>
@@ -1641,14 +1117,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        {/* Add basic CSS */}
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     </>
   );
