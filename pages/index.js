@@ -1,4 +1,4 @@
-// pages/index.js - FIXED FOR VERCEL DEPLOYMENT
+// pages/index.js - COMPLETE CODE WITH CARDS AND FOOTER
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -21,6 +21,64 @@ const AI_MODELS = [
   { name: 'claude-instant', label: 'Claude Instant', free: true },
   { name: 'llama-3', label: 'Meta Llama 3', free: true },
   { name: 'mistral', label: 'Mistral 7B', free: true },
+];
+
+// Tool Cards Data
+const TOOL_CARDS = [
+  {
+    id: 1,
+    title: '🔍 SEO Tool',
+    description: 'Optimize your content for search engines with our advanced SEO analysis tool.',
+    path: '/seo',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  },
+  {
+    id: 2,
+    title: '💻 Code Assistant',
+    description: 'Get help with coding, debugging, and code explanations from AI.',
+    path: '/code',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  },
+  {
+    id: 3,
+    title: '✉️ Email Writer',
+    description: 'Create professional emails quickly with our AI-powered email writer.',
+    path: '/email',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  },
+  {
+    id: 4,
+    title: '🔄 Translator',
+    description: 'Translate text between multiple languages with high accuracy.',
+    path: '/translate',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  },
+  {
+    id: 5,
+    title: '🎵 Audio Tool',
+    description: 'Audio processing and enhancement tools for your media files.',
+    path: '/audio',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  },
+  {
+    id: 6,
+    title: '📚 Prompt Library',
+    description: 'Explore our collection of pre-made AI prompts for various use cases.',
+    path: '/prompts',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  }
 ];
 
 export default function Home() {
@@ -1008,20 +1066,381 @@ export default function Home() {
           </div>
         </main>
 
-        {/* FOOTER - Simplified for deployment */}
+        {/* TOOL CARDS SECTION - FOOTER के पहले ADD किया */}
+        <section style={{ marginTop: '40px' }}>
+          <h2 style={{ 
+            textAlign: 'center', 
+            marginBottom: '20px',
+            color: darkMode ? '#f8fafc' : '#1e293b',
+            fontSize: isMobile ? '1.5rem' : '2rem'
+          }}>
+            🛠️ Our Free AI Tools
+          </h2>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: '20px',
+            marginBottom: '40px'
+          }}>
+            {TOOL_CARDS.map((tool) => (
+              <div
+                key={tool.id}
+                onClick={() => navigateTo(tool.path)}
+                style={{
+                  backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  borderRadius: '12px',
+                  padding: '20px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                }}
+              >
+                {/* Label */}
+                <div style={{
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  display: 'inline-block',
+                  marginBottom: '12px'
+                }}>
+                  {tool.label}
+                </div>
+
+                {/* Title */}
+                <h3 style={{
+                  margin: '0 0 10px 0',
+                  color: darkMode ? '#f8fafc' : '#1e293b',
+                  fontSize: '1.2rem',
+                  fontWeight: '700'
+                }}>
+                  {tool.title}
+                </h3>
+
+                {/* Description */}
+                <p style={{
+                  margin: '0 0 15px 0',
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  fontSize: '0.9rem',
+                  lineHeight: '1.5'
+                }}>
+                  {tool.description}
+                </p>
+
+                {/* Author and Date */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '0.8rem',
+                  color: darkMode ? '#94a3b8' : '#94a3b8'
+                }}>
+                  <span>By {tool.author}</span>
+                  <span>{tool.date}</span>
+                </div>
+
+                {/* Read More Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigateTo(tool.path);
+                  }}
+                  style={{
+                    width: '100%',
+                    marginTop: '15px',
+                    padding: '10px',
+                    backgroundColor: 'transparent',
+                    border: `2px solid ${darkMode ? '#3b82f6' : '#3b82f6'}`,
+                    color: darkMode ? '#3b82f6' : '#3b82f6',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#3b82f6';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = darkMode ? '#3b82f6' : '#3b82f6';
+                  }}
+                >
+                  Read More
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FOOTER SECTION - ORIGINAL FOOTER */}
         <footer style={{
           backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
           padding: isMobile ? '30px 16px 16px' : '40px 20px 20px',
           marginTop: '40px',
           borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
         }}>
-          <div style={{ textAlign: 'center' }}>
+          <div style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? '20px' : '30px',
+            marginBottom: '20px'
+          }}>
+            
+            {/* Company Info */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
+              }}>
+                AI Prompt Maker
+              </h3>
+              <p style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                lineHeight: '1.5'
+              }}>
+                Transform your ideas into perfect AI prompts with our advanced multi-model AI technology. Free tool for creators, writers, and developers.
+              </p>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ 
+                  padding: '6px 10px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🚀 Fast
+                </span>
+                <span style={{ 
+                  padding: '6px 10px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🔒 Secure
+                </span>
+                <span style={{ 
+                  padding: '6px 10px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🎯 AI Powered
+                </span>
+              </div>
+            </div>
+            
+            {/* Quick Links */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
+              }}>
+                Quick Links
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <button onClick={() => navigateTo('/')} style={{
+                  color: darkMode ? '#93c5fd' : '#3b82f6',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🏠 Home
+                </button>
+                <button onClick={() => navigateTo('/seo')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🔍 SEO Tools
+                </button>
+                <button onClick={() => navigateTo('/code')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  💻 Code Assistant
+                </button>
+                <button onClick={() => navigateTo('/email')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  ✉️ Email Writer
+                </button>
+                <button onClick={() => navigateTo('/translate')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🔄 Translator
+                </button>
+                <button onClick={() => navigateTo('/audio')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🎵 Audio Tool
+                </button>
+              </div>
+            </div>
+            
+            {/* Support */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
+              }}>
+                Support
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <button onClick={() => navigateTo('/help')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  ❓ Help Center
+                </button>
+                <button onClick={() => navigateTo('/contact')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  📧 Contact Us
+                </button>
+                <button onClick={() => navigateTo('/feedback')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  💬 Feedback
+                </button>
+                <button onClick={() => navigateTo('/blog')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  📚 Blog
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bottom Section */}
+          <div style={{
+            borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+            paddingTop: isMobile ? '15px' : '20px',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: isMobile ? '15px' : '20px',
+              marginBottom: isMobile ? '12px' : '15px',
+              flexWrap: 'wrap'
+            }}>
+              <button onClick={() => navigateTo('/privacy')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
+              }}>
+                Privacy Policy
+              </button>
+              <button onClick={() => navigateTo('/terms')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
+              }}>
+                Terms of Service
+              </button>
+              <button onClick={() => navigateTo('/cookies')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
+              }}>
+                Cookie Policy
+              </button>
+            </div>
+            
             <p style={{ 
               margin: '0', 
               color: darkMode ? '#94a3b8' : '#475569',
               fontSize: isMobile ? '0.75rem' : '0.8rem',
+              lineHeight: '1.5'
             }}>
-              © 2024 AI Prompt Maker. All rights reserved.
+              © 2024 AI Prompt Maker. All rights reserved. 
+              <br />
+              Powered by multiple AI models • Made with ❤️ for creators worldwide
             </p>
           </div>
         </footer>
@@ -1051,6 +1470,7 @@ export default function Home() {
               display: 'flex',
               flexDirection: 'column'
             }}>
+              {/* Header */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -1059,42 +1479,145 @@ export default function Home() {
                 paddingBottom: '10px',
                 borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
               }}>
-                <h2 style={{ margin: 0, color: darkMode ? '#f8fafc' : '#1e293b', fontSize: isMobile ? '1.3rem' : '1.5rem' }}>
+                <h2 style={{ 
+                  margin: 0, 
+                  color: darkMode ? '#f8fafc' : '#1e293b',
+                  fontSize: isMobile ? '1.3rem' : '1.5rem'
+                }}>
                   📚 Prompt History
                 </h2>
-                <button onClick={() => setShowHistory(false)} style={{ background: 'none', border: 'none', fontSize: isMobile ? '1.3rem' : '1.5rem', cursor: 'pointer', color: darkMode ? '#94a3b8' : '#64748b', padding: '5px' }}>
+                <button
+                  onClick={() => setShowHistory(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: isMobile ? '1.3rem' : '1.5rem',
+                    cursor: 'pointer',
+                    color: darkMode ? '#94a3b8' : '#64748b',
+                    padding: '5px'
+                  }}
+                >
                   ✕
                 </button>
               </div>
 
-              <div style={{ flex: 1, overflowY: 'auto', marginBottom: '16px' }}>
+              {/* History List */}
+              <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                marginBottom: '16px'
+              }}>
                 {promptHistory.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '40px 20px', color: darkMode ? '#94a3b8' : '#64748b' }}>
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '40px 20px',
+                    color: darkMode ? '#94a3b8' : '#64748b'
+                  }}>
                     <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
                     <h3 style={{ margin: '0 0 10px 0' }}>No History Yet</h3>
                     <p style={{ margin: 0 }}>Your generated prompts will appear here</p>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}>
                     {promptHistory.map((item) => (
-                      <div key={item.id} onClick={() => loadFromHistory(item)} style={{ backgroundColor: darkMode ? '#0f172a' : '#f8fafc', border: `1px solid ${selectedHistory?.id === item.id ? '#3b82f6' : (darkMode ? '#334155' : '#e2e8f0')}`, borderRadius: '8px', padding: '12px', cursor: 'pointer', transition: 'all 0.2s ease', position: 'relative' }}>
-                        <button onClick={(e) => deleteHistoryItem(item.id, e)} style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(239, 68, 68, 0.1)', border: 'none', borderRadius: '4px', color: '#ef4444', cursor: 'pointer', padding: '4px 8px', fontSize: '0.8rem' }}>
+                      <div
+                        key={item.id}
+                        onClick={() => loadFromHistory(item)}
+                        style={{
+                          backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                          border: `1px solid ${selectedHistory?.id === item.id ? '#3b82f6' : (darkMode ? '#334155' : '#e2e8f0')}`,
+                          borderRadius: '8px',
+                          padding: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          position: 'relative'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = darkMode ? '#1e40af20' : '#3b82f610';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = darkMode ? '#0f172a' : '#f8fafc';
+                        }}
+                      >
+                        {/* Delete Button */}
+                        <button
+                          onClick={(e) => deleteHistoryItem(item.id, e)}
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: 'none',
+                            borderRadius: '4px',
+                            color: '#ef4444',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            fontSize: '0.8rem'
+                          }}
+                          title="Delete this history"
+                        >
                           🗑️
                         </button>
+
+                        {/* History Content */}
                         <div style={{ marginRight: '40px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                            <strong style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: isMobile ? '0.9rem' : '1rem' }}>
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            marginBottom: '8px'
+                          }}>
+                            <strong style={{
+                              color: darkMode ? '#f8fafc' : '#1e293b',
+                              fontSize: isMobile ? '0.9rem' : '1rem'
+                            }}>
                               {item.input.substring(0, 60)}{item.input.length > 60 ? '...' : ''}
                             </strong>
-                            <span style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: isMobile ? '0.7rem' : '0.8rem', whiteSpace: 'nowrap' }}>
+                            <span style={{
+                              color: darkMode ? '#94a3b8' : '#64748b',
+                              fontSize: isMobile ? '0.7rem' : '0.8rem',
+                              whiteSpace: 'nowrap'
+                            }}>
                               {formatDate(item.timestamp)}
                             </span>
                           </div>
-                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                            <span style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '2px 6px', borderRadius: '4px', fontSize: isMobile ? '0.7rem' : '0.75rem' }}>{item.tone}</span>
-                            <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '2px 6px', borderRadius: '4px', fontSize: isMobile ? '0.7rem' : '0.75rem' }}>{item.model}</span>
+                          
+                          <div style={{
+                            display: 'flex',
+                            gap: '8px',
+                            flexWrap: 'wrap',
+                            marginBottom: '6px'
+                          }}>
+                            <span style={{
+                              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                              color: '#3b82f6',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: isMobile ? '0.7rem' : '0.75rem'
+                            }}>
+                              {item.tone}
+                            </span>
+                            <span style={{
+                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                              color: '#10b981',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: isMobile ? '0.7rem' : '0.75rem'
+                            }}>
+                              {item.model}
+                            </span>
                           </div>
-                          <p style={{ margin: 0, color: darkMode ? '#cbd5e1' : '#64748b', fontSize: isMobile ? '0.8rem' : '0.85rem', lineHeight: '1.4' }}>
+
+                          <p style={{
+                            margin: 0,
+                            color: darkMode ? '#cbd5e1' : '#64748b',
+                            fontSize: isMobile ? '0.8rem' : '0.85rem',
+                            lineHeight: '1.4'
+                          }}>
                             {item.output.substring(0, 80)}{item.output.length > 80 ? '...' : ''}
                           </p>
                         </div>
@@ -1104,12 +1627,34 @@ export default function Home() {
                 )}
               </div>
 
+              {/* Footer Actions */}
               {promptHistory.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}` }}>
-                  <span style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingTop: '12px',
+                  borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
+                }}>
+                  <span style={{
+                    color: darkMode ? '#94a3b8' : '#64748b',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem'
+                  }}>
                     {promptHistory.length} prompts
                   </span>
-                  <button onClick={clearHistory} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem', fontWeight: '600' }}>
+                  <button
+                    onClick={clearHistory}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      color: '#ef4444',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: isMobile ? '0.8rem' : '0.9rem',
+                      fontWeight: '600'
+                    }}
+                  >
                     Clear All
                   </button>
                 </div>
@@ -1117,6 +1662,14 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* Add basic CSS */}
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     </>
   );
