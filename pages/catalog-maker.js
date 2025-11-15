@@ -1,80 +1,81 @@
-// pages/catalog-maker.js - FIXED WITH PROPER AI INTEGRATION
-import { useState, useEffect } from 'react';
+// pages/catalog-maker.js - COMPATIBLE WITH YOUR PACKAGE.JSON
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
+// Dynamic imports for optional dependencies
+let html2canvas, jsPDF;
+
+if (typeof window !== 'undefined') {
+  import('html2canvas').then(module => {
+    html2canvas = module.default;
+  });
+  import('jspdf').then(module => {
+    jsPDF = module.default;
+  });
+}
+
 export default function CatalogMaker() {
-  const [companyName, setCompanyName] = useState("KING'S FOOD PRODUCTS");
-  const [tagline, setTagline] = useState('SINCE 2013');
+  const [catalogData, setCatalogData] = useState({
+    companyName: 'Your Company Name',
+    tagline: 'Since 2024',
+    contact: {
+      phone: '+91 XXXXX XXXXX',
+      email: 'contact@company.com',
+      address: 'Your Business Address',
+      timing: 'OPEN DAILY 9AM TO 9PM'
+    }
+  });
+  
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState(null);
-  const [contactInfo, setContactInfo] = useState({
-    phone: '+917666903585',
-    instagram: '@kingsfoodsproducts',
-    timing: 'OPEN DAILY 8AM TO 10PM'
-  });
+  const [activeTab, setActiveTab] = useState('edit');
+  const catalogRef = useRef(null);
   const router = useRouter();
 
-  // Initial products based on your images
-  const initialProducts = [
+  // Sample template products
+  const templateProducts = [
     {
       id: 1,
-      name: 'Soya Chaap 500g',
-      description: 'Premium Soya Chaap made from high-protein soy. Soft, flavorful, and perfect for tandoori or curry dishes.',
-      price: '',
+      name: 'Premium Product 500g',
+      description: 'High-quality product with excellent features and premium ingredients. Perfect for daily use and special occasions.',
+      price: '₹499',
       image: '',
-      category: 'Soya Chaap'
+      category: 'Premium Range'
     },
     {
       id: 2,
-      name: 'Soya Chaap 2kg',
-      description: 'Tender, juicy Soya Chaap Sticks - ready to grill, marinate, or cook. Hygienically packed for fresh taste.',
-      price: '',
+      name: 'Deluxe Product 1kg',
+      description: 'Premium deluxe version with enhanced features and superior quality. Ideal for professional use.',
+      price: '₹899',
       image: '',
-      category: 'Soya Chaap'
+      category: 'Deluxe Range'
     },
     {
       id: 3,
-      name: 'Punjabi Chaap 2Kg',
-      description: 'Authentic Punjabi Chaap with rich spices and tender texture. Perfect for tandoori, tikka, and gravy dishes.',
-      price: '',
+      name: 'Standard Product 250g',
+      description: 'Quality product at an affordable price. Great for everyday use and family consumption.',
+      price: '₹249',
       image: '',
-      category: 'Punjabi Chaap'
+      category: 'Standard Range'
     },
     {
       id: 4,
-      name: 'Dilli Chaap 2Kg',
-      description: 'Authentic Delhi Chaap with classic street-style flavour. Soft, juicy, and perfect for tandoori or gravy dishes.',
-      price: '',
+      name: 'Special Edition Pack',
+      description: 'Limited edition product with exclusive features and premium packaging. Perfect for gifting.',
+      price: '₹1299',
       image: '',
-      category: 'Dilli Chaap'
-    },
-    {
-      id: 5,
-      name: 'Soya Tofu',
-      description: 'High-protein, fresh Soya Tofu with a smooth texture and mild taste. Ideal for stir-fries, salads, curries, and healthy daily meals.',
-      price: '',
-      image: '',
-      category: 'Tofu'
-    },
-    {
-      id: 6,
-      name: 'Masala Tofu',
-      description: 'Ready-to-cook Masala Tofu, seasoned with aromatic spices. Perfect for quick snacks, wraps, and curries.',
-      price: '',
-      image: '',
-      category: 'Tofu'
+      category: 'Special Edition'
     }
   ];
 
   useEffect(() => {
-    setProducts(initialProducts);
+    setProducts(templateProducts);
     
-    // Check screen size
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -83,12 +84,10 @@ export default function CatalogMaker() {
       checkScreenSize();
       window.addEventListener('resize', checkScreenSize);
       
-      // Check dark mode
       const isDark = localStorage.getItem('darkMode') === 'true';
       setDarkMode(isDark);
       updateDarkModeStyles(isDark);
       
-      // Check user
       const checkUser = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         setUser(session?.user || null);
@@ -142,8 +141,25 @@ export default function CatalogMaker() {
     }
   };
 
-  // FIXED AI GENERATION FUNCTION
-  const generateWithAI = async (type = 'descriptions') => {
+  const updateCatalogData = (field, value) => {
+    setCatalogData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const updateContact = (field, value) => {
+    setCatalogData(prev => ({
+      ...prev,
+      contact: {
+        ...prev.contact,
+        [field]: value
+      }
+    }));
+  };
+
+  // AI GENERATION FUNCTION
+  const generateWithAI = async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/generate-catalog', {
@@ -152,39 +168,31 @@ export default function CatalogMaker() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          type: type,
           products: products,
-          companyName: companyName,
-          industry: 'food'
+          companyName: catalogData.companyName,
+          industry: 'general'
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       const data = await response.json();
       
       if (data.success && data.products) {
         setProducts(data.products);
       } else {
-        // Fallback to local generation if AI fails
         generateLocalContent();
       }
     } catch (error) {
       console.error('AI Generation error:', error);
-      // Fallback to local content generation
       generateLocalContent();
     } finally {
       setLoading(false);
     }
   };
 
-  // Local content generation as fallback
   const generateLocalContent = () => {
     const enhancedProducts = products.map(product => ({
       ...product,
-      description: `${product.description} Now with enhanced flavor and premium quality ingredients for the best taste experience.`
+      description: `${product.description} Now with enhanced quality and customer satisfaction guarantee.`
     }));
     setProducts(enhancedProducts);
   };
@@ -194,7 +202,7 @@ export default function CatalogMaker() {
       id: products.length + 1,
       name: 'New Product',
       description: 'Product description will be generated automatically.',
-      price: '',
+      price: '₹0',
       image: '',
       category: 'New Category'
     };
@@ -215,17 +223,17 @@ export default function CatalogMaker() {
     }
   };
 
-  const exportCatalog = () => {
-    const catalogData = {
-      companyName,
-      tagline,
+  // EXPORT AS JSON
+  const exportAsJSON = () => {
+    const exportData = {
+      companyName: catalogData.companyName,
+      tagline: catalogData.tagline,
       products,
-      contactInfo,
+      contact: catalogData.contact,
       generatedAt: new Date().toISOString()
     };
     
-    // Export as JSON
-    const blob = new Blob([JSON.stringify(catalogData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -234,6 +242,71 @@ export default function CatalogMaker() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  // DOWNLOAD AS IMAGE
+  const downloadAsImage = async () => {
+    if (!catalogRef.current || !html2canvas) {
+      alert('Image download feature is loading. Please try again in a moment.');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const canvas = await html2canvas(catalogRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: darkMode ? '#0f172a' : '#ffffff'
+      });
+      
+      const image = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.download = `catalog-${Date.now()}.png`;
+      link.href = image;
+      link.click();
+    } catch (error) {
+      console.error('Error generating image:', error);
+      alert('Error generating image. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // DOWNLOAD AS PDF
+  const downloadAsPDF = async () => {
+    if (!catalogRef.current || !html2canvas || !jsPDF) {
+      alert('PDF download feature is loading. Please try again in a moment.');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const canvas = await html2canvas(catalogRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: darkMode ? '#0f172a' : '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 10;
+      
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.save(`catalog-${Date.now()}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const navigateTo = (path) => {
@@ -262,7 +335,7 @@ export default function CatalogMaker() {
     header: {
       textAlign: 'center',
       padding: isMobile ? '30px 20px' : '50px 20px',
-      background: 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
       borderRadius: '15px',
       marginBottom: '30px',
@@ -270,14 +343,14 @@ export default function CatalogMaker() {
       boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
     },
     companyName: {
-      fontSize: isMobile ? '1.5rem' : '2.5rem',
+      fontSize: isMobile ? '1.8rem' : '3rem',
       fontWeight: '900',
       margin: '10px 0',
       textTransform: 'uppercase',
       letterSpacing: '2px',
     },
     tagline: {
-      fontSize: isMobile ? '0.9rem' : '1.1rem',
+      fontSize: isMobile ? '1rem' : '1.2rem',
       fontWeight: '600',
       opacity: 0.9,
       letterSpacing: '1px',
@@ -303,7 +376,7 @@ export default function CatalogMaker() {
     },
     button: {
       padding: '12px 20px',
-      backgroundColor: '#d4af37',
+      backgroundColor: '#667eea',
       color: 'white',
       border: 'none',
       borderRadius: '8px',
@@ -313,6 +386,28 @@ export default function CatalogMaker() {
       margin: '5px',
       transition: 'all 0.3s ease',
       fontFamily: 'inherit',
+    },
+    tabContainer: {
+      display: 'flex',
+      marginBottom: '20px',
+      borderBottom: `2px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    },
+    tab: {
+      padding: '12px 24px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: '600',
+      borderBottom: '3px solid transparent',
+    },
+    catalogPreview: {
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      border: `2px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      borderRadius: '12px',
+      padding: '30px',
+      marginBottom: '30px',
+      minHeight: '500px',
     },
     productGrid: {
       display: 'grid',
@@ -347,7 +442,7 @@ export default function CatalogMaker() {
       fontWeight: '700',
       marginBottom: '10px',
       color: darkMode ? '#f8fafc' : '#1e293b',
-      borderBottom: `2px solid #d4af37`,
+      borderBottom: `2px solid #667eea`,
       paddingBottom: '5px',
     },
     productDescription: {
@@ -355,6 +450,12 @@ export default function CatalogMaker() {
       fontSize: '0.95rem',
       marginBottom: '15px',
       lineHeight: '1.5',
+    },
+    productPrice: {
+      fontSize: '1.4rem',
+      fontWeight: '900',
+      color: '#667eea',
+      marginBottom: '10px',
     },
     actionButtons: {
       display: 'flex',
@@ -380,7 +481,7 @@ export default function CatalogMaker() {
     categoryTitle: {
       fontSize: '1.8rem',
       fontWeight: '700',
-      color: '#d4af37',
+      color: '#667eea',
       marginBottom: '20px',
       textAlign: 'center',
       textTransform: 'uppercase',
@@ -396,6 +497,83 @@ export default function CatalogMaker() {
     },
   };
 
+  // Catalog Preview Component
+  const CatalogPreview = () => (
+    <div ref={catalogRef} style={styles.catalogPreview}>
+      {/* Header */}
+      <div style={{
+        textAlign: 'center',
+        padding: '40px 20px',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        borderRadius: '12px',
+        marginBottom: '40px'
+      }}>
+        <div style={{fontSize: '3rem', marginBottom: '15px'}}>🏢</div>
+        <h1 style={{fontSize: '2.5rem', fontWeight: '900', margin: '10px 0', textTransform: 'uppercase'}}>
+          {catalogData.companyName}
+        </h1>
+        <div style={{fontSize: '1.2rem', fontWeight: '600', opacity: 0.9}}>
+          {catalogData.tagline}
+        </div>
+      </div>
+
+      {/* Products by Category */}
+      {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
+        <div key={category} style={styles.categorySection}>
+          <h2 style={styles.categoryTitle}>{category}</h2>
+          <div style={styles.productGrid}>
+            {categoryProducts.map((product) => (
+              <div key={product.id} style={styles.productCard}>
+                <div style={styles.productImage}>
+                  {product.image ? (
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                  ) : (
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📦</div>
+                      <span>Product Image</span>
+                    </div>
+                  )}
+                </div>
+
+                <h3 style={styles.productName}>{product.name}</h3>
+                <div style={styles.productPrice}>{product.price}</div>
+                <p style={styles.productDescription}>{product.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {/* Contact Information */}
+      <div style={styles.contactSection}>
+        <h3 style={{ color: '#667eea', marginBottom: '20px', fontSize: '1.5rem' }}>📞 CONTACT US</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <div style={{ fontWeight: '700', marginBottom: '5px' }}>Phone</div>
+            <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{catalogData.contact.phone}</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: '700', marginBottom: '5px' }}>Email</div>
+            <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{catalogData.contact.email}</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: '700', marginBottom: '5px' }}>Address</div>
+            <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{catalogData.contact.address}</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: '700', marginBottom: '5px' }}>Business Hours</div>
+            <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{catalogData.contact.timing}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Head>
@@ -410,168 +588,227 @@ export default function CatalogMaker() {
             <button onClick={() => navigateTo('/')} style={styles.navButton}>🏠 Home</button>
             <button onClick={() => navigateTo('/seo')} style={styles.navButton}>🔍 SEO</button>
             <button onClick={() => navigateTo('/code')} style={styles.navButton}>💻 Code</button>
-            <button onClick={() => navigateTo('/catalog-maker')} style={{...styles.navButton, backgroundColor: '#d4af37', color: 'white'}}>📋 Catalog Maker</button>
+            <button onClick={() => navigateTo('/catalog-maker')} style={{...styles.navButton, backgroundColor: '#667eea', color: 'white'}}>📋 Catalog Maker</button>
           </div>
           <button onClick={toggleDarkMode} style={styles.navButton}>
             {darkMode ? '☀️ Light' : '🌙 Dark'}
           </button>
         </div>
 
-        {/* Catalog Header */}
-        <div style={styles.header}>
-          <div style={{fontSize: '2rem', marginBottom: '10px'}}>👑</div>
-          <h1 style={styles.companyName}>{companyName}</h1>
-          <div style={styles.tagline}>{tagline}</div>
-        </div>
-
-        {/* Control Panel */}
-        <div style={styles.controlPanel}>
-          <h2 style={{ marginBottom: '20px', color: darkMode ? '#f8fafc' : '#1e293b', textAlign: 'center' }}>🎨 Customize Your Catalog</h2>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Company Name</label>
-              <input
-                type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                style={styles.input}
-                placeholder="Enter company name"
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Tagline</label>
-              <input
-                type="text"
-                value={tagline}
-                onChange={(e) => setTagline(e.target.value)}
-                style={styles.input}
-                placeholder="Company tagline"
-              />
-            </div>
-          </div>
-
-          <div style={{ marginTop: '25px', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button 
-              onClick={() => generateWithAI('descriptions')} 
-              disabled={loading} 
-              style={{...styles.button, opacity: loading ? 0.7 : 1}}
-            >
-              {loading ? '⚡ Generating...' : '🤖 AI Generate Content'}
-            </button>
-            <button onClick={addNewProduct} style={{...styles.button, backgroundColor: '#10b981'}}>
-              ➕ Add Product
-            </button>
-            <button onClick={exportCatalog} style={{...styles.button, backgroundColor: '#8b5cf6'}}>
-              💾 Export Catalog
-            </button>
-          </div>
-        </div>
-
-        {/* Products by Category */}
-        {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
-          <div key={category} style={styles.categorySection}>
-            <h2 style={styles.categoryTitle}>{category}</h2>
-            <div style={styles.productGrid}>
-              {categoryProducts.map((product) => (
-                <div key={product.id} style={styles.productCard}>
-                  {/* Product Image Upload */}
-                  <div style={styles.productImage}>
-                    {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-                      />
-                    ) : (
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🖼️</div>
-                        <span>Product Image</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageUpload(e, product.id)}
-                          style={{ display: 'none' }}
-                          id={`imageUpload-${product.id}`}
-                        />
-                        <label 
-                          htmlFor={`imageUpload-${product.id}`}
-                          style={{
-                            display: 'inline-block',
-                            marginTop: '8px',
-                            padding: '6px 12px',
-                            backgroundColor: '#d4af37',
-                            color: 'white',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                        >
-                          Upload Image
-                        </label>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Details */}
-                  <input
-                    type="text"
-                    value={product.name}
-                    onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
-                    style={{...styles.input, fontSize: '1.3rem', fontWeight: '700', border: 'none', padding: '0', marginBottom: '10px'}}
-                  />
-                  
-                  <textarea
-                    value={product.description}
-                    onChange={(e) => updateProduct(product.id, 'description', e.target.value)}
-                    style={{...styles.input, minHeight: '80px', resize: 'vertical', fontSize: '0.95rem'}}
-                    placeholder="Product description"
-                  />
-
-                  <input
-                    type="text"
-                    value={product.category}
-                    onChange={(e) => updateProduct(product.id, 'category', e.target.value)}
-                    style={{...styles.input, fontSize: '0.9rem', fontStyle: 'italic'}}
-                    placeholder="Product category"
-                  />
-
-                  {/* Action Buttons */}
-                  <div style={styles.actionButtons}>
-                    <button 
-                      onClick={() => removeProduct(product.id)}
-                      style={{...styles.button, backgroundColor: '#ef4444', padding: '8px 16px', fontSize: '12px'}}
-                    >
-                      🗑️ Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {/* Contact Information */}
-        <div style={styles.contactSection}>
-          <h3 style={{ color: '#d4af37', marginBottom: '20px', fontSize: '1.5rem' }}>📞 ORDER NOW</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px', marginBottom: '20px' }}>
-            <div>
-              <div style={{ fontWeight: '700', marginBottom: '5px' }}>Phone</div>
-              <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{contactInfo.phone}</div>
-            </div>
-            <div>
-              <div style={{ fontWeight: '700', marginBottom: '5px' }}>Instagram</div>
-              <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{contactInfo.instagram}</div>
-            </div>
-            <div>
-              <div style={{ fontWeight: '700', marginBottom: '5px' }}>Timing</div>
-              <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{contactInfo.timing}</div>
-            </div>
-          </div>
-          <button style={{...styles.button, fontSize: '1.1rem', padding: '15px 30px'}}>
-            📞 CALL TO ORDER
+        {/* Tabs */}
+        <div style={styles.tabContainer}>
+          <button 
+            onClick={() => setActiveTab('edit')} 
+            style={{
+              ...styles.tab,
+              borderBottomColor: activeTab === 'edit' ? '#667eea' : 'transparent',
+              color: activeTab === 'edit' ? '#667eea' : (darkMode ? '#cbd5e1' : '#64748b')
+            }}
+          >
+            ✏️ Edit Catalog
+          </button>
+          <button 
+            onClick={() => setActiveTab('preview')} 
+            style={{
+              ...styles.tab,
+              borderBottomColor: activeTab === 'preview' ? '#667eea' : 'transparent',
+              color: activeTab === 'preview' ? '#667eea' : (darkMode ? '#cbd5e1' : '#64748b')
+            }}
+          >
+            👁️ Preview
           </button>
         </div>
+
+        {activeTab === 'edit' ? (
+          <>
+            {/* Control Panel */}
+            <div style={styles.controlPanel}>
+              <h2 style={{ marginBottom: '20px', color: darkMode ? '#f8fafc' : '#1e293b', textAlign: 'center' }}>🎨 Customize Your Catalog</h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Company Name</label>
+                  <input
+                    type="text"
+                    value={catalogData.companyName}
+                    onChange={(e) => updateCatalogData('companyName', e.target.value)}
+                    style={styles.input}
+                    placeholder="Enter company name"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Tagline</label>
+                  <input
+                    type="text"
+                    value={catalogData.tagline}
+                    onChange={(e) => updateCatalogData('tagline', e.target.value)}
+                    style={styles.input}
+                    placeholder="Company tagline"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Phone</label>
+                  <input
+                    type="text"
+                    value={catalogData.contact.phone}
+                    onChange={(e) => updateContact('phone', e.target.value)}
+                    style={styles.input}
+                    placeholder="Contact phone"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Email</label>
+                  <input
+                    type="text"
+                    value={catalogData.contact.email}
+                    onChange={(e) => updateContact('email', e.target.value)}
+                    style={styles.input}
+                    placeholder="Contact email"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Address</label>
+                  <input
+                    type="text"
+                    value={catalogData.contact.address}
+                    onChange={(e) => updateContact('address', e.target.value)}
+                    style={styles.input}
+                    placeholder="Business address"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Business Hours</label>
+                  <input
+                    type="text"
+                    value={catalogData.contact.timing}
+                    onChange={(e) => updateContact('timing', e.target.value)}
+                    style={styles.input}
+                    placeholder="Business timing"
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginTop: '25px', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button 
+                  onClick={generateWithAI} 
+                  disabled={loading} 
+                  style={{...styles.button, opacity: loading ? 0.7 : 1}}
+                >
+                  {loading ? '⚡ Generating...' : '🤖 AI Generate Content'}
+                </button>
+                <button onClick={addNewProduct} style={{...styles.button, backgroundColor: '#10b981'}}>
+                  ➕ Add Product
+                </button>
+                <button onClick={exportAsJSON} style={{...styles.button, backgroundColor: '#8b5cf6'}}>
+                  💾 Export JSON
+                </button>
+                <button onClick={downloadAsImage} style={{...styles.button, backgroundColor: '#f59e0b'}}>
+                  🖼️ Download Image
+                </button>
+                <button onClick={downloadAsPDF} style={{...styles.button, backgroundColor: '#ef4444'}}>
+                  📄 Download PDF
+                </button>
+              </div>
+            </div>
+
+            {/* Products Editor */}
+            <h2 style={{ marginBottom: '20px', color: darkMode ? '#f8fafc' : '#1e293b', textAlign: 'center' }}>
+              📦 Manage Products ({products.length})
+            </h2>
+
+            {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
+              <div key={category} style={styles.categorySection}>
+                <h3 style={{...styles.categoryTitle, fontSize: '1.5rem'}}>{category}</h3>
+                <div style={styles.productGrid}>
+                  {categoryProducts.map((product) => (
+                    <div key={product.id} style={styles.productCard}>
+                      {/* Product Image Upload */}
+                      <div style={styles.productImage}>
+                        {product.image ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                          />
+                        ) : (
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🖼️</div>
+                            <span>Product Image</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, product.id)}
+                              style={{ display: 'none' }}
+                              id={`imageUpload-${product.id}`}
+                            />
+                            <label 
+                              htmlFor={`imageUpload-${product.id}`}
+                              style={{
+                                display: 'inline-block',
+                                marginTop: '8px',
+                                padding: '6px 12px',
+                                backgroundColor: '#667eea',
+                                color: 'white',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              Upload Image
+                            </label>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Product Details Editor */}
+                      <input
+                        type="text"
+                        value={product.name}
+                        onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
+                        style={{...styles.input, fontSize: '1.3rem', fontWeight: '700', border: 'none', padding: '0', marginBottom: '10px'}}
+                      />
+                      
+                      <input
+                        type="text"
+                        value={product.price}
+                        onChange={(e) => updateProduct(product.id, 'price', e.target.value)}
+                        style={{...styles.input, fontSize: '1.4rem', fontWeight: '900', color: '#667eea', border: 'none', padding: '0', marginBottom: '10px'}}
+                        placeholder="Product price"
+                      />
+                      
+                      <textarea
+                        value={product.description}
+                        onChange={(e) => updateProduct(product.id, 'description', e.target.value)}
+                        style={{...styles.input, minHeight: '80px', resize: 'vertical', fontSize: '0.95rem'}}
+                        placeholder="Product description"
+                      />
+
+                      <input
+                        type="text"
+                        value={product.category}
+                        onChange={(e) => updateProduct(product.id, 'category', e.target.value)}
+                        style={{...styles.input, fontSize: '0.9rem', fontStyle: 'italic'}}
+                        placeholder="Product category"
+                      />
+
+                      {/* Action Buttons */}
+                      <div style={styles.actionButtons}>
+                        <button 
+                          onClick={() => removeProduct(product.id)}
+                          style={{...styles.button, backgroundColor: '#ef4444', padding: '8px 16px', fontSize: '12px'}}
+                        >
+                          🗑️ Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <CatalogPreview />
+        )}
 
         {/* Footer */}
         <footer style={{
@@ -586,4 +823,4 @@ export default function CatalogMaker() {
       </div>
     </>
   );
-                              }
+                         }
