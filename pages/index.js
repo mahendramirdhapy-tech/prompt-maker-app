@@ -785,6 +785,14 @@ export default function Home() {
               <button onClick={() => navigateTo('/audio')} style={styles.navLink(router.pathname === '/audio')}>
                 🎵 Audio Tool
               </button>
+               // pages/index.js में navigation section में यह add करें
+              <button 
+                      onClick={() => navigateTo('/catalog-maker')} 
+                      style={styles.navLink(router.pathname === '/catalog-maker')}
+               >
+               📋 Catalog Maker
+               </button>
+                  
               <button onClick={() => navigateTo('/prompts')} style={styles.navLink(router.pathname === '/prompts')}>
                 📚 Library
               </button>
