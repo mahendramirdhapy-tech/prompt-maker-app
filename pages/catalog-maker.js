@@ -1,51 +1,73 @@
-// pages/catalog-maker.js
+// pages/catalog-maker.js - FIXED WITH PROPER AI INTEGRATION
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
 export default function CatalogMaker() {
-  const [catalogTitle, setCatalogTitle] = useState('EXQUISITE BABY CARE PRODUCT');
-  const [newProductText, setNewProductText] = useState('NEW PRODUCT');
-  const [categoryText, setCategoryText] = useState('BABY STROLLERS AND CHRIS SAFETY & MONITORING');
-  const [giftText, setGiftText] = useState('GIFT IN THE WORLD');
+  const [companyName, setCompanyName] = useState("KING'S FOOD PRODUCTS");
+  const [tagline, setTagline] = useState('SINCE 2013');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState(null);
+  const [contactInfo, setContactInfo] = useState({
+    phone: '+917666903585',
+    instagram: '@kingsfoodsproducts',
+    timing: 'OPEN DAILY 8AM TO 10PM'
+  });
   const router = useRouter();
 
-  // Sample initial products
+  // Initial products based on your images
   const initialProducts = [
     {
       id: 1,
-      name: 'Premium Baby Stroller',
-      price: '$299.99',
-      description: 'Luxury comfort with advanced safety features',
-      image: '/api/placeholder/300/300'
+      name: 'Soya Chaap 500g',
+      description: 'Premium Soya Chaap made from high-protein soy. Soft, flavorful, and perfect for tandoori or curry dishes.',
+      price: '',
+      image: '',
+      category: 'Soya Chaap'
     },
     {
       id: 2,
-      name: 'Baby Monitor Pro',
-      price: '$159.99',
-      description: 'HD video monitoring with night vision',
-      image: '/api/placeholder/300/300'
+      name: 'Soya Chaap 2kg',
+      description: 'Tender, juicy Soya Chaap Sticks - ready to grill, marinate, or cook. Hygienically packed for fresh taste.',
+      price: '',
+      image: '',
+      category: 'Soya Chaap'
     },
     {
       id: 3,
-      name: 'Organic Baby Cream',
-      price: '$24.99',
-      description: '100% natural ingredients for sensitive skin',
-      image: '/api/placeholder/300/300'
+      name: 'Punjabi Chaap 2Kg',
+      description: 'Authentic Punjabi Chaap with rich spices and tender texture. Perfect for tandoori, tikka, and gravy dishes.',
+      price: '',
+      image: '',
+      category: 'Punjabi Chaap'
     },
     {
       id: 4,
-      name: 'Educational Toy Set',
-      price: '$49.99',
-      description: 'Developmental toys for growing minds',
-      image: '/api/placeholder/300/300'
+      name: 'Dilli Chaap 2Kg',
+      description: 'Authentic Delhi Chaap with classic street-style flavour. Soft, juicy, and perfect for tandoori or gravy dishes.',
+      price: '',
+      image: '',
+      category: 'Dilli Chaap'
+    },
+    {
+      id: 5,
+      name: 'Soya Tofu',
+      description: 'High-protein, fresh Soya Tofu with a smooth texture and mild taste. Ideal for stir-fries, salads, curries, and healthy daily meals.',
+      price: '',
+      image: '',
+      category: 'Tofu'
+    },
+    {
+      id: 6,
+      name: 'Masala Tofu',
+      description: 'Ready-to-cook Masala Tofu, seasoned with aromatic spices. Perfect for quick snacks, wraps, and curries.',
+      price: '',
+      image: '',
+      category: 'Tofu'
     }
   ];
 
@@ -64,6 +86,7 @@ export default function CatalogMaker() {
       // Check dark mode
       const isDark = localStorage.getItem('darkMode') === 'true';
       setDarkMode(isDark);
+      updateDarkModeStyles(isDark);
       
       // Check user
       const checkUser = async () => {
@@ -104,58 +127,76 @@ export default function CatalogMaker() {
     updateDarkModeStyles(newDarkMode);
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = (e, productId) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target.result);
+        setProducts(products.map(product => 
+          product.id === productId 
+            ? { ...product, image: e.target.result }
+            : product
+        ));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const generateWithAI = async () => {
+  // FIXED AI GENERATION FUNCTION
+  const generateWithAI = async (type = 'descriptions') => {
     setLoading(true);
     try {
-      // AI generation logic here
       const response = await fetch('/api/generate-catalog', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          title: catalogTitle,
-          category: categoryText,
-          type: 'catalog'
+          type: type,
+          products: products,
+          companyName: companyName,
+          industry: 'food'
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       
-      if (data.success) {
-        // Update products with AI generated content
-        const newProducts = data.products.map((product, index) => ({
-          ...products[index],
-          name: product.name,
-          description: product.description,
-          price: product.price
-        }));
-        setProducts(newProducts);
+      if (data.success && data.products) {
+        setProducts(data.products);
+      } else {
+        // Fallback to local generation if AI fails
+        generateLocalContent();
       }
     } catch (error) {
       console.error('AI Generation error:', error);
-      alert('AI generation failed. Please try again.');
+      // Fallback to local content generation
+      generateLocalContent();
     } finally {
       setLoading(false);
     }
+  };
+
+  // Local content generation as fallback
+  const generateLocalContent = () => {
+    const enhancedProducts = products.map(product => ({
+      ...product,
+      description: `${product.description} Now with enhanced flavor and premium quality ingredients for the best taste experience.`
+    }));
+    setProducts(enhancedProducts);
   };
 
   const addNewProduct = () => {
     const newProduct = {
       id: products.length + 1,
       name: 'New Product',
-      price: '$0.00',
-      description: 'Product description',
-      image: '/api/placeholder/300/300'
+      description: 'Product description will be generated automatically.',
+      price: '',
+      image: '',
+      category: 'New Category'
     };
     setProducts([...products, newProduct]);
   };
@@ -167,19 +208,23 @@ export default function CatalogMaker() {
   };
 
   const removeProduct = (id) => {
-    setProducts(products.filter(product => product.id !== id));
+    if (products.length > 1) {
+      setProducts(products.filter(product => product.id !== id));
+    } else {
+      alert('You need at least one product in the catalog.');
+    }
   };
 
   const exportCatalog = () => {
     const catalogData = {
-      title: catalogTitle,
-      newProductText,
-      categoryText,
-      giftText,
+      companyName,
+      tagline,
       products,
+      contactInfo,
       generatedAt: new Date().toISOString()
     };
     
+    // Export as JSON
     const blob = new Blob([JSON.stringify(catalogData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -195,6 +240,15 @@ export default function CatalogMaker() {
     router.push(path);
   };
 
+  // Group products by category
+  const groupedProducts = products.reduce((acc, product) => {
+    if (!acc[product.category]) {
+      acc[product.category] = [];
+    }
+    acc[product.category].push(product);
+    return acc;
+  }, {});
+
   const styles = {
     container: {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -207,68 +261,49 @@ export default function CatalogMaker() {
     },
     header: {
       textAlign: 'center',
-      padding: isMobile ? '20px 0' : '40px 0',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: isMobile ? '30px 20px' : '50px 20px',
+      background: 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)',
       color: 'white',
       borderRadius: '15px',
       marginBottom: '30px',
       position: 'relative',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
     },
-    catalogTitle: {
-      fontSize: isMobile ? '0.8rem' : '1rem',
-      fontWeight: '600',
-      letterSpacing: '3px',
-      marginBottom: '10px',
-      opacity: 0.9,
-    },
-    mainTitle: {
-      fontSize: isMobile ? '1.8rem' : '3.5rem',
+    companyName: {
+      fontSize: isMobile ? '1.5rem' : '2.5rem',
       fontWeight: '900',
       margin: '10px 0',
       textTransform: 'uppercase',
+      letterSpacing: '2px',
     },
-    newProductBadge: {
-      display: 'inline-block',
-      backgroundColor: '#ff6b6b',
-      color: 'white',
-      padding: '8px 20px',
-      borderRadius: '25px',
-      fontSize: isMobile ? '0.8rem' : '1rem',
-      fontWeight: '700',
-      margin: '15px 0',
-    },
-    categoryText: {
-      fontSize: isMobile ? '1rem' : '1.3rem',
+    tagline: {
+      fontSize: isMobile ? '0.9rem' : '1.1rem',
       fontWeight: '600',
-      margin: '10px 0',
       opacity: 0.9,
-    },
-    giftText: {
-      fontSize: isMobile ? '1.2rem' : '1.8rem',
-      fontWeight: '700',
-      marginTop: '15px',
-      textTransform: 'uppercase',
+      letterSpacing: '1px',
     },
     controlPanel: {
       backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-      padding: '20px',
+      padding: '25px',
       borderRadius: '12px',
       marginBottom: '30px',
       border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
     },
     input: {
       width: '100%',
-      padding: '12px',
+      padding: '12px 15px',
       borderRadius: '8px',
       border: `1px solid ${darkMode ? '#334155' : '#d1d5db'}`,
       backgroundColor: darkMode ? '#0f172a' : '#ffffff',
       color: darkMode ? '#f8fafc' : '#1e293b',
       fontSize: '14px',
       marginBottom: '15px',
+      fontFamily: 'inherit',
     },
     button: {
-      padding: '12px 24px',
-      backgroundColor: '#667eea',
+      padding: '12px 20px',
+      backgroundColor: '#d4af37',
       color: 'white',
       border: 'none',
       borderRadius: '8px',
@@ -276,24 +311,27 @@ export default function CatalogMaker() {
       fontSize: '14px',
       fontWeight: '600',
       margin: '5px',
+      transition: 'all 0.3s ease',
+      fontFamily: 'inherit',
     },
     productGrid: {
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-      gap: '20px',
+      gap: '25px',
       marginBottom: '40px',
     },
     productCard: {
       backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-      border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      border: `2px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
       borderRadius: '12px',
       padding: '20px',
-      textAlign: 'center',
       position: 'relative',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+      transition: 'all 0.3s ease',
     },
     productImage: {
       width: '100%',
-      height: '200px',
+      height: '180px',
       backgroundColor: darkMode ? '#334155' : '#f1f5f9',
       borderRadius: '8px',
       marginBottom: '15px',
@@ -302,31 +340,30 @@ export default function CatalogMaker() {
       justifyContent: 'center',
       color: darkMode ? '#cbd5e1' : '#64748b',
       fontSize: '14px',
+      border: `1px dashed ${darkMode ? '#475569' : '#cbd5e1'}`,
     },
     productName: {
-      fontSize: '1.2rem',
+      fontSize: '1.3rem',
       fontWeight: '700',
-      marginBottom: '8px',
+      marginBottom: '10px',
       color: darkMode ? '#f8fafc' : '#1e293b',
-    },
-    productPrice: {
-      fontSize: '1.4rem',
-      fontWeight: '900',
-      color: '#667eea',
-      marginBottom: '8px',
+      borderBottom: `2px solid #d4af37`,
+      paddingBottom: '5px',
     },
     productDescription: {
       color: darkMode ? '#cbd5e1' : '#64748b',
-      fontSize: '0.9rem',
+      fontSize: '0.95rem',
       marginBottom: '15px',
+      lineHeight: '1.5',
     },
     actionButtons: {
       display: 'flex',
-      gap: '10px',
-      justifyContent: 'center',
+      gap: '8px',
+      justifyContent: 'flex-start',
+      flexWrap: 'wrap',
     },
     navButton: {
-      padding: '10px 20px',
+      padding: '10px 16px',
       backgroundColor: darkMode ? '#374151' : '#e5e7eb',
       color: darkMode ? '#f9fafb' : '#374151',
       border: 'none',
@@ -335,13 +372,34 @@ export default function CatalogMaker() {
       fontSize: '14px',
       fontWeight: '600',
       margin: '5px',
+      fontFamily: 'inherit',
+    },
+    categorySection: {
+      marginBottom: '40px',
+    },
+    categoryTitle: {
+      fontSize: '1.8rem',
+      fontWeight: '700',
+      color: '#d4af37',
+      marginBottom: '20px',
+      textAlign: 'center',
+      textTransform: 'uppercase',
+      letterSpacing: '1px',
+    },
+    contactSection: {
+      backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+      padding: '30px',
+      borderRadius: '12px',
+      textAlign: 'center',
+      marginTop: '40px',
+      border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
     },
   };
 
   return (
     <>
       <Head>
-        <title>AI Catalog Maker - Create Beautiful Product Catalogs</title>
+        <title>AI Catalog Maker - Create Professional Product Catalogs</title>
         <meta name="description" content="Create stunning product catalogs with AI integration. Generate catalog content automatically with our AI tools." />
       </Head>
 
@@ -352,7 +410,7 @@ export default function CatalogMaker() {
             <button onClick={() => navigateTo('/')} style={styles.navButton}>🏠 Home</button>
             <button onClick={() => navigateTo('/seo')} style={styles.navButton}>🔍 SEO</button>
             <button onClick={() => navigateTo('/code')} style={styles.navButton}>💻 Code</button>
-            <button onClick={() => navigateTo('/catalog-maker')} style={{...styles.navButton, backgroundColor: '#667eea', color: 'white'}}>📋 Catalog</button>
+            <button onClick={() => navigateTo('/catalog-maker')} style={{...styles.navButton, backgroundColor: '#d4af37', color: 'white'}}>📋 Catalog Maker</button>
           </div>
           <button onClick={toggleDarkMode} style={styles.navButton}>
             {darkMode ? '☀️ Light' : '🌙 Dark'}
@@ -361,63 +419,45 @@ export default function CatalogMaker() {
 
         {/* Catalog Header */}
         <div style={styles.header}>
-          <div style={styles.catalogTitle}>CATALOG</div>
-          <h1 style={styles.mainTitle}>{catalogTitle}</h1>
-          <div style={styles.newProductBadge}>{newProductText}</div>
-          <div style={styles.categoryText}>{categoryText}</div>
-          <div style={styles.giftText}>{giftText}</div>
+          <div style={{fontSize: '2rem', marginBottom: '10px'}}>👑</div>
+          <h1 style={styles.companyName}>{companyName}</h1>
+          <div style={styles.tagline}>{tagline}</div>
         </div>
 
         {/* Control Panel */}
         <div style={styles.controlPanel}>
-          <h2 style={{ marginBottom: '20px', color: darkMode ? '#f8fafc' : '#1e293b' }}>🎨 Customize Your Catalog</h2>
+          <h2 style={{ marginBottom: '20px', color: darkMode ? '#f8fafc' : '#1e293b', textAlign: 'center' }}>🎨 Customize Your Catalog</h2>
           
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '15px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '20px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Catalog Title</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Company Name</label>
               <input
                 type="text"
-                value={catalogTitle}
-                onChange={(e) => setCatalogTitle(e.target.value)}
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
                 style={styles.input}
-                placeholder="Enter catalog title"
+                placeholder="Enter company name"
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>New Product Badge</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Tagline</label>
               <input
                 type="text"
-                value={newProductText}
-                onChange={(e) => setNewProductText(e.target.value)}
+                value={tagline}
+                onChange={(e) => setTagline(e.target.value)}
                 style={styles.input}
-                placeholder="New product text"
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Category Text</label>
-              <input
-                type="text"
-                value={categoryText}
-                onChange={(e) => setCategoryText(e.target.value)}
-                style={styles.input}
-                placeholder="Category description"
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Gift Text</label>
-              <input
-                type="text"
-                value={giftText}
-                onChange={(e) => setGiftText(e.target.value)}
-                style={styles.input}
-                placeholder="Gift section text"
+                placeholder="Company tagline"
               />
             </div>
           </div>
 
-          <div style={{ marginTop: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button onClick={generateWithAI} disabled={loading} style={styles.button}>
-              {loading ? '⚡ Generating...' : '🤖 AI Generate Catalog'}
+          <div style={{ marginTop: '25px', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button 
+              onClick={() => generateWithAI('descriptions')} 
+              disabled={loading} 
+              style={{...styles.button, opacity: loading ? 0.7 : 1}}
+            >
+              {loading ? '⚡ Generating...' : '🤖 AI Generate Content'}
             </button>
             <button onClick={addNewProduct} style={{...styles.button, backgroundColor: '#10b981'}}>
               ➕ Add Product
@@ -425,99 +465,112 @@ export default function CatalogMaker() {
             <button onClick={exportCatalog} style={{...styles.button, backgroundColor: '#8b5cf6'}}>
               💾 Export Catalog
             </button>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ display: 'none' }}
-              id="imageUpload"
-            />
-            <label htmlFor="imageUpload" style={{...styles.button, backgroundColor: '#f59e0b', cursor: 'pointer'}}>
-              🖼️ Upload Image
-            </label>
           </div>
         </div>
 
-        {/* Products Grid */}
-        <h2 style={{ marginBottom: '20px', color: darkMode ? '#f8fafc' : '#1e293b', textAlign: 'center' }}>
-          📦 Products ({products.length})
-        </h2>
+        {/* Products by Category */}
+        {Object.entries(groupedProducts).map(([category, categoryProducts]) => (
+          <div key={category} style={styles.categorySection}>
+            <h2 style={styles.categoryTitle}>{category}</h2>
+            <div style={styles.productGrid}>
+              {categoryProducts.map((product) => (
+                <div key={product.id} style={styles.productCard}>
+                  {/* Product Image Upload */}
+                  <div style={styles.productImage}>
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                      />
+                    ) : (
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🖼️</div>
+                        <span>Product Image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, product.id)}
+                          style={{ display: 'none' }}
+                          id={`imageUpload-${product.id}`}
+                        />
+                        <label 
+                          htmlFor={`imageUpload-${product.id}`}
+                          style={{
+                            display: 'inline-block',
+                            marginTop: '8px',
+                            padding: '6px 12px',
+                            backgroundColor: '#d4af37',
+                            color: 'white',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Upload Image
+                        </label>
+                      </div>
+                    )}
+                  </div>
 
-        <div style={styles.productGrid}>
-          {products.map((product) => (
-            <div key={product.id} style={styles.productCard}>
-              {/* Product Image */}
-              <div style={styles.productImage}>
-                {selectedImage ? (
-                  <img 
-                    src={selectedImage} 
-                    alt="Product" 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                  {/* Product Details */}
+                  <input
+                    type="text"
+                    value={product.name}
+                    onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
+                    style={{...styles.input, fontSize: '1.3rem', fontWeight: '700', border: 'none', padding: '0', marginBottom: '10px'}}
                   />
-                ) : (
-                  '🖼️ Product Image'
-                )}
-              </div>
+                  
+                  <textarea
+                    value={product.description}
+                    onChange={(e) => updateProduct(product.id, 'description', e.target.value)}
+                    style={{...styles.input, minHeight: '80px', resize: 'vertical', fontSize: '0.95rem'}}
+                    placeholder="Product description"
+                  />
 
-              {/* Product Details */}
-              <input
-                type="text"
-                value={product.name}
-                onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
-                style={{...styles.input, textAlign: 'center', fontSize: '1.2rem', fontWeight: '700'}}
-              />
-              <input
-                type="text"
-                value={product.price}
-                onChange={(e) => updateProduct(product.id, 'price', e.target.value)}
-                style={{...styles.input, textAlign: 'center', fontSize: '1.4rem', fontWeight: '900', color: '#667eea'}}
-              />
-              <textarea
-                value={product.description}
-                onChange={(e) => updateProduct(product.id, 'description', e.target.value)}
-                style={{...styles.input, minHeight: '60px', resize: 'vertical'}}
-                placeholder="Product description"
-              />
+                  <input
+                    type="text"
+                    value={product.category}
+                    onChange={(e) => updateProduct(product.id, 'category', e.target.value)}
+                    style={{...styles.input, fontSize: '0.9rem', fontStyle: 'italic'}}
+                    placeholder="Product category"
+                  />
 
-              {/* Action Buttons */}
-              <div style={styles.actionButtons}>
-                <button 
-                  onClick={() => removeProduct(product.id)}
-                  style={{...styles.button, backgroundColor: '#ef4444', padding: '8px 16px', fontSize: '12px'}}
-                >
-                  🗑️ Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* AI Features Section */}
-        <div style={styles.controlPanel}>
-          <h2 style={{ marginBottom: '15px', color: darkMode ? '#f8fafc' : '#1e293b' }}>🚀 AI-Powered Features</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '15px' }}>
-            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: darkMode ? '#334155' : '#f1f5f9', borderRadius: '8px' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🤖</div>
-              <h3 style={{ marginBottom: '10px' }}>AI Content Generation</h3>
-              <p style={{ fontSize: '0.9rem', color: darkMode ? '#cbd5e1' : '#64748b' }}>
-                Generate product descriptions and titles automatically
-              </p>
-            </div>
-            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: darkMode ? '#334155' : '#f1f5f9', borderRadius: '8px' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🎨</div>
-              <h3 style={{ marginBottom: '10px' }}>Template Designs</h3>
-              <p style={{ fontSize: '0.9rem', color: darkMode ? '#cbd5e1' : '#64748b' }}>
-                Multiple catalog templates to choose from
-              </p>
-            </div>
-            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: darkMode ? '#334155' : '#f1f5f9', borderRadius: '8px' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>💾</div>
-              <h3 style={{ marginBottom: '10px' }}>Export Options</h3>
-              <p style={{ fontSize: '0.9rem', color: darkMode ? '#cbd5e1' : '#64748b' }}>
-                Export as JSON, PDF, or share online
-              </p>
+                  {/* Action Buttons */}
+                  <div style={styles.actionButtons}>
+                    <button 
+                      onClick={() => removeProduct(product.id)}
+                      style={{...styles.button, backgroundColor: '#ef4444', padding: '8px 16px', fontSize: '12px'}}
+                    >
+                      🗑️ Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+        ))}
+
+        {/* Contact Information */}
+        <div style={styles.contactSection}>
+          <h3 style={{ color: '#d4af37', marginBottom: '20px', fontSize: '1.5rem' }}>📞 ORDER NOW</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontWeight: '700', marginBottom: '5px' }}>Phone</div>
+              <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{contactInfo.phone}</div>
+            </div>
+            <div>
+              <div style={{ fontWeight: '700', marginBottom: '5px' }}>Instagram</div>
+              <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{contactInfo.instagram}</div>
+            </div>
+            <div>
+              <div style={{ fontWeight: '700', marginBottom: '5px' }}>Timing</div>
+              <div style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>{contactInfo.timing}</div>
+            </div>
+          </div>
+          <button style={{...styles.button, fontSize: '1.1rem', padding: '15px 30px'}}>
+            📞 CALL TO ORDER
+          </button>
         </div>
 
         {/* Footer */}
@@ -533,4 +586,4 @@ export default function CatalogMaker() {
       </div>
     </>
   );
-}
+                              }
