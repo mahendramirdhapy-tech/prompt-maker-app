@@ -1,6 +1,6 @@
 // pages/index.js
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase.js';
+import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
@@ -58,36 +58,44 @@ export default function Home() {
   // Enhanced responsive detection
   useEffect(() => {
     const checkScreenSize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      // Auto-close mobile menu when switching to desktop
-      if (!mobile && mobileMenuOpen) {
-        setMobileMenuOpen(false);
+      if (typeof window !== 'undefined') {
+        const mobile = window.innerWidth < 768;
+        setIsMobile(mobile);
+        // Auto-close mobile menu when switching to desktop
+        if (!mobile && mobileMenuOpen) {
+          setMobileMenuOpen(false);
+        }
       }
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', checkScreenSize);
+      return () => window.removeEventListener('resize', checkScreenSize);
+    }
   }, [mobileMenuOpen]);
 
   // Enhanced dark mode with professional theme
   useEffect(() => {
-    const isDark = localStorage.getItem('darkMode') === 'true';
-    setDarkMode(isDark);
-    updateDarkModeStyles(isDark);
+    if (typeof window !== 'undefined') {
+      const isDark = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(isDark);
+      updateDarkModeStyles(isDark);
+    }
   }, []);
 
   // Load history from localStorage on component mount
   useEffect(() => {
     const loadHistory = () => {
       try {
-        const savedHistory = localStorage.getItem('promptHistory');
-        if (savedHistory) {
-          const history = JSON.parse(savedHistory);
-          // Sort by timestamp descending (newest first)
-          history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-          setPromptHistory(history);
+        if (typeof window !== 'undefined') {
+          const savedHistory = localStorage.getItem('promptHistory');
+          if (savedHistory) {
+            const history = JSON.parse(savedHistory);
+            // Sort by timestamp descending (newest first)
+            history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            setPromptHistory(history);
+          }
         }
       } catch (error) {
         console.error('Error loading history:', error);
@@ -98,36 +106,48 @@ export default function Home() {
   }, []);
 
   const updateDarkModeStyles = (isDark) => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.style.setProperty('--bg-primary', '#0f172a');
-      root.style.setProperty('--bg-secondary', '#1e293b');
-      root.style.setProperty('--text-primary', '#f8fafc');
-      root.style.setProperty('--text-secondary', '#cbd5e1');
-      root.style.setProperty('--border-color', '#334155');
-    } else {
-      root.style.setProperty('--bg-primary', '#ffffff');
-      root.style.setProperty('--bg-secondary', '#f8fafc');
-      root.style.setProperty('--text-primary', '#1e293b');
-      root.style.setProperty('--text-secondary', '#64748b');
-      root.style.setProperty('--border-color', '#e2e8f0');
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (isDark) {
+        root.style.setProperty('--bg-primary', '#0f172a');
+        root.style.setProperty('--bg-secondary', '#1e293b');
+        root.style.setProperty('--text-primary', '#f8fafc');
+        root.style.setProperty('--text-secondary', '#cbd5e1');
+        root.style.setProperty('--border-color', '#334155');
+      } else {
+        root.style.setProperty('--bg-primary', '#ffffff');
+        root.style.setProperty('--bg-secondary', '#f8fafc');
+        root.style.setProperty('--text-primary', '#1e293b');
+        root.style.setProperty('--text-secondary', '#64748b');
+        root.style.setProperty('--border-color', '#e2e8f0');
+      }
     }
   };
 
-  // Enhanced user initialization
+  // Enhanced user initialization with Supabase
   useEffect(() => {
     const initUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-      
-      // Load usage count
-      const count = parseInt(localStorage.getItem('guestUsage') || '0');
-      setUsageCount(count);
-      
-      // Load cache from localStorage
-      const savedCache = localStorage.getItem('responseCache');
-      if (savedCache) {
-        setResponseCache(new Map(JSON.parse(savedCache)));
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user || null);
+        
+        // Load usage count
+        if (typeof window !== 'undefined') {
+          const count = parseInt(localStorage.getItem('guestUsage') || '0');
+          setUsageCount(count);
+          
+          // Load cache from localStorage
+          const savedCache = localStorage.getItem('responseCache');
+          if (savedCache) {
+            try {
+              setResponseCache(new Map(JSON.parse(savedCache)));
+            } catch (error) {
+              console.error('Error loading cache:', error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing user:', error);
       }
     };
 
@@ -149,7 +169,9 @@ export default function Home() {
   useEffect(() => {
     const saveHistory = () => {
       try {
-        localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
+        }
       } catch (error) {
         console.error('Error saving history:', error);
       }
@@ -174,7 +196,14 @@ export default function Home() {
     }
     
     setResponseCache(newCache);
-    localStorage.setItem('responseCache', JSON.stringify(Array.from(newCache.entries())));
+    
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('responseCache', JSON.stringify(Array.from(newCache.entries())));
+      } catch (error) {
+        console.error('Error saving cache:', error);
+      }
+    }
   };
 
   const getFromCache = (key) => {
@@ -223,7 +252,9 @@ export default function Home() {
   const clearHistory = () => {
     if (confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
       setPromptHistory([]);
-      localStorage.removeItem('promptHistory');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('promptHistory');
+      }
     }
   };
 
@@ -334,17 +365,25 @@ export default function Home() {
       setOutput(result.prompt);
       setUsedModel(result.modelLabel);
 
-      // Save to database
-      await supabase.from('prompts').insert({
-        user_id: user?.id || null,
-        input: input.trim(),
-        output: result.prompt,
-        model_used: result.modelUsed,
-        language,
-        tone,
-        max_tokens: maxTokens,
-        type: 'prompt',
-      });
+      // Save to Supabase database
+      try {
+        const { error } = await supabase.from('prompts').insert({
+          user_id: user?.id || null,
+          input: input.trim(),
+          output: result.prompt,
+          model_used: result.modelUsed,
+          language,
+          tone,
+          max_tokens: maxTokens,
+          type: 'prompt',
+        });
+
+        if (error) {
+          console.error('Error saving to database:', error);
+        }
+      } catch (dbError) {
+        console.error('Database error:', dbError);
+      }
 
       // Add to local history
       addToHistory({
@@ -358,7 +397,7 @@ export default function Home() {
       });
 
       // Update usage for guests
-      if (!user) {
+      if (!user && typeof window !== 'undefined') {
         const newCount = usageCount + 1;
         setUsageCount(newCount);
         localStorage.setItem('guestUsage', newCount.toString());
@@ -391,14 +430,16 @@ export default function Home() {
     }
   };
 
+  // Supabase Login Function
   const handleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { 
+        options: {
           redirectTo: `${window.location.origin}/auth/callback`
-        },
+        }
       });
+      
       if (error) throw error;
     } catch (error) {
       console.error('Login error:', error);
@@ -406,9 +447,16 @@ export default function Home() {
     }
   };
 
+  // Supabase Logout Function
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Logout failed: ' + error.message);
+    }
   };
 
   const exportTxt = () => {
@@ -429,6 +477,7 @@ export default function Home() {
     setFeedbackGiven(rating);
     
     try {
+      // Get the latest prompt ID from Supabase
       const { data: prompts, error } = await supabase
         .from('prompts')
         .select('id')
@@ -460,7 +509,9 @@ export default function Home() {
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', newDarkMode.toString());
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('darkMode', newDarkMode.toString());
+    }
     updateDarkModeStyles(newDarkMode);
   };
 
@@ -495,7 +546,7 @@ export default function Home() {
   // SIMPLE FIXED STYLES
   const styles = {
     container: {
-      fontFamily: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       maxWidth: '1200px',
       margin: '0 auto',
       padding: isMobile ? '12px' : '24px',
@@ -1601,4 +1652,4 @@ export default function Home() {
       </div>
     </>
   );
-                     }
+}
