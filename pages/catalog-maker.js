@@ -1,20 +1,8 @@
-// pages/catalog-maker.js - COMPATIBLE WITH YOUR PACKAGE.JSON
+// pages/catalog-maker.js - NO NEW DEPENDENCIES NEEDED
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-
-// Dynamic imports for optional dependencies
-let html2canvas, jsPDF;
-
-if (typeof window !== 'undefined') {
-  import('html2canvas').then(module => {
-    html2canvas = module.default;
-  });
-  import('jspdf').then(module => {
-    jsPDF = module.default;
-  });
-}
 
 export default function CatalogMaker() {
   const [catalogData, setCatalogData] = useState({
@@ -244,69 +232,146 @@ export default function CatalogMaker() {
     URL.revokeObjectURL(url);
   };
 
-  // DOWNLOAD AS IMAGE
-  const downloadAsImage = async () => {
-    if (!catalogRef.current || !html2canvas) {
-      alert('Image download feature is loading. Please try again in a moment.');
-      return;
-    }
+  // SIMPLE IMAGE DOWNLOAD - Using canvas
+  const downloadAsImage = () => {
+    if (!catalogRef.current) return;
     
     setLoading(true);
     try {
-      const canvas = await html2canvas(catalogRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: darkMode ? '#0f172a' : '#ffffff'
-      });
+      // Create a simple image capture using SVG foreignObject
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${catalogRef.current.scrollWidth}" height="${catalogRef.current.scrollHeight}">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml">
+              ${catalogRef.current.innerHTML}
+            </div>
+          </foreignObject>
+        </svg>
+      `;
       
-      const image = canvas.toDataURL('image/png', 1.0);
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = `catalog-${Date.now()}.png`;
-      link.href = image;
+      link.download = `catalog-${Date.now()}.svg`;
+      link.href = url;
       link.click();
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating image:', error);
-      alert('Error generating image. Please try again.');
+      alert('Image download requires modern browser support. Try JSON export instead.');
     } finally {
       setLoading(false);
     }
   };
 
-  // DOWNLOAD AS PDF
-  const downloadAsPDF = async () => {
-    if (!catalogRef.current || !html2canvas || !jsPDF) {
-      alert('PDF download feature is loading. Please try again in a moment.');
-      return;
-    }
+  // SIMPLE PDF DOWNLOAD - Using print functionality
+  const downloadAsPDF = () => {
+    if (!catalogRef.current) return;
     
     setLoading(true);
     try {
-      const canvas = await html2canvas(catalogRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: darkMode ? '#0f172a' : '#ffffff'
-      });
+      // Create a print-friendly version
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${catalogData.companyName} - Catalog</title>
+            <style>
+              body { 
+                font-family: Arial, sans-serif; 
+                margin: 40px; 
+                color: #333;
+              }
+              .catalog-header {
+                text-align: center;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 40px 20px;
+                border-radius: 12px;
+                margin-bottom: 40px;
+              }
+              .product-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin-bottom: 40px;
+              }
+              .product-card {
+                border: 2px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 20px;
+                background: white;
+              }
+              .product-name {
+                font-size: 1.3rem;
+                font-weight: bold;
+                margin-bottom: 10px;
+                border-bottom: 2px solid #667eea;
+                padding-bottom: 5px;
+              }
+              .product-price {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #667eea;
+                margin-bottom: 10px;
+              }
+              .contact-section {
+                background: #f8fafc;
+                padding: 30px;
+                border-radius: 12px;
+                text-align: center;
+                margin-top: 40px;
+                border: 1px solid #e2e8f0;
+              }
+              @media print {
+                body { margin: 0; }
+                .catalog-header { background: #667eea !important; }
+              }
+            </style>
+          </head>
+          <body>
+            ${catalogRef.current.innerHTML}
+            <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+              Generated by AI Catalog Maker - ${new Date().toLocaleDateString()}
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
       
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 10;
+      // Give it a moment to load then print
+      setTimeout(() => {
+        printWindow.print();
+        setLoading(false);
+      }, 500);
       
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(`catalog-${Date.now()}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
-    } finally {
+      alert('PDF download requires browser print functionality. Try JSON export instead.');
       setLoading(false);
     }
+  };
+
+  // PRINT CATALOG
+  const printCatalog = () => {
+    if (!catalogRef.current) return;
+    
+    const printContent = catalogRef.current.innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = `
+      <div style="padding: 20px; font-family: Arial, sans-serif;">
+        ${printContent}
+        <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
+          Generated by AI Catalog Maker - ${new Date().toLocaleDateString()}
+        </div>
+      </div>
+    `;
+    
+    window.print();
+    document.body.innerHTML = originalContent;
+    window.location.reload();
   };
 
   const navigateTo = (path) => {
@@ -705,8 +770,8 @@ export default function CatalogMaker() {
                 <button onClick={downloadAsImage} style={{...styles.button, backgroundColor: '#f59e0b'}}>
                   🖼️ Download Image
                 </button>
-                <button onClick={downloadAsPDF} style={{...styles.button, backgroundColor: '#ef4444'}}>
-                  📄 Download PDF
+                <button onClick={printCatalog} style={{...styles.button, backgroundColor: '#ef4444'}}>
+                  🖨️ Print Catalog
                 </button>
               </div>
             </div>
@@ -823,4 +888,4 @@ export default function CatalogMaker() {
       </div>
     </>
   );
-                         }
+  }
