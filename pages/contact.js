@@ -80,7 +80,7 @@ export default function ContactUs() {
           {/* Status Messages */}
           {submitStatus === 'success' && (
             <div style={styles.successMessage}>
-              ✅ Thank you! Your message has been received. We will get back to you within 24 hours.
+              ✅ Thank you! Your message has been sent successfully. We will get back to you within 24 hours.
             </div>
           )}
 
@@ -449,7 +449,21 @@ const styles = {
 };
 
 // Responsive design
-if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-  styles.grid.gridTemplateColumns = '1fr 1fr';
-  styles.grid.gap = '40px';
+if (typeof window !== 'undefined') {
+  // Initial check
+  if (window.innerWidth >= 768) {
+    styles.grid.gridTemplateColumns = '1fr 1fr';
+    styles.grid.gap = '40px';
+  }
+
+  // Update on resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      styles.grid.gridTemplateColumns = '1fr 1fr';
+      styles.grid.gap = '40px';
+    } else {
+      styles.grid.gridTemplateColumns = '1fr';
+      styles.grid.gap = '32px';
+    }
+  });
 }
