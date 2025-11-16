@@ -59,110 +59,94 @@ export default function ContactUs() {
         <meta name="description" content="Contact AI Prompt Maker support team. Get help with your account and features." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div style={styles.container}>
+        <div style={styles.contentWrapper}>
           {/* Back Button */}
           <button 
             onClick={() => router.back()} 
-            className="flex items-center text-blue-600 hover:text-blue-800 mb-8 transition duration-200 font-medium"
+            style={styles.backButton}
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back
+            ← Back
           </button>
 
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Contact Us
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div style={styles.header}>
+            <h1 style={styles.title}>Contact Us</h1>
+            <p style={styles.subtitle}>
               Get in touch with our support team. We're here to help you with any questions or concerns.
             </p>
           </div>
 
           {/* Status Messages */}
           {submitStatus === 'success' && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 text-center">
+            <div style={styles.successMessage}>
               ✅ Thank you! Your message has been received. We will get back to you within 24 hours.
             </div>
           )}
 
           {submitStatus === 'error' && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 text-center">
+            <div style={styles.errorMessage}>
               ❌ There was an error sending your message. Please try again.
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div style={styles.grid}>
             {/* Contact Information */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h2>
+            <div style={styles.infoCard}>
+              <h2 style={styles.infoTitle}>Get in Touch</h2>
               
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <span className="text-blue-600 text-xl">📧</span>
-                  </div>
+              <div style={styles.infoList}>
+                <div style={styles.infoItem}>
+                  <span style={styles.infoIcon}>📧</span>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Email</h3>
-                    <p className="text-gray-600">aipromptmakerinfo@gmail.com</p>
+                    <h3 style={styles.infoLabel}>Email</h3>
+                    <p style={styles.infoText}>aipromptmakerinfo@gmail.com</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="bg-green-100 p-3 rounded-lg">
-                    <span className="text-green-600 text-xl">🕒</span>
-                  </div>
+                <div style={styles.infoItem}>
+                  <span style={styles.infoIcon}>🕒</span>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Response Time</h3>
-                    <p className="text-gray-600">Within 24 hours</p>
+                    <h3 style={styles.infoLabel}>Response Time</h3>
+                    <p style={styles.infoText}>Within 24 hours</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="bg-purple-100 p-3 rounded-lg">
-                    <span className="text-purple-600 text-xl">🌐</span>
-                  </div>
+                <div style={styles.infoItem}>
+                  <span style={styles.infoIcon}>🌐</span>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Support Hours</h3>
-                    <p className="text-gray-600">24/7 Customer Support</p>
+                    <h3 style={styles.infoLabel}>Support Hours</h3>
+                    <p style={styles.infoText}>24/7 Customer Support</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="bg-orange-100 p-3 rounded-lg">
-                    <span className="text-orange-600 text-xl">📍</span>
-                  </div>
+                <div style={styles.infoItem}>
+                  <span style={styles.infoIcon}>📍</span>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Location</h3>
-                    <p className="text-gray-600">Remote Team - Global Support</p>
+                    <h3 style={styles.infoLabel}>Location</h3>
+                    <p style={styles.infoText}>Remote Team - Global Support</p>
                   </div>
                 </div>
               </div>
 
               {/* Social Links */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
-                <div className="flex space-x-4">
+              <div style={styles.socialSection}>
+                <h3 style={styles.socialTitle}>Follow Us</h3>
+                <div style={styles.socialIcons}>
                   {['📘', '🐦', '📷', '💼'].map((icon, index) => (
-                    <button
-                      key={index}
-                      className="text-2xl hover:scale-110 transition-transform duration-200"
-                    >
+                    <span key={index} style={styles.socialIcon}>
                       {icon}
-                    </button>
+                    </span>
                   ))}
                 </div>
               </div>
             </div>
 
             {/* Contact Form */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <div style={styles.formCard}>
+              <form onSubmit={handleSubmit} style={styles.form}>
+                <div style={styles.formGroup}>
+                  <label htmlFor="name" style={styles.label}>
                     Full Name *
                   </label>
                   <input
@@ -172,13 +156,13 @@ export default function ContactUs() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                    style={styles.input}
                     placeholder="Enter your full name"
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <div style={styles.formGroup}>
+                  <label htmlFor="email" style={styles.label}>
                     Email Address *
                   </label>
                   <input
@@ -188,13 +172,13 @@ export default function ContactUs() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                    style={styles.input}
                     placeholder="Enter your email address"
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                <div style={styles.formGroup}>
+                  <label htmlFor="subject" style={styles.label}>
                     Subject *
                   </label>
                   <input
@@ -204,13 +188,13 @@ export default function ContactUs() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                    style={styles.input}
                     placeholder="What is this regarding?"
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                <div style={styles.formGroup}>
+                  <label htmlFor="message" style={styles.label}>
                     Message *
                   </label>
                   <textarea
@@ -220,7 +204,7 @@ export default function ContactUs() {
                     onChange={handleChange}
                     required
                     rows="6"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-vertical"
+                    style={styles.textarea}
                     placeholder="Tell us how we can help you..."
                   />
                 </div>
@@ -228,29 +212,223 @@ export default function ContactUs() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white transition duration-200 ${
-                    isSubmitting
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
-                  }`}
+                  style={isSubmitting ? styles.submitButtonDisabled : styles.submitButton}
                 >
-                  {isSubmitting ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Sending...
-                    </span>
-                  ) : (
-                    'Send Message'
-                  )}
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .container {
+          margin: 0;
+          padding: 0;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+      `}</style>
     </>
   );
+}
+
+const styles = {
+  container: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+    padding: '20px 0',
+  },
+  contentWrapper: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '0 20px',
+  },
+  backButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    color: '#2563eb',
+    background: 'none',
+    border: 'none',
+    fontSize: '16px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    marginBottom: '30px',
+    padding: '10px 0',
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: '50px',
+  },
+  title: {
+    fontSize: '3rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: '15px',
+    background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  },
+  subtitle: {
+    color: '#64748b',
+    fontSize: '1.2rem',
+    maxWidth: '600px',
+    margin: '0 auto',
+    lineHeight: '1.6',
+  },
+  successMessage: {
+    backgroundColor: '#dcfce7',
+    border: '1px solid #22c55e',
+    color: '#166534',
+    padding: '16px',
+    borderRadius: '8px',
+    marginBottom: '24px',
+    textAlign: 'center',
+  },
+  errorMessage: {
+    backgroundColor: '#fecaca',
+    border: '1px solid #ef4444',
+    color: '#dc2626',
+    padding: '16px',
+    borderRadius: '8px',
+    marginBottom: '24px',
+    textAlign: 'center',
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: '32px',
+  },
+  infoCard: {
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    padding: '32px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  },
+  formCard: {
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    padding: '32px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  },
+  infoTitle: {
+    fontSize: '1.8rem',
+    fontWeight: '600',
+    color: '#1e293b',
+    marginBottom: '24px',
+  },
+  infoList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  infoItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '12px',
+    padding: '12px',
+    borderRadius: '8px',
+    transition: 'background-color 0.2s',
+  },
+  infoIcon: {
+    fontSize: '1.4rem',
+    marginTop: '2px',
+    flexShrink: 0,
+  },
+  infoLabel: {
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: '4px',
+    fontSize: '14px',
+  },
+  infoText: {
+    color: '#6b7280',
+    fontSize: '14px',
+  },
+  socialSection: {
+    marginTop: '32px',
+    paddingTop: '24px',
+    borderTop: '1px solid #e5e7eb',
+  },
+  socialTitle: {
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: '12px',
+    fontSize: '14px',
+  },
+  socialIcons: {
+    display: 'flex',
+    gap: '12px',
+  },
+  socialIcon: {
+    fontSize: '1.5rem',
+    cursor: 'pointer',
+    transition: 'transform 0.2s',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  label: {
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: '8px',
+    fontSize: '14px',
+  },
+  input: {
+    padding: '12px 16px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontFamily: 'inherit',
+    transition: 'all 0.2s',
+  },
+  textarea: {
+    padding: '12px 16px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontFamily: 'inherit',
+    resize: 'vertical',
+    minHeight: '120px',
+    transition: 'all 0.2s',
+  },
+  submitButton: {
+    padding: '16px 24px',
+    background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    marginTop: '10px',
+  },
+  submitButtonDisabled: {
+    padding: '16px 24px',
+    backgroundColor: '#9ca3af',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'not-allowed',
+    marginTop: '10px',
+  },
+};
+
+// Media queries for responsiveness
+if (typeof window !== 'undefined') {
+  const mediaQuery = window.matchMedia('(min-width: 768px)');
+  if (mediaQuery.matches) {
+    styles.grid.gridTemplateColumns = '1fr 1fr';
+    styles.grid.gap = '48px';
+  }
 }
