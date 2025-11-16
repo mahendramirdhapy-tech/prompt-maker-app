@@ -1,10 +1,10 @@
-// pages/index.js - SIMPLIFIED AND FIXED VERSION
+// pages/index.js - COMPLETELY FIXED WITH ALL FEATURES
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
-// Templates
+// Enhanced Templates
 const TEMPLATES = [
   { label: 'Custom Idea', value: '' },
   { label: 'Blog Intro', value: 'Write a blog intro about' },
@@ -14,16 +14,27 @@ const TEMPLATES = [
   { label: 'Code Debugger', value: 'Debug this code:' },
   { label: 'Midjourney Image', value: 'Create a detailed Midjourney prompt for' },
   { label: 'DALL-E Image', value: 'Generate a DALL-E image prompt for' },
+  { label: 'Story Writer', value: 'Write a creative story about' },
+  { label: 'Product Description', value: 'Write a compelling product description for' },
+  { label: 'YouTube Script', value: 'Create a YouTube video script about' },
+  { label: 'Ad Copy', value: 'Write persuasive ad copy for' },
 ];
 
-const TONES = ['Professional', 'Friendly', 'Technical', 'Creative', 'Humorous'];
+// Enhanced Tones
+const TONES = [
+  'Professional', 'Friendly', 'Technical', 'Creative', 'Humorous',
+  'Formal', 'Casual', 'Persuasive', 'Educational', 'Inspirational'
+];
 
+// AI Models
 const AI_MODELS = [
   { name: 'gemini-pro', label: 'Google Gemini Pro', free: true },
   { name: 'claude-instant', label: 'Claude Instant', free: true },
   { name: 'llama-3', label: 'Meta Llama 3', free: true },
+  { name: 'mistral', label: 'Mistral 7B', free: true },
 ];
 
+// Tool Cards Data
 const TOOL_CARDS = [
   {
     id: 1,
@@ -61,6 +72,30 @@ const TOOL_CARDS = [
     date: 'November 13, 2024',
     label: 'FREE TOOLS'
   },
+  {
+    id: 5,
+    title: '🎵 Audio Tool',
+    description: 'Audio processing and enhancement tools for your media files.',
+    path: '/audio',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  },
+  {
+    id: 6,
+    title: '📚 Prompt Library',
+    description: 'Explore our collection of pre-made AI prompts for various use cases.',
+    path: '/prompts',
+    author: 'AI Prompt Maker',
+    date: 'November 13, 2024',
+    label: 'FREE TOOLS'
+  }
+];
+
+// Image generation styles
+const IMAGE_STYLES = [
+  'Photorealistic', 'Digital Art', 'Oil Painting', 'Watercolor', 'Anime',
+  'Cyberpunk', 'Minimalist', 'Vintage', 'Futuristic', 'Fantasy'
 ];
 
 export default function Home() {
@@ -81,73 +116,53 @@ export default function Home() {
   const [generationStatus, setGenerationStatus] = useState('');
   const [promptHistory, setPromptHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [imageStyle, setImageStyle] = useState('Photorealistic');
+  const [aspectRatio, setAspectRatio] = useState('1:1');
+  const [includeNegativePrompt, setIncludeNegativePrompt] = useState(false);
+  const [advancedOptions, setAdvancedOptions] = useState(false);
+  const [temperature, setTemperature] = useState(0.7);
+  const [creativityLevel, setCreativityLevel] = useState('balanced');
+  const [lastInput, setLastInput] = useState('');
   const router = useRouter();
 
   // SEO data
   const pageTitle = "AI Prompt Maker - Free AI Prompt Generator Tool";
-  const pageDescription = "Transform your ideas into perfect AI prompts with our free AI Prompt Generator.";
+  const pageDescription = "Transform your ideas into perfect AI prompts with our free AI Prompt Generator. Support for multiple AI models including GPT-4, Gemini, Claude, and Llama.";
 
-  // Responsive detection
+  // Client-side only effects
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768 && mobileMenuOpen) {
+      if (window.innerWidth >= 768) {
         setMobileMenuOpen(false);
       }
     };
 
-    if (typeof window !== 'undefined') {
-      checkScreenSize();
-      window.addEventListener('resize', checkScreenSize);
-      return () => window.removeEventListener('resize', checkScreenSize);
-    }
-  }, [mobileMenuOpen]);
-
-  // Dark mode
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const isDark = localStorage.getItem('darkMode') === 'true';
-      setDarkMode(isDark);
-      updateDarkModeStyles(isDark);
-      
-      const savedUsage = localStorage.getItem('guestUsage');
-      if (savedUsage) {
-        setUsageCount(parseInt(savedUsage));
-      }
-    }
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Load history
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const savedHistory = localStorage.getItem('promptHistory');
-        if (savedHistory) {
-          const history = JSON.parse(savedHistory);
-          setPromptHistory(history.slice(0, 50));
-        }
-      } catch (error) {
-        console.error('Error loading history:', error);
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    updateDarkModeStyles(isDark);
+    
+    const savedUsage = localStorage.getItem('guestUsage');
+    if (savedUsage) {
+      setUsageCount(parseInt(savedUsage));
+    }
+
+    try {
+      const savedHistory = localStorage.getItem('promptHistory');
+      if (savedHistory) {
+        const history = JSON.parse(savedHistory);
+        setPromptHistory(history.slice(0, 50));
       }
+    } catch (error) {
+      console.error('Error loading history:', error);
     }
   }, []);
-
-  const updateDarkModeStyles = (isDark) => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      if (isDark) {
-        root.style.setProperty('--bg-primary', '#0f172a');
-        root.style.setProperty('--bg-secondary', '#1e293b');
-        root.style.setProperty('--text-primary', '#f8fafc');
-        root.style.setProperty('--text-secondary', '#cbd5e1');
-      } else {
-        root.style.setProperty('--bg-primary', '#ffffff');
-        root.style.setProperty('--bg-secondary', '#f8fafc');
-        root.style.setProperty('--text-primary', '#1e293b');
-        root.style.setProperty('--text-secondary', '#64748b');
-      }
-    }
-  };
 
   // User initialization
   useEffect(() => {
@@ -182,22 +197,55 @@ export default function Home() {
 
   // Save history
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
-      } catch (error) {
-        console.error('Error saving history:', error);
-      }
+    try {
+      localStorage.setItem('promptHistory', JSON.stringify(promptHistory));
+    } catch (error) {
+      console.error('Error saving history:', error);
     }
   }, [promptHistory]);
 
-  const enhancePrompt = (input, template, tone, language) => {
+  const updateDarkModeStyles = (isDark) => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.style.setProperty('--bg-primary', '#0f172a');
+      root.style.setProperty('--bg-secondary', '#1e293b');
+      root.style.setProperty('--text-primary', '#f8fafc');
+      root.style.setProperty('--text-secondary', '#cbd5e1');
+    } else {
+      root.style.setProperty('--bg-primary', '#ffffff');
+      root.style.setProperty('--bg-secondary', '#f8fafc');
+      root.style.setProperty('--text-primary', '#1e293b');
+      root.style.setProperty('--text-secondary', '#64748b');
+    }
+  };
+
+  // Enhanced prompt generation algorithm
+  const enhancePrompt = (input, template, tone, language, imageStyle, aspectRatio, includeNegativePrompt) => {
     let enhancedPrompt = input;
     
     if (template && !input.startsWith(template)) {
       enhancedPrompt = `${template} ${input}`;
     }
 
+    // Image prompt enhancement
+    if (template.includes('Midjourney') || template.includes('DALL-E')) {
+      let imagePrompt = enhancedPrompt;
+      
+      if (imageStyle && imageStyle !== 'Photorealistic') {
+        imagePrompt += `, ${imageStyle.toLowerCase()} style`;
+      }
+      
+      imagePrompt += ` --ar ${aspectRatio}`;
+      imagePrompt += ' --quality 2';
+      
+      if (includeNegativePrompt) {
+        imagePrompt += ` --no blur, low quality, distorted, watermark`;
+      }
+      
+      return imagePrompt;
+    }
+
+    // Text prompt enhancement
     let finalPrompt = `${enhancedPrompt}\n\nGenerate this in a ${tone.toLowerCase()} tone`;
     
     if (language !== 'English') {
@@ -215,6 +263,7 @@ export default function Home() {
       output: promptData.output,
       model: promptData.model,
       tone: promptData.tone,
+      language: promptData.language,
     };
 
     setPromptHistory(prev => [historyItem, ...prev.slice(0, 49)]);
@@ -249,9 +298,7 @@ export default function Home() {
         console.warn(`${model.label} failed:`, error.message);
       }
       
-      if (i < AI_MODELS.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
+      await new Promise(resolve => setTimeout(resolve, 300));
     }
     
     throw new Error('All AI models are currently unavailable. Please try again.');
@@ -259,8 +306,9 @@ export default function Home() {
 
   const canGenerate = () => user || usageCount < 5;
 
+  // FIXED: Submit handler with regeneration support
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!input.trim() || !canGenerate()) return;
 
     setLoading(true);
@@ -270,14 +318,19 @@ export default function Home() {
     setGenerationStatus('Starting generation...');
 
     try {
-      const enhancedInput = enhancePrompt(input, template, tone, language);
+      setLastInput(input);
+
+      const enhancedInput = enhancePrompt(
+        input, template, tone, language, imageStyle, aspectRatio, includeNegativePrompt
+      );
 
       const inputData = {
         idea: enhancedInput,
         language,
         tone,
         maxTokens,
-        type: 'prompt'
+        temperature,
+        creativity: creativityLevel
       };
 
       const result = await generateWithFallback(inputData);
@@ -299,16 +352,17 @@ export default function Home() {
         console.error('Database error:', dbError);
       }
 
-      // Add to local history
+      // Add to history
       addToHistory({
         input: input.trim(),
         output: result.prompt,
         model: result.modelLabel,
         tone,
+        language,
       });
 
-      // Update usage for guests
-      if (!user && typeof window !== 'undefined') {
+      // Update usage count
+      if (!user) {
         const newCount = usageCount + 1;
         setUsageCount(newCount);
         localStorage.setItem('guestUsage', newCount.toString());
@@ -325,8 +379,14 @@ export default function Home() {
     }
   };
 
+  // FIXED: Regenerate function
   const handleRegenerate = () => {
-    if (input.trim()) {
+    if (lastInput.trim()) {
+      setInput(lastInput);
+      setTimeout(() => {
+        handleSubmit({ preventDefault: () => {} });
+      }, 100);
+    } else if (input.trim()) {
       handleSubmit({ preventDefault: () => {} });
     }
   };
@@ -384,9 +444,7 @@ export default function Home() {
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', newDarkMode.toString());
-    }
+    localStorage.setItem('darkMode', newDarkMode.toString());
     updateDarkModeStyles(newDarkMode);
   };
 
@@ -406,7 +464,28 @@ export default function Home() {
     }
   };
 
-  // SIMPLIFIED STYLES - No function calls in styles
+  const deleteHistoryItem = (id, e) => {
+    e.stopPropagation();
+    setPromptHistory(prev => prev.filter(item => item.id !== id));
+  };
+
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    } catch (error) {
+      return 'Recent';
+    }
+  };
+
+  // FIXED STYLES - No function calls in styles
   const containerStyle = {
     fontFamily: "'Inter', sans-serif",
     maxWidth: '1200px',
@@ -523,6 +602,17 @@ export default function Home() {
     boxSizing: 'border-box',
   };
 
+  const navItems = [
+    { path: '/', label: '🏠 Home' },
+    { path: '/seo', label: '🔍 SEO' },
+    { path: '/code', label: '💻 Code' },
+    { path: '/email', label: '✉️ Email' },
+    { path: '/translate', label: '🔄 Translate' },
+    { path: '/audio', label: '🎵 Audio' },
+    { path: '/catalog-maker', label: '📋 Catalog' },
+    { path: '/prompts', label: '📚 Library' },
+  ];
+
   return (
     <>
       <Head>
@@ -554,16 +644,7 @@ export default function Home() {
               alignItems: 'center',
               width: isMobile ? '100%' : 'auto',
             }}>
-              {[
-                { path: '/', label: '🏠 Home' },
-                { path: '/seo', label: '🔍 SEO' },
-                { path: '/code', label: '💻 Code' },
-                { path: '/email', label: '✉️ Email' },
-                { path: '/translate', label: '🔄 Translate' },
-                { path: '/audio', label: '🎵 Audio' },
-                { path: '/catalog-maker', label: '📋 Catalog' },
-                { path: '/prompts', label: '📚 Library' },
-              ].map((item) => (
+              {navItems.map((item) => (
                 <button 
                   key={item.path}
                   onClick={() => navigateTo(item.path)} 
@@ -681,6 +762,101 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Image Generation Options */}
+              {(template.includes('Midjourney') || template.includes('DALL-E')) && (
+                <div style={{ marginTop: '12px' }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? '1rem' : '1.1rem' }}>🎨 Image Settings</h3>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+                    gap: isMobile ? '10px' : '12px' 
+                  }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                        Style
+                      </label>
+                      <select value={imageStyle} onChange={(e) => setImageStyle(e.target.value)} style={inputStyle}>
+                        {IMAGE_STYLES.map(style => (
+                          <option key={style} value={style}>{style}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                        Aspect Ratio
+                      </label>
+                      <select value={aspectRatio} onChange={(e) => setAspectRatio(e.target.value)} style={inputStyle}>
+                        {['1:1', '16:9', '9:16', '4:3', '3:2'].map(ratio => (
+                          <option key={ratio} value={ratio}>{ratio}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: '10px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={includeNegativePrompt} 
+                        onChange={(e) => setIncludeNegativePrompt(e.target.checked)} 
+                      />
+                      Include Negative Prompt
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Advanced Options */}
+              <div style={{ marginTop: '12px' }}>
+                <button 
+                  onClick={() => setAdvancedOptions(!advancedOptions)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: darkMode ? '#60a5fa' : '#3b82f6',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '0.9rem' : '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '0'
+                  }}
+                >
+                  {advancedOptions ? '▼' : '▶'} Advanced Options
+                </button>
+
+                {advancedOptions && (
+                  <div style={{ marginTop: '10px', padding: '12px', backgroundColor: darkMode ? '#0f172a' : '#f1f5f9', borderRadius: '8px' }}>
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
+                        Creativity Level
+                      </label>
+                      <select value={creativityLevel} onChange={(e) => setCreativityLevel(e.target.value)} style={inputStyle}>
+                        <option value="precise">Precise & Factual</option>
+                        <option value="balanced">Balanced</option>
+                        <option value="creative">Highly Creative</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
+                        Temperature: {temperature}
+                      </label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1.0"
+                        step="0.1"
+                        value={temperature}
+                        onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div style={{ marginTop: '12px' }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
                   Response Length: {maxTokens} tokens
@@ -792,9 +968,15 @@ export default function Home() {
                 }}>
                   <h2 style={{ margin: 0, fontSize: isMobile ? '1.2rem' : '1.4rem' }}>🎉 Your AI Prompt</h2>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={handleRegenerate} style={buttonStyle('#10b981')}>🔄</button>
-                    <button onClick={copyToClipboard} style={buttonStyle('#3b82f6')}>📋</button>
-                    <button onClick={exportTxt} style={buttonStyle('#8b5cf6')}>💾</button>
+                    <button onClick={handleRegenerate} style={buttonStyle('#10b981')} title="Regenerate">
+                      🔄
+                    </button>
+                    <button onClick={copyToClipboard} style={buttonStyle('#3b82f6')} title="Copy to Clipboard">
+                      📋
+                    </button>
+                    <button onClick={exportTxt} style={buttonStyle('#8b5cf6')} title="Download as TXT">
+                      💾
+                    </button>
                   </div>
                 </div>
                 
@@ -1044,36 +1226,70 @@ export default function Home() {
                           borderRadius: '8px',
                           padding: '12px',
                           cursor: 'pointer',
+                          position: 'relative'
                         }}
                       >
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          marginBottom: '8px'
-                        }}>
-                          <strong style={{
-                            color: darkMode ? '#f8fafc' : '#1e293b',
-                          }}>
-                            {item.input.substring(0, 60)}{item.input.length > 60 ? '...' : ''}
-                          </strong>
-                        </div>
-                        
-                        <div style={{
-                          display: 'flex',
-                          gap: '8px',
-                          flexWrap: 'wrap',
-                          marginBottom: '6px'
-                        }}>
-                          <span style={{
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            color: '#3b82f6',
-                            padding: '2px 6px',
+                        <button
+                          onClick={(e) => deleteHistoryItem(item.id, e)}
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: 'none',
                             borderRadius: '4px',
-                            fontSize: '0.75rem'
+                            color: '#ef4444',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            fontSize: '0.8rem'
+                          }}
+                        >
+                          🗑️
+                        </button>
+
+                        <div style={{ marginRight: '40px' }}>
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            marginBottom: '8px'
                           }}>
-                            {item.tone}
-                          </span>
+                            <strong>
+                              {item.input.substring(0, 60)}{item.input.length > 60 ? '...' : ''}
+                            </strong>
+                            <span style={{
+                              color: darkMode ? '#94a3b8' : '#64748b',
+                              fontSize: '0.8rem',
+                            }}>
+                              {formatDate(item.timestamp)}
+                            </span>
+                          </div>
+                          
+                          <div style={{
+                            display: 'flex',
+                            gap: '8px',
+                            flexWrap: 'wrap',
+                            marginBottom: '6px'
+                          }}>
+                            <span style={{
+                              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                              color: '#3b82f6',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: '0.75rem'
+                            }}>
+                              {item.tone}
+                            </span>
+                            <span style={{
+                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                              color: '#10b981',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: '0.75rem'
+                            }}>
+                              {item.model}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}
