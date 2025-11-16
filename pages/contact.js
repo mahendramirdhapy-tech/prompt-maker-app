@@ -214,7 +214,14 @@ export default function ContactUs() {
                   disabled={isSubmitting}
                   style={isSubmitting ? styles.submitButtonDisabled : styles.submitButton}
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  {isSubmitting ? (
+                    <span style={styles.buttonContent}>
+                      <span style={styles.spinner}></span>
+                      Sending...
+                    </span>
+                  ) : (
+                    'Send Message'
+                  )}
                 </button>
               </form>
             </div>
@@ -222,11 +229,19 @@ export default function ContactUs() {
         </div>
       </div>
 
-      <style jsx>{`
-        .container {
+      <style jsx global>{`
+        body {
           margin: 0;
           padding: 0;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background-color: #f8fafc;
+        }
+        * {
+          box-sizing: border-box;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </>
@@ -261,7 +276,7 @@ const styles = {
     marginBottom: '50px',
   },
   title: {
-    fontSize: '3rem',
+    fontSize: '2.5rem',
     fontWeight: '700',
     color: '#1e293b',
     marginBottom: '15px',
@@ -272,7 +287,7 @@ const styles = {
   },
   subtitle: {
     color: '#64748b',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     maxWidth: '600px',
     margin: '0 auto',
     lineHeight: '1.6',
@@ -285,6 +300,7 @@ const styles = {
     borderRadius: '8px',
     marginBottom: '24px',
     textAlign: 'center',
+    fontSize: '14px',
   },
   errorMessage: {
     backgroundColor: '#fecaca',
@@ -294,47 +310,46 @@ const styles = {
     borderRadius: '8px',
     marginBottom: '24px',
     textAlign: 'center',
+    fontSize: '14px',
   },
   grid: {
     display: 'grid',
     gridTemplateColumns: '1fr',
     gap: '32px',
+    marginBottom: '40px',
   },
   infoCard: {
     backgroundColor: 'white',
-    borderRadius: '16px',
-    padding: '32px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    borderRadius: '12px',
+    padding: '24px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
   },
   formCard: {
     backgroundColor: 'white',
-    borderRadius: '16px',
-    padding: '32px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    borderRadius: '12px',
+    padding: '24px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
   },
   infoTitle: {
-    fontSize: '1.8rem',
+    fontSize: '1.5rem',
     fontWeight: '600',
     color: '#1e293b',
-    marginBottom: '24px',
+    marginBottom: '20px',
   },
   infoList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '16px',
   },
   infoItem: {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '12px',
-    padding: '12px',
-    borderRadius: '8px',
-    transition: 'background-color 0.2s',
+    padding: '8px',
   },
   infoIcon: {
-    fontSize: '1.4rem',
+    fontSize: '1.2rem',
     marginTop: '2px',
-    flexShrink: 0,
   },
   infoLabel: {
     fontWeight: '600',
@@ -347,8 +362,8 @@ const styles = {
     fontSize: '14px',
   },
   socialSection: {
-    marginTop: '32px',
-    paddingTop: '24px',
+    marginTop: '24px',
+    paddingTop: '20px',
     borderTop: '1px solid #e5e7eb',
   },
   socialTitle: {
@@ -362,14 +377,12 @@ const styles = {
     gap: '12px',
   },
   socialIcon: {
-    fontSize: '1.5rem',
-    cursor: 'pointer',
-    transition: 'transform 0.2s',
+    fontSize: '1.3rem',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '16px',
   },
   formGroup: {
     display: 'flex',
@@ -378,57 +391,65 @@ const styles = {
   label: {
     fontWeight: '600',
     color: '#374151',
-    marginBottom: '8px',
+    marginBottom: '6px',
     fontSize: '14px',
   },
   input: {
-    padding: '12px 16px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '16px',
+    padding: '10px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    fontSize: '14px',
     fontFamily: 'inherit',
-    transition: 'all 0.2s',
   },
   textarea: {
-    padding: '12px 16px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '16px',
+    padding: '10px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    fontSize: '14px',
     fontFamily: 'inherit',
     resize: 'vertical',
-    minHeight: '120px',
-    transition: 'all 0.2s',
+    minHeight: '100px',
   },
   submitButton: {
-    padding: '16px 24px',
-    background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+    padding: '12px 20px',
+    backgroundColor: '#3b82f6',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
-    fontSize: '16px',
+    borderRadius: '6px',
+    fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
-    transition: 'all 0.2s',
-    marginTop: '10px',
+    marginTop: '8px',
   },
   submitButtonDisabled: {
-    padding: '16px 24px',
+    padding: '12px 20px',
     backgroundColor: '#9ca3af',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
-    fontSize: '16px',
+    borderRadius: '6px',
+    fontSize: '14px',
     fontWeight: '600',
     cursor: 'not-allowed',
-    marginTop: '10px',
+    marginTop: '8px',
+  },
+  buttonContent: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+  },
+  spinner: {
+    width: '14px',
+    height: '14px',
+    border: '2px solid transparent',
+    borderTop: '2px solid white',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
   },
 };
 
-// Media queries for responsiveness
-if (typeof window !== 'undefined') {
-  const mediaQuery = window.matchMedia('(min-width: 768px)');
-  if (mediaQuery.matches) {
-    styles.grid.gridTemplateColumns = '1fr 1fr';
-    styles.grid.gap = '48px';
-  }
+// Responsive design
+if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+  styles.grid.gridTemplateColumns = '1fr 1fr';
+  styles.grid.gap = '40px';
 }
