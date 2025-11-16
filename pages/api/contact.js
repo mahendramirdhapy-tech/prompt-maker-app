@@ -1,72 +1,58 @@
 // pages/api/contact.js
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
-
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version')
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' })
+    return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { name, email, subject, message } = req.body
+  const { name, email, subject, message } = req.body;
 
-  // Validate required fields
   if (!name || !email || !subject || !message) {
     return res.status(400).json({ 
       success: false,
       message: 'All fields are required' 
-    })
+    });
   }
 
   try {
-    // Supabase mein contact submission save karein
-    const { data, error } = await supabase
-      .from('contact_submissions')
-      .insert([
-        {
-          name: name.trim(),
-          email: email.trim(),
-          subject: subject.trim(),
-          message: message.trim(),
-          status: 'new',
-          created_at: new Date().toISOString()
+    // EmailJS API call with environment variables
+    const emailjsResponse = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        service_id: process.env.EMAILJS_SERVICE_ID,
+        template_id: process.env.EMAILJS_TEMPLATE_ID,
+        user_id: process.env.EMAILJS_PUBLIC_KEY,
+        template_params: {
+          from_name: name,
+          from_email: email,
+          subject: `Contact Form: ${subject}`,
+          message: message,
+          to_email: 'aipromptmakerinfo@gmail.com',
+          reply_to: email,
+          date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         }
-      ])
-      .select()
+      })
+    });
 
-    if (error) {
-      console.error('Supabase error:', error)
-      throw error
+    if (emailjsResponse.ok) {
+      console.log('✅ Email sent successfully to aipromptmakerinfo@gmail.com');
+      res.status(200).json({ 
+        success: true,
+        message: 'Thank you! Your message has been sent successfully. We will get back to you within 24 hours.' 
+      });
+    } else {
+      const errorText = await emailjsResponse.text();
+      console.error('❌ EmailJS error:', errorText);
+      throw new Error('Email sending failed');
     }
 
-    console.log('✅ Contact form submitted:', { name, email, subject })
-
-    res.status(200).json({ 
-      success: true,
-      message: 'Thank you! Your message has been received. We will get back to you within 24 hours.',
-      data: data
-    })
-
   } catch (error) {
-    console.error('❌ Error saving contact form:', error)
-    
+    console.error('❌ Error sending email:', error);
     res.status(500).json({ 
       success: false,
-      message: 'Sorry, there was an error sending your message. Please try again later or email us directly at aipromptmakerinfo@gmail.com.'
-    })
+      message: 'Sorry, there was an error sending your message. Please try again later.' 
+    });
   }
 }
