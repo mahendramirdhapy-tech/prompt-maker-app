@@ -1,4 +1,4 @@
-// pages/index.js - COMPLETELY FIXED WITH ALL FEATURES
+// pages/index.js - WITH COMPLETE FOOTER
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -1119,7 +1119,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FOOTER */}
+        {/* COMPLETE FOOTER SECTION */}
         <footer style={{
           backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
           padding: isMobile ? '30px 16px 16px' : '40px 20px 20px',
@@ -1129,14 +1129,252 @@ export default function Home() {
           <div style={{
             maxWidth: '1200px',
             margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? '20px' : '30px',
+            marginBottom: '20px'
+          }}>
+            
+            {/* Company Info */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
+              }}>
+                AI Prompt Maker
+              </h3>
+              <p style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                lineHeight: '1.5'
+              }}>
+                Transform your ideas into perfect AI prompts with our advanced multi-model AI technology. Free tool for creators, writers, and developers.
+              </p>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ 
+                  padding: '6px 10px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🚀 Fast
+                </span>
+                <span style={{ 
+                  padding: '6px 10px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🔒 Secure
+                </span>
+                <span style={{ 
+                  padding: '6px 10px', 
+                  backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                  borderRadius: '6px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  🎯 AI Powered
+                </span>
+              </div>
+            </div>
+            
+            {/* Quick Links */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
+              }}>
+                Quick Links
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <button onClick={() => navigateTo('/')} style={{
+                  color: darkMode ? '#93c5fd' : '#3b82f6',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🏠 Home
+                </button>
+                <button onClick={() => navigateTo('/seo')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🔍 SEO Tools
+                </button>
+                <button onClick={() => navigateTo('/code')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  💻 Code Assistant
+                </button>
+                <button onClick={() => navigateTo('/email')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  ✉️ Email Writer
+                </button>
+                <button onClick={() => navigateTo('/translate')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🔄 Translator
+                </button>
+                <button onClick={() => navigateTo('/audio')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  🎵 Audio Tool
+                </button>
+              </div>
+            </div>
+            
+            {/* Support */}
+            <div>
+              <h3 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                margin: '0 0 12px 0',
+                fontSize: isMobile ? '1rem' : '1.1rem'
+              }}>
+                Support
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <button onClick={() => navigateTo('/help')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  ❓ Help Center
+                </button>
+                <button onClick={() => navigateTo('/contact')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  📧 Contact Us
+                </button>
+                <button onClick={() => navigateTo('/feedback')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  💬 Feedback
+                </button>
+                <button onClick={() => navigateTo('/blog')} style={{
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: isMobile ? '0.8rem' : '0.9rem',
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  padding: '0',
+                }}>
+                  📚 Blog
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bottom Section */}
+          <div style={{
+            borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+            paddingTop: isMobile ? '15px' : '20px',
             textAlign: 'center'
           }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: isMobile ? '15px' : '20px',
+              marginBottom: isMobile ? '12px' : '15px',
+              flexWrap: 'wrap'
+            }}>
+              <button onClick={() => navigateTo('/privacy')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
+              }}>
+                Privacy Policy
+              </button>
+              <button onClick={() => navigateTo('/terms')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
+              }}>
+                Terms of Service
+              </button>
+              <button onClick={() => navigateTo('/cookies')} style={{
+                color: darkMode ? '#93c5fd' : '#3b82f6',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                background: 'none',
+                border: 'none',
+                padding: '0',
+              }}>
+                Cookie Policy
+              </button>
+            </div>
+            
             <p style={{ 
               margin: '0', 
               color: darkMode ? '#94a3b8' : '#475569',
               fontSize: isMobile ? '0.75rem' : '0.8rem',
+              lineHeight: '1.5'
             }}>
-              © 2024 AI Prompt Maker. All rights reserved.
+              © 2024 AI Prompt Maker. All rights reserved. 
+              <br />
+              Powered by multiple AI models • Made with ❤️ for creators worldwide
             </p>
           </div>
         </footer>
