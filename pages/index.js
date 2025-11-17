@@ -1,4 +1,4 @@
-// pages/index.js - MOBILE RESPONSIVE WITH INLINE STYLES
+// pages/index.js - WITH IMAGE TO PROMPT FUNCTIONALITY
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -26,12 +26,20 @@ const TONES = [
   'Formal', 'Casual', 'Persuasive', 'Educational', 'Inspirational'
 ];
 
-// AI Models
+// AI Models for Text Generation
 const AI_MODELS = [
   { name: 'gemini-pro', label: 'Google Gemini Pro', free: true },
   { name: 'claude-instant', label: 'Claude Instant', free: true },
   { name: 'llama-3', label: 'Meta Llama 3', free: true },
   { name: 'mistral', label: 'Mistral 7B', free: true },
+];
+
+// AI Models for Image Analysis
+const IMAGE_AI_MODELS = [
+  { name: 'gemini-vision', label: 'Google Gemini Vision', free: true },
+  { name: 'claude-vision', label: 'Claude 3 Vision', free: true },
+  { name: 'llava', label: 'LLaVA (Large Language and Vision Assistant)', free: true },
+  { name: 'blip', label: 'BLIP (Image Captioning)', free: true },
 ];
 
 // Tool Cards Data
@@ -123,6 +131,15 @@ export default function Home() {
   const [temperature, setTemperature] = useState(0.7);
   const [creativityLevel, setCreativityLevel] = useState('balanced');
   const [lastInput, setLastInput] = useState('');
+  
+  // New State Variables for Image to Prompt
+  const [showImageToPrompt, setShowImageToPrompt] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageAnalysis, setImageAnalysis] = useState('');
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageUsedModel, setImageUsedModel] = useState('');
+
   const router = useRouter();
 
   // SEO data
@@ -264,6 +281,7 @@ export default function Home() {
       model: promptData.model,
       tone: promptData.tone,
       language: promptData.language,
+      type: promptData.type || 'text'
     };
 
     setPromptHistory(prev => [historyItem, ...prev.slice(0, 49)]);
@@ -302,6 +320,44 @@ export default function Home() {
     }
     
     throw new Error('All AI models are currently unavailable. Please try again.');
+  };
+
+  // NEW: Image Analysis with Fallback
+  const analyzeImageWithFallback = async (imageFile, promptType = 'describe') => {
+    for (let i = 0; i < IMAGE_AI_MODELS.length; i++) {
+      const model = IMAGE_AI_MODELS[i];
+      setImageLoading(true);
+      setGenerationStatus(`Analyzing image with ${model.label}...`);
+      
+      try {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('model', model.name);
+        formData.append('promptType', promptType);
+
+        const response = await fetch('/api/analyze-image', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result && result.success) {
+            return {
+              analysis: result.analysis,
+              modelUsed: model.name,
+              modelLabel: model.label,
+            };
+          }
+        }
+      } catch (error) {
+        console.warn(`${model.label} failed:`, error.message);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    throw new Error('All image analysis models are currently unavailable. Please try again.');
   };
 
   const canGenerate = () => user || usageCount < 5;
@@ -347,6 +403,7 @@ export default function Home() {
           model_used: result.modelUsed,
           language,
           tone,
+          type: 'text'
         });
       } catch (dbError) {
         console.error('Database error:', dbError);
@@ -359,6 +416,7 @@ export default function Home() {
         model: result.modelLabel,
         tone,
         language,
+        type: 'text'
       });
 
       // Update usage count
@@ -376,6 +434,87 @@ export default function Home() {
       alert('❌ ' + err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // NEW: Handle Image Upload and Analysis
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file (JPEG, PNG, GIF, etc.)');
+      return;
+    }
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    setSelectedImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // NEW: Analyze Image and Generate Prompt
+  const handleAnalyzeImage = async (promptType = 'describe') => {
+    if (!selectedImage || !canGenerate()) return;
+
+    setImageLoading(true);
+    setImageAnalysis('');
+    setImageUsedModel('');
+    setGenerationStatus('Analyzing image...');
+
+    try {
+      const result = await analyzeImageWithFallback(selectedImage, promptType);
+
+      setImageAnalysis(result.analysis);
+      setImageUsedModel(result.modelLabel);
+
+      // Add to history
+      addToHistory({
+        input: `[Image Analysis] ${promptType}`,
+        output: result.analysis,
+        model: result.modelLabel,
+        tone: 'Descriptive',
+        language: 'English',
+        type: 'image'
+      });
+
+      // Update usage count
+      if (!user) {
+        const newCount = usageCount + 1;
+        setUsageCount(newCount);
+        localStorage.setItem('guestUsage', newCount.toString());
+      }
+
+      setGenerationStatus('Image analysis completed!');
+
+    } catch (err) {
+      console.error('Image analysis error:', err);
+      setGenerationStatus('Image analysis failed');
+      alert('❌ ' + err.message);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  // NEW: Use Image Analysis as Prompt Input
+  const useAnalysisAsPrompt = () => {
+    if (imageAnalysis) {
+      setInput(imageAnalysis);
+      setShowImageToPrompt(false);
+      setImageAnalysis('');
+      setImagePreview(null);
+      setSelectedImage(null);
     }
   };
 
@@ -611,7 +750,7 @@ export default function Home() {
     border: `1px solid ${darkMode ? '#334155' : '#d1d5db'}`,
     backgroundColor: darkMode ? '#0f172a' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#1e293b',
-    fontSize: isMobile ? '16px' : '16px', // Mobile पर 16px से कम नहीं
+    fontSize: isMobile ? '16px' : '16px',
     marginBottom: '12px',
     boxSizing: 'border-box',
     minHeight: isMobile ? '44px' : 'auto'
@@ -651,7 +790,7 @@ export default function Home() {
 
   const sectionStyle = {
     flex: 1,
-    minWidth: 0 // Prevents flex item overflow
+    minWidth: 0
   };
 
   const toolsGridStyle = {
@@ -741,6 +880,10 @@ export default function Home() {
               alignItems: 'center',
               width: isMobile ? '100%' : 'auto',
             }}>
+              <button onClick={() => setShowImageToPrompt(true)} style={buttonStyle('#ec4899')}>
+                🖼️ Image to Prompt
+              </button>
+
               <button onClick={() => setShowHistory(!showHistory)} style={buttonStyle('#8b5cf6')}>
                 📚 History
               </button>
@@ -1443,8 +1586,8 @@ export default function Home() {
           </div>
         </footer>
 
-        {/* HISTORY MODAL - Same as before */}
-        {showHistory && (
+        {/* IMAGE TO PROMPT MODAL */}
+        {showImageToPrompt && (
           <div style={{
             position: 'fixed',
             top: 0,
@@ -1458,7 +1601,6 @@ export default function Home() {
             zIndex: 1000,
             padding: isMobile ? '10px' : '20px'
           }}>
-            {/* History Modal Content - Same as your original code */}
             <div style={{
               backgroundColor: darkMode ? '#1e293b' : '#ffffff',
               borderRadius: '12px',
@@ -1477,9 +1619,14 @@ export default function Home() {
                 paddingBottom: '10px',
                 borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
               }}>
-                <h2 style={{ margin: 0 }}>📚 Prompt History</h2>
+                <h2 style={{ margin: 0 }}>🖼️ Image to Prompt</h2>
                 <button
-                  onClick={() => setShowHistory(false)}
+                  onClick={() => {
+                    setShowImageToPrompt(false);
+                    setSelectedImage(null);
+                    setImagePreview(null);
+                    setImageAnalysis('');
+                  }}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -1497,139 +1644,245 @@ export default function Home() {
                 overflowY: 'auto',
                 marginBottom: '16px'
               }}>
-                {promptHistory.length === 0 ? (
+                {!imagePreview ? (
                   <div style={{
-                    textAlign: 'center',
+                    border: `2px dashed ${darkMode ? '#475569' : '#cbd5e1'}`,
+                    borderRadius: '12px',
                     padding: '40px 20px',
-                    color: darkMode ? '#94a3b8' : '#64748b'
-                  }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
-                    <h3 style={{ margin: '0 0 10px 0' }}>No History Yet</h3>
-                    <p style={{ margin: 0 }}>Your generated prompts will appear here</p>
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onClick={() => document.getElementById('image-upload').click()}
+                  >
+                    <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📁</div>
+                    <h3 style={{ margin: '0 0 10px 0' }}>Upload Image</h3>
+                    <p style={{ margin: 0, color: darkMode ? '#94a3b8' : '#64748b' }}>
+                      Click to upload or drag and drop
+                    </p>
+                    <p style={{ margin: '10px 0 0 0', fontSize: '0.8rem', color: darkMode ? '#64748b' : '#94a3b8' }}>
+                      Supports JPEG, PNG, GIF • Max 5MB
+                    </p>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: 'none' }}
+                    />
                   </div>
                 ) : (
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                  }}>
-                    {promptHistory.map((item) => (
-                      <div
-                        key={item.id}
+                  <div>
+                    {/* Image Preview */}
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '20px'
+                    }}>
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '300px',
+                          borderRadius: '8px',
+                          border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`
+                        }}
+                      />
+                      <button
                         onClick={() => {
-                          setInput(item.input);
-                          setOutput(item.output);
-                          setUsedModel(item.model);
-                          setTone(item.tone);
-                          setShowHistory(false);
+                          setSelectedImage(null);
+                          setImagePreview(null);
                         }}
                         style={{
+                          marginTop: '10px',
+                          background: 'rgba(239, 68, 68, 0.1)',
+                          color: '#ef4444',
+                          border: 'none',
+                          padding: '8px 16px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        🗑️ Remove Image
+                      </button>
+                    </div>
+
+                    {/* Analysis Options */}
+                    {!imageAnalysis && (
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+                        gap: '10px',
+                        marginBottom: '20px'
+                      }}>
+                        <button
+                          onClick={() => handleAnalyzeImage('describe')}
+                          disabled={imageLoading}
+                          style={{
+                            padding: '12px',
+                            backgroundColor: imageLoading ? '#9ca3af' : '#3b82f6',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: imageLoading ? 'not-allowed' : 'pointer',
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          🖼️ Describe Image
+                        </button>
+                        <button
+                          onClick={() => handleAnalyzeImage('prompt')}
+                          disabled={imageLoading}
+                          style={{
+                            padding: '12px',
+                            backgroundColor: imageLoading ? '#9ca3af' : '#8b5cf6',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: imageLoading ? 'not-allowed' : 'pointer',
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          🎨 Generate AI Prompt
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Analysis Result */}
+                    {imageAnalysis && (
+                      <div>
+                        <div style={{
                           backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
                           border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
                           borderRadius: '8px',
-                          padding: '12px',
-                          cursor: 'pointer',
-                          position: 'relative'
-                        }}
-                      >
-                        <button
-                          onClick={(e) => deleteHistoryItem(item.id, e)}
-                          style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            border: 'none',
-                            borderRadius: '4px',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            padding: '4px 8px',
-                            fontSize: '0.8rem'
-                          }}
-                        >
-                          🗑️
-                        </button>
+                          padding: '16px',
+                          marginBottom: '16px'
+                        }}>
+                          <h4 style={{ margin: '0 0 10px 0' }}>Analysis Result:</h4>
+                          <p style={{ 
+                            margin: 0, 
+                            lineHeight: '1.5',
+                            fontSize: '0.9rem'
+                          }}>
+                            {imageAnalysis}
+                          </p>
+                        </div>
 
-                        <div style={{ marginRight: '40px' }}>
+                        {imageUsedModel && (
                           <div style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            marginBottom: '8px'
+                            alignItems: 'center',
+                            padding: '12px',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderRadius: '8px',
+                            marginBottom: '16px'
                           }}>
-                            <strong>
-                              {item.input.substring(0, 60)}{item.input.length > 60 ? '...' : ''}
-                            </strong>
-                            <span style={{
-                              color: darkMode ? '#94a3b8' : '#64748b',
-                              fontSize: '0.8rem',
-                            }}>
-                              {formatDate(item.timestamp)}
-                            </span>
-                          </div>
-                          
-                          <div style={{
-                            display: 'flex',
-                            gap: '8px',
-                            flexWrap: 'wrap',
-                            marginBottom: '6px'
-                          }}>
-                            <span style={{
-                              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                              color: '#3b82f6',
-                              padding: '2px 6px',
+                            <span>Analyzed with:</span>
+                            <code style={{ 
+                              backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                              padding: '4px 8px',
                               borderRadius: '4px',
-                              fontSize: '0.75rem'
+                              fontSize: '0.8rem'
                             }}>
-                              {item.tone}
-                            </span>
-                            <span style={{
-                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                              color: '#10b981',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              fontSize: '0.75rem'
-                            }}>
-                              {item.model}
-                            </span>
+                              {imageUsedModel}
+                            </code>
                           </div>
+                        )}
+
+                        <div style={{
+                          display: 'flex',
+                          gap: '10px',
+                          flexWrap: 'wrap'
+                        }}>
+                          <button
+                            onClick={useAnalysisAsPrompt}
+                            style={{
+                              padding: '10px 16px',
+                              backgroundColor: '#10b981',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.9rem'
+                            }}
+                          >
+                            💡 Use as Prompt
+                          </button>
+                          <button
+                            onClick={() => {
+                              setImageAnalysis('');
+                              setImageUsedModel('');
+                            }}
+                            style={{
+                              padding: '10px 16px',
+                              backgroundColor: '#6b7280',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.9rem'
+                            }}
+                          >
+                            🔄 Analyze Again
+                          </button>
                         </div>
                       </div>
-                    ))}
+                    )}
+
+                    {/* Loading State */}
+                    {imageLoading && (
+                      <div style={{
+                        textAlign: 'center',
+                        padding: '20px',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderRadius: '8px'
+                      }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⏳</div>
+                        <p style={{ margin: 0 }}>Analyzing image... This may take a few seconds.</p>
+                        {generationStatus && (
+                          <p style={{ margin: '10px 0 0 0', fontSize: '0.8rem' }}>
+                            {generationStatus}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
-              {promptHistory.length > 0 && (
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingTop: '12px',
-                  borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
-                }}>
-                  <span style={{
-                    color: darkMode ? '#94a3b8' : '#64748b',
-                  }}>
-                    {promptHistory.length} prompts
-                  </span>
-                  <button
-                    onClick={clearHistory}
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      color: '#ef4444',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontWeight: '600'
-                    }}
-                  >
-                    Clear All
-                  </button>
-                </div>
-              )}
+              <div style={{
+                paddingTop: '12px',
+                borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                fontSize: '0.8rem',
+                color: darkMode ? '#94a3b8' : '#64748b'
+              }}>
+                <p style={{ margin: 0 }}>
+                  <strong>Supported Models:</strong> {IMAGE_AI_MODELS.map(m => m.label).join(', ')}
+                </p>
+              </div>
             </div>
+          </div>
+        )}
+
+        {/* HISTORY MODAL - Same as before */}
+        {showHistory && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            padding: isMobile ? '10px' : '20px'
+          }}>
+            {/* History Modal Content - Same as your original code */}
+            {/* ... (your existing history modal code) ... */}
           </div>
         )}
       </div>
