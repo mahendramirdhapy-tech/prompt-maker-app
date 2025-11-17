@@ -1,4 +1,4 @@
-// pages/prompt-library.js
+// pages/prompts.js
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -15,32 +15,45 @@ export default function PromptLibrary() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    // Check dark mode preference
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    
     fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
-      // Updated table names: prompt_categories and prompt_library
+      // Updated table names: user_prompt_categories and user_prompts
       const [categoriesResponse, promptsResponse] = await Promise.all([
-        supabase.from('prompt_categories').select('*').order('name'),
-        supabase.from('prompt_library')
+        supabase.from('user_prompt_categories').select('*').order('name'),
+        supabase.from('user_prompts')
           .select(`
             *,
-            prompt_categories (
+            user_prompt_categories (
               name,
-              color,
               icon
             )
           `)
           .eq('is_public', true)
-          .order('usage_count', { ascending: false })
+          .order('created_at', { ascending: false })
       ]);
 
-      if (categoriesResponse.data) setCategories(categoriesResponse.data);
-      if (promptsResponse.data) setPrompts(promptsResponse.data);
+      if (categoriesResponse.error) {
+        console.error('Error fetching categories:', categoriesResponse.error);
+      } else {
+        setCategories(categoriesResponse.data || []);
+      }
+
+      if (promptsResponse.error) {
+        console.error('Error fetching prompts:', promptsResponse.error);
+      } else {
+        setPrompts(promptsResponse.data || []);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -50,38 +63,331 @@ export default function PromptLibrary() {
 
   const filteredPrompts = prompts.filter(prompt => {
     const matchesCategory = selectedCategory === 'all' || 
-                           prompt.prompt_categories?.name === selectedCategory;
+                           prompt.user_prompt_categories?.name === selectedCategory;
     const matchesSearch = prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          prompt.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         prompt.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+                         (prompt.tags && prompt.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
     return matchesCategory && matchesSearch;
   });
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = async (text, prompt) => {
     try {
       await navigator.clipboard.writeText(text);
       alert('Prompt copied to clipboard!');
       
       // Usage count update karen
-      await supabase
-        .from('prompt_library')
-        .update({ usage_count: prompt.usage_count + 1 })
-        .eq('id', prompt.id);
-        
+      if (prompt && prompt.id) {
+        await supabase
+          .from('user_prompts')
+          .update({ usage_count: (prompt.usage_count || 0) + 1 })
+          .eq('id', prompt.id);
+      }
     } catch (err) {
       console.error('Failed to copy:', err);
+      alert('Failed to copy prompt. Please try again.');
     }
   };
 
-  const handleUseTemplate = (promptId) => {
-    router.push(`/prompt-builder?template=${promptId}`);
+  const handleUseTemplate = (prompt) => {
+    router.push({
+      pathname: '/prompt-builder',
+      query: { 
+        template: prompt.id,
+        title: prompt.title,
+        description: prompt.description,
+        prompt_text: prompt.prompt_text,
+        category_id: prompt.category_id,
+        tags: prompt.tags?.join(',')
+      }
+    });
+  };
+
+  const styles = {
+    container: {
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '20px',
+      minHeight: '100vh',
+      backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+      color: darkMode ? '#f8fafc' : '#1e293b',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    },
+    nav: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '20px',
+      marginBottom: '30px',
+      flexWrap: 'wrap'
+    },
+    backButton: {
+      padding: '10px 20px',
+      backgroundColor: '#3b82f6',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '0.9rem',
+      textDecoration: 'none',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px'
+    },
+    title: {
+      fontSize: '2.5rem',
+      fontWeight: '700',
+      background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      margin: 0
+    },
+    hero: {
+      textAlign: 'center',
+      marginBottom: '40px',
+      padding: '40px 20px',
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      border: darkMode ? '1px solid #334155' : 'none'
+    },
+    heroTitle: {
+      fontSize: '2rem',
+      color: darkMode ? '#f8fafc' : '#1e293b',
+      marginBottom: '10px'
+    },
+    heroSubtitle: {
+      color: darkMode ? '#cbd5e1' : '#64748b',
+      fontSize: '1.1rem'
+    },
+    controls: {
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      padding: '30px',
+      borderRadius: '16px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      marginBottom: '30px',
+      border: darkMode ? '1px solid #334155' : 'none'
+    },
+    searchInput: {
+      width: '100%',
+      maxWidth: '600px',
+      margin: '0 auto 30px',
+      padding: '15px 20px',
+      border: `2px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      borderRadius: '12px',
+      fontSize: '1rem',
+      backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+      color: darkMode ? '#f8fafc' : '#1e293b',
+      display: 'block'
+    },
+    categoriesSection: {
+      marginBottom: '20px'
+    },
+    categoriesTitle: {
+      marginBottom: '15px',
+      color: darkMode ? '#f8fafc' : '#374151',
+      fontSize: '1.1rem'
+    },
+    categoriesGrid: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '10px'
+    },
+    categoryFilter: {
+      padding: '12px 20px',
+      border: `2px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+      color: darkMode ? '#f8fafc' : '#374151',
+      borderRadius: '25px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      transition: 'all 0.3s ease',
+      fontSize: '0.9rem'
+    },
+    activeCategory: {
+      borderColor: '#3b82f6',
+      backgroundColor: '#3b82f620',
+      fontWeight: '600'
+    },
+    stats: {
+      display: 'flex',
+      gap: '20px',
+      marginBottom: '20px',
+      padding: '0 10px',
+      flexWrap: 'wrap'
+    },
+    statItem: {
+      color: darkMode ? '#cbd5e1' : '#64748b',
+      fontSize: '0.9rem'
+    },
+    grid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+      gap: '25px',
+      marginBottom: '40px'
+    },
+    card: {
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      borderRadius: '16px',
+      padding: '25px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+      transition: 'all 0.3s ease',
+      display: 'flex',
+      flexDirection: 'column'
+    },
+    cardHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: '15px',
+      flexWrap: 'wrap',
+      gap: '10px'
+    },
+    categoryBadge: {
+      padding: '6px 12px',
+      borderRadius: '20px',
+      fontSize: '0.8rem',
+      fontWeight: '600',
+      backgroundColor: '#3b82f620',
+      color: '#3b82f6'
+    },
+    metrics: {
+      display: 'flex',
+      gap: '10px',
+      fontSize: '0.8rem',
+      color: darkMode ? '#cbd5e1' : '#64748b'
+    },
+    cardTitle: {
+      fontSize: '1.3rem',
+      fontWeight: '600',
+      color: darkMode ? '#f8fafc' : '#1e293b',
+      marginBottom: '10px',
+      lineHeight: '1.3'
+    },
+    cardDescription: {
+      color: darkMode ? '#cbd5e1' : '#64748b',
+      lineHeight: '1.5',
+      marginBottom: '15px',
+      flexGrow: 1
+    },
+    preview: {
+      backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+      padding: '12px',
+      borderRadius: '8px',
+      marginBottom: '15px',
+      borderLeft: '4px solid #3b82f6'
+    },
+    previewCode: {
+      color: darkMode ? '#cbd5e1' : '#475569',
+      fontFamily: "'Monaco', 'Consolas', monospace",
+      fontSize: '0.85rem',
+      lineHeight: '1.4',
+      margin: 0
+    },
+    tagsContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '6px',
+      marginBottom: '20px'
+    },
+    tag: {
+      background: darkMode ? '#334155' : '#f1f5f9',
+      color: darkMode ? '#e2e8f0' : '#475569',
+      padding: '4px 10px',
+      borderRadius: '12px',
+      fontSize: '0.75rem',
+      fontWeight: '500'
+    },
+    actions: {
+      display: 'flex',
+      gap: '10px',
+      marginTop: 'auto'
+    },
+    actionButton: {
+      flex: 1,
+      padding: '12px',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '0.9rem',
+      fontWeight: '500',
+      transition: 'all 0.3s ease'
+    },
+    copyButton: {
+      background: darkMode ? '#334155' : '#f1f5f9',
+      color: darkMode ? '#f8fafc' : '#374151'
+    },
+    useButton: {
+      background: '#3b82f6',
+      color: 'white'
+    },
+    emptyState: {
+      textAlign: 'center',
+      padding: '80px 20px',
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      border: darkMode ? '1px solid #334155' : 'none'
+    },
+    emptyIcon: {
+      fontSize: '4rem',
+      marginBottom: '20px'
+    },
+    emptyTitle: {
+      color: darkMode ? '#f8fafc' : '#1e293b',
+      marginBottom: '10px'
+    },
+    emptyText: {
+      color: darkMode ? '#cbd5e1' : '#64748b'
+    },
+    footer: {
+      textAlign: 'center',
+      padding: '30px',
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      border: darkMode ? '1px solid #334155' : 'none'
+    },
+    footerLink: {
+      color: '#3b82f6',
+      textDecoration: 'none',
+      fontWeight: '600'
+    },
+    loadingContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '100px 20px',
+      textAlign: 'center'
+    },
+    spinner: {
+      width: '40px',
+      height: '40px',
+      border: `4px solid ${darkMode ? '#334155' : '#f1f5f9'}`,
+      borderTop: '4px solid #3b82f6',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+      marginBottom: '20px'
+    }
   };
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading prompt library...</p>
+      <div style={styles.container}>
+        <div style={styles.loadingContainer}>
+          <div style={styles.spinner}></div>
+          <p style={{ color: darkMode ? '#cbd5e1' : '#64748b' }}>Loading prompt library...</p>
+        </div>
+        
+        <style jsx global>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -90,38 +396,43 @@ export default function PromptLibrary() {
     <>
       <Head>
         <title>Prompt Library - AI Prompt Maker</title>
-        <meta name="description" content="Browse our collection of AI prompts for various use cases" />
+        <meta name="description" content="Browse our collection of AI prompts for various use cases including creative writing, coding, business, and more." />
+        <meta name="keywords" content="AI prompts, prompt library, chatgpt prompts, AI templates, creative writing prompts" />
       </Head>
 
-      <div className="prompt-library-container">
-        <nav className="library-nav">
-          <button onClick={() => router.back()} className="back-btn">
+      <div style={styles.container}>
+        <nav style={styles.nav}>
+          <button 
+            onClick={() => router.push('/')}
+            style={styles.backButton}
+          >
             ← Back to Home
           </button>
-          <h1>AI Prompt Library</h1>
+          <h1 style={styles.title}>AI Prompt Library</h1>
         </nav>
 
-        <div className="library-hero">
-          <h2>Discover Ready-to-Use AI Prompts</h2>
-          <p>Copy, customize, and use professionally crafted prompts for various tasks</p>
+        <div style={styles.hero}>
+          <h2 style={styles.heroTitle}>Discover Ready-to-Use AI Prompts</h2>
+          <p style={styles.heroSubtitle}>Copy, customize, and use professionally crafted prompts for various tasks</p>
         </div>
 
-        <div className="library-controls">
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="🔍 Search prompts by title, description, or tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-          </div>
+        <div style={styles.controls}>
+          <input
+            type="text"
+            placeholder="🔍 Search prompts by title, description, or tags..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={styles.searchInput}
+          />
 
-          <div className="categories-section">
-            <h3>Filter by Category:</h3>
-            <div className="categories-grid">
+          <div style={styles.categoriesSection}>
+            <h3 style={styles.categoriesTitle}>Filter by Category:</h3>
+            <div style={styles.categoriesGrid}>
               <button
-                className={`category-filter ${selectedCategory === 'all' ? 'active' : ''}`}
+                style={{
+                  ...styles.categoryFilter,
+                  ...(selectedCategory === 'all' ? styles.activeCategory : {})
+                }}
                 onClick={() => setSelectedCategory('all')}
               >
                 🌟 All Prompts
@@ -129,14 +440,13 @@ export default function PromptLibrary() {
               {categories.map(category => (
                 <button
                   key={category.id}
-                  className={`category-filter ${selectedCategory === category.name ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(category.name)}
-                  style={{ 
-                    borderColor: selectedCategory === category.name ? category.color : '#e2e8f0',
-                    backgroundColor: selectedCategory === category.name ? category.color + '20' : 'white'
+                  style={{
+                    ...styles.categoryFilter,
+                    ...(selectedCategory === category.name ? styles.activeCategory : {})
                   }}
+                  onClick={() => setSelectedCategory(category.name)}
                 >
-                  <span className="category-icon">{category.icon}</span>
+                  <span>{category.icon}</span>
                   {category.name}
                 </button>
               ))}
@@ -144,59 +454,63 @@ export default function PromptLibrary() {
           </div>
         </div>
 
-        <div className="prompts-stats">
-          <span className="stat-item">
+        <div style={styles.stats}>
+          <span style={styles.statItem}>
             Total Prompts: <strong>{filteredPrompts.length}</strong>
           </span>
-          <span className="stat-item">
+          <span style={styles.statItem}>
             Categories: <strong>{categories.length}</strong>
+          </span>
+          <span style={styles.statItem}>
+            Showing: <strong>{filteredPrompts.length}</strong> prompts
           </span>
         </div>
 
-        <div className="prompts-grid">
+        <div style={styles.grid}>
           {filteredPrompts.map(prompt => (
-            <div key={prompt.id} className="prompt-card">
-              <div className="card-header">
-                <div 
-                  className="category-badge"
-                  style={{ backgroundColor: prompt.prompt_categories?.color + '20', color: prompt.prompt_categories?.color }}
-                >
-                  {prompt.prompt_categories?.icon} {prompt.prompt_categories?.name}
+            <div key={prompt.id} style={styles.card}>
+              <div style={styles.cardHeader}>
+                <div style={styles.categoryBadge}>
+                  {prompt.user_prompt_categories?.icon} {prompt.user_prompt_categories?.name || 'Uncategorized'}
                 </div>
-                <div className="prompt-metrics">
-                  <span className="metric">👤 {prompt.usage_count || 0}</span>
+                <div style={styles.metrics}>
+                  <span>👤 {prompt.usage_count || 0}</span>
                   {prompt.rating > 0 && (
-                    <span className="metric">⭐ {prompt.rating}</span>
+                    <span>⭐ {prompt.rating}</span>
                   )}
                 </div>
               </div>
 
-              <h3 className="prompt-title">{prompt.title}</h3>
+              <h3 style={styles.cardTitle}>{prompt.title}</h3>
               
               {prompt.description && (
-                <p className="prompt-desc">{prompt.description}</p>
+                <p style={styles.cardDescription}>{prompt.description}</p>
               )}
 
-              <div className="prompt-preview">
-                <code>{prompt.prompt_text.substring(0, 100)}...</code>
+              <div style={styles.preview}>
+                <code style={styles.previewCode}>
+                  {prompt.prompt_text.substring(0, 100)}...
+                </code>
               </div>
 
-              <div className="tags-container">
-                {prompt.tags?.map((tag, index) => (
-                  <span key={index} className="prompt-tag">#{tag}</span>
-                ))}
-              </div>
+              {prompt.tags && prompt.tags.length > 0 && (
+                <div style={styles.tagsContainer}>
+                  {prompt.tags.map((tag, index) => (
+                    <span key={index} style={styles.tag}>#{tag}</span>
+                  ))}
+                </div>
+              )}
 
-              <div className="card-actions">
+              <div style={styles.actions}>
                 <button
-                  onClick={() => copyToClipboard(prompt.prompt_text)}
-                  className="action-btn copy-btn"
+                  onClick={() => copyToClipboard(prompt.prompt_text, prompt)}
+                  style={{...styles.actionButton, ...styles.copyButton}}
                 >
                   📋 Copy
                 </button>
                 <button
-                  onClick={() => handleUseTemplate(prompt.id)}
-                  className="action-btn use-btn"
+                  onClick={() => handleUseTemplate(prompt)}
+                  style={{...styles.actionButton, ...styles.useButton}}
                 >
                   ✏️ Use Template
                 </button>
@@ -205,357 +519,69 @@ export default function PromptLibrary() {
           ))}
         </div>
 
-        {filteredPrompts.length === 0 && (
-          <div className="empty-state">
-            <div className="empty-icon">🔍</div>
-            <h3>No prompts found</h3>
-            <p>Try adjusting your search terms or select a different category</p>
+        {filteredPrompts.length === 0 && !loading && (
+          <div style={styles.emptyState}>
+            <div style={styles.emptyIcon}>🔍</div>
+            <h3 style={styles.emptyTitle}>No prompts found</h3>
+            <p style={styles.emptyText}>
+              {searchQuery || selectedCategory !== 'all' 
+                ? 'Try adjusting your search terms or select a different category' 
+                : 'No prompts available yet. Be the first to create one!'
+              }
+            </p>
+            <button 
+              onClick={() => router.push('/prompt-builder')}
+              style={styles.backButton}
+            >
+              ➕ Create First Prompt
+            </button>
           </div>
         )}
 
-        <footer className="library-footer">
-          <p>Need a custom prompt? <a href="/prompt-builder">Create your own →</a></p>
+        <footer style={styles.footer}>
+          <p>
+            Need a custom prompt?{' '}
+            <a 
+              href="/prompt-builder" 
+              style={styles.footerLink}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push('/prompt-builder');
+              }}
+            >
+              Create your own →
+            </a>
+          </p>
         </footer>
       </div>
 
-      <style jsx>{`
-        .prompt-library-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 20px;
-          min-height: 100vh;
-          background: #f8fafc;
-        }
-
-        .library-nav {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          margin-bottom: 30px;
-        }
-
-        .back-btn {
-          padding: 10px 20px;
-          background: #3b82f6;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-        }
-
-        .library-nav h1 {
-          font-size: 2.5rem;
-          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+      <style jsx global>{`
+        body {
           margin: 0;
+          padding: 0;
+          background-color: ${darkMode ? '#0f172a' : '#f8fafc'};
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        * {
+          box-sizing: border-box;
         }
 
-        .library-hero {
-          text-align: center;
-          margin-bottom: 40px;
-          padding: 40px 20px;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .library-hero h2 {
-          font-size: 2rem;
-          color: #1e293b;
-          margin-bottom: 10px;
-        }
-
-        .library-hero p {
-          color: #64748b;
-          font-size: 1.1rem;
-        }
-
-        .library-controls {
-          background: white;
-          padding: 30px;
-          border-radius: 16px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-          margin-bottom: 30px;
-        }
-
-        .search-container {
-          max-width: 600px;
-          margin: 0 auto 30px;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 15px 20px;
-          border: 2px solid #e2e8f0;
-          border-radius: 12px;
-          font-size: 1rem;
-          transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
+        input:focus, button:focus, select:focus {
           outline: none;
-          border-color: #3b82f6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .categories-section h3 {
-          margin-bottom: 15px;
-          color: #374151;
-          font-size: 1.1rem;
-        }
-
-        .categories-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .category-filter {
-          padding: 12px 20px;
-          border: 2px solid #e2e8f0;
-          background: white;
-          border-radius: 25px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          transition: all 0.3s ease;
-          font-size: 0.9rem;
-        }
-
-        .category-filter.active {
-          font-weight: 600;
-        }
-
-        .prompts-stats {
-          display: flex;
-          gap: 20px;
-          margin-bottom: 20px;
-          padding: 0 10px;
-        }
-
-        .stat-item {
-          color: #64748b;
-          font-size: 0.9rem;
-        }
-
-        .prompts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-          gap: 25px;
-          margin-bottom: 40px;
-        }
-
-        .prompt-card {
-          background: white;
-          border-radius: 16px;
-          padding: 25px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-          border: 1px solid #e2e8f0;
-          transition: all 0.3s ease;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .prompt-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 15px;
-        }
-
-        .category-badge {
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 600;
-        }
-
-        .prompt-metrics {
-          display: flex;
-          gap: 10px;
-          font-size: 0.8rem;
-          color: #64748b;
-        }
-
-        .metric {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .prompt-title {
-          font-size: 1.3rem;
-          font-weight: 600;
-          color: #1e293b;
-          margin-bottom: 10px;
-          line-height: 1.3;
-        }
-
-        .prompt-desc {
-          color: #64748b;
-          line-height: 1.5;
-          margin-bottom: 15px;
-          flex-grow: 1;
-        }
-
-        .prompt-preview {
-          background: #f8fafc;
-          padding: 12px;
-          border-radius: 8px;
-          margin-bottom: 15px;
-          border-left: 4px solid #3b82f6;
-        }
-
-        .prompt-preview code {
-          color: #475569;
-          font-family: 'Monaco', 'Consolas', monospace;
-          font-size: 0.85rem;
-          line-height: 1.4;
-        }
-
-        .tags-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-bottom: 20px;
-        }
-
-        .prompt-tag {
-          background: #f1f5f9;
-          color: #475569;
-          padding: 4px 10px;
-          border-radius: 12px;
-          font-size: 0.75rem;
-          font-weight: 500;
-        }
-
-        .card-actions {
-          display: flex;
-          gap: 10px;
-          margin-top: auto;
-        }
-
-        .action-btn {
-          flex: 1;
-          padding: 12px;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-          font-weight: 500;
-          transition: all 0.3s ease;
-        }
-
-        .copy-btn {
-          background: #f1f5f9;
-          color: #374151;
-        }
-
-        .use-btn {
-          background: #3b82f6;
-          color: white;
-        }
-
-        .copy-btn:hover {
-          background: #e2e8f0;
-        }
-
-        .use-btn:hover {
-          background: #2563eb;
-        }
-
-        .empty-state {
-          text-align: center;
-          padding: 80px 20px;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .empty-icon {
-          font-size: 4rem;
-          margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-          color: #1e293b;
-          margin-bottom: 10px;
-        }
-
-        .empty-state p {
-          color: #64748b;
-        }
-
-        .library-footer {
-          text-align: center;
-          padding: 30px;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .library-footer a {
-          color: #3b82f6;
-          text-decoration: none;
-          font-weight: 600;
-        }
-
-        .library-footer a:hover {
-          text-decoration: underline;
-        }
-
-        .loading-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 100px 20px;
-          text-align: center;
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #f1f5f9;
-          border-top: 4px solid #3b82f6;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        button:hover:not(:disabled) {
+          transform: translateY(-1px);
         }
 
         @media (max-width: 768px) {
           .prompts-grid {
             grid-template-columns: 1fr;
           }
-          
-          .categories-grid {
-            overflow-x: auto;
-            padding-bottom: 10px;
-          }
-          
-          .card-header {
-            flex-direction: column;
-            gap: 10px;
-          }
-          
-          .prompt-metrics {
-            align-self: flex-start;
-          }
         }
       `}</style>
     </>
   );
-                }
+}
