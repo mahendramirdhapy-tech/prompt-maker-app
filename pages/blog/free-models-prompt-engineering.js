@@ -102,7 +102,7 @@ export default function FreeModelsPromptEngineering() {
             </div>
           </div>
 
-          <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid '#e5e7eb' }}>
+          <footer style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e5e7eb' }}>
             <div style={{ textAlign: 'center' }}>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>Ready to master prompt engineering with free tools?</p>
               <Link 
