@@ -43,12 +43,19 @@ export default function PromptBuilder() {
 
   const loadCategories = async () => {
     try {
+      console.log('Loading categories from user_prompt_categories...');
       const { data, error } = await supabase
-        .from('prompt_categories')
+        .from('user_prompt_categories')
         .select('*')
         .order('name');
       
-      if (data) setCategories(data);
+      if (error) {
+        console.error('Error loading categories:', error);
+        return;
+      }
+      
+      console.log('Categories loaded:', data);
+      setCategories(data || []);
     } catch (error) {
       console.error('Error loading categories:', error);
     }
@@ -63,29 +70,45 @@ export default function PromptBuilder() {
     setLoading(true);
 
     try {
+      const promptData = {
+        title: title.trim(),
+        description: description.trim(),
+        prompt_text: prompt.trim(),
+        category_id: category || null,
+        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        is_public: isPublic,
+        usage_count: 0,
+        rating: 0
+      };
+
+      console.log('Saving prompt to user_prompts table:', promptData);
+
       const { data, error } = await supabase
-        .from('prompt_library')
-        .insert([
-          {
-            title: title.trim(),
-            description: description.trim(),
-            prompt_text: prompt.trim(),
-            category_id: category || null,
-            tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-            is_public: isPublic,
-            usage_count: 0,
-            rating: 0
-          }
-        ])
+        .from('user_prompts')
+        .insert([promptData])
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase Error Details:', error);
+        throw error;
+      }
 
+      console.log('Prompt saved successfully:', data);
       alert('Prompt saved successfully!');
+      
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setPrompt('');
+      setCategory('');
+      setTags('');
+      setIsPublic(true);
+      
+      // Redirect to prompts page
       router.push('/prompts');
     } catch (error) {
       console.error('Error saving prompt:', error);
-      alert('Error saving prompt. Please try again.');
+      alert(`Error saving prompt: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -281,6 +304,11 @@ export default function PromptBuilder() {
                 </option>
               ))}
             </select>
+            {categories.length === 0 && (
+              <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '8px' }}>
+                No categories found. Please check if user_prompt_categories table exists.
+              </p>
+            )}
           </div>
 
           <div style={styles.formGroup}>
