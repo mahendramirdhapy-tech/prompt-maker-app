@@ -1,4 +1,4 @@
-// pages/index.js - WITH COMPLETE FOOTER
+// pages/index.js - MOBILE RESPONSIVE WITH SIDEBAR AND FEEDBACK SECTION
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -26,7 +26,7 @@ const TONES = [
   'Formal', 'Casual', 'Persuasive', 'Educational', 'Inspirational'
 ];
 
-// AI Models
+// AI Models for Text Generation
 const AI_MODELS = [
   { name: 'gemini-pro', label: 'Google Gemini Pro', free: true },
   { name: 'claude-instant', label: 'Claude Instant', free: true },
@@ -98,6 +98,63 @@ const IMAGE_STYLES = [
   'Cyberpunk', 'Minimalist', 'Vintage', 'Futuristic', 'Fantasy'
 ];
 
+// Features Dropdown Items
+const FEATURES_ITEMS = [
+  { path: '/seo', label: '🔍 SEO Tool', icon: '🔍' },
+  { path: '/code', label: '💻 Code Assistant', icon: '💻' },
+  { path: '/email', label: '✉️ Email Writer', icon: '✉️' },
+  { path: '/translate', label: '🔄 Translator', icon: '🔄' },
+  { path: '/audio', label: '🎵 Audio Tool', icon: '🎵' },
+  { path: '/prompts', label: '📚 Prompt Library', icon: '📚' },
+];
+
+// Pricing Plans
+const PRICING_PLANS = [
+  {
+    name: 'Free',
+    price: '$0',
+    period: 'forever',
+    features: [
+      '5 prompts per day',
+      'Basic AI models',
+      'Standard templates',
+      'Community support'
+    ],
+    buttonText: 'Get Started',
+    popular: false
+  },
+  {
+    name: 'Pro',
+    price: '$19',
+    period: 'per month',
+    features: [
+      'Unlimited prompts',
+      'All AI models access',
+      'Advanced templates',
+      'Priority support',
+      'Image to prompt feature',
+      'Export capabilities'
+    ],
+    buttonText: 'Start Free Trial',
+    popular: true
+  },
+  {
+    name: 'Enterprise',
+    price: '$49',
+    period: 'per month',
+    features: [
+      'Everything in Pro',
+      'Team collaboration',
+      'Custom templates',
+      'API access',
+      'Dedicated support',
+      'Advanced analytics'
+    ],
+    buttonText: 'Contact Sales',
+    popular: false
+  }
+];
+
 export default function Home() {
   const [user, setUser] = useState(null);
   const [input, setInput] = useState('');
@@ -123,76 +180,101 @@ export default function Home() {
   const [temperature, setTemperature] = useState(0.7);
   const [creativityLevel, setCreativityLevel] = useState('balanced');
   const [lastInput, setLastInput] = useState('');
+  
+  // New State Variables for Image to Prompt
+  const [showImageToPrompt, setShowImageToPrompt] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageAnalysis, setImageAnalysis] = useState('');
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageUsedModel, setImageUsedModel] = useState('');
+
+  // New State Variables for Feedback Section
+  const [recentFeedbacks, setRecentFeedbacks] = useState([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(true);
+
+  // New State Variables for Navigation
+  const [showFeaturesDropdown, setShowFeaturesDropdown] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
+
   const router = useRouter();
 
   // SEO data
   const pageTitle = "AI Prompt Maker - Free AI Prompt Generator Tool";
   const pageDescription = "Transform your ideas into perfect AI prompts with our free AI Prompt Generator. Support for multiple AI models including GPT-4, Gemini, Claude, and Llama.";
 
-  // Client-side only effects
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setMobileMenuOpen(false);
-      }
-    };
+  // Navigation items - Updated
+  const navItems = [
+    { path: '/pricing', label: 'Pricing', icon: '💰', action: () => setShowPricingModal(true) },
+    { path: '/features', label: 'Features', icon: '⚡', dropdown: true },
+  ];
 
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-
+  // Initialize component
   useEffect(() => {
-    const isDark = localStorage.getItem('darkMode') === 'true';
-    setDarkMode(isDark);
-    updateDarkModeStyles(isDark);
+    console.log('Component mounted');
     
-    const savedUsage = localStorage.getItem('guestUsage');
-    if (savedUsage) {
-      setUsageCount(parseInt(savedUsage));
-    }
-
-    try {
-      const savedHistory = localStorage.getItem('promptHistory');
-      if (savedHistory) {
-        const history = JSON.parse(savedHistory);
-        setPromptHistory(history.slice(0, 50));
-      }
-    } catch (error) {
-      console.error('Error loading history:', error);
-    }
-  }, []);
-
-  // User initialization
-  useEffect(() => {
-    let mounted = true;
-
-    const initUser = async () => {
+    const initializeApp = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (mounted) {
-          setUser(session?.user || null);
+        // Check screen size
+        const checkScreenSize = () => {
+          const mobile = window.innerWidth < 768;
+          setIsMobile(mobile);
+          if (!mobile) {
+            setMobileMenuOpen(false);
+            setShowFeaturesDropdown(false);
+          }
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+
+        // Initialize dark mode
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        setDarkMode(isDark);
+        updateDarkModeStyles(isDark);
+        
+        // Initialize usage count
+        const savedUsage = localStorage.getItem('guestUsage');
+        if (savedUsage) {
+          setUsageCount(parseInt(savedUsage));
         }
+
+        // Initialize history
+        try {
+          const savedHistory = localStorage.getItem('promptHistory');
+          if (savedHistory) {
+            const history = JSON.parse(savedHistory);
+            setPromptHistory(history.slice(0, 50));
+          }
+        } catch (error) {
+          console.error('Error loading history:', error);
+        }
+
+        // Initialize user
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user || null);
+
+        // Fetch recent feedbacks
+        fetchRecentFeedbacks();
+
+        return () => window.removeEventListener('resize', checkScreenSize);
       } catch (error) {
-        console.error('Error initializing user:', error);
+        console.error('Initialization error:', error);
       }
     };
 
-    initUser();
+    initializeApp();
+  }, []);
 
+  // Auth state listener
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (mounted) {
-          setUser(session?.user || null);
-        }
+        setUser(session?.user || null);
       }
     );
 
-    return () => {
-      mounted = false;
-      subscription?.unsubscribe();
-    };
+    return () => subscription?.unsubscribe();
   }, []);
 
   // Save history
@@ -203,6 +285,24 @@ export default function Home() {
       console.error('Error saving history:', error);
     }
   }, [promptHistory]);
+
+  // Fetch recent feedbacks function
+  const fetchRecentFeedbacks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_feedback')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      setRecentFeedbacks(data || []);
+    } catch (error) {
+      console.error('Error fetching feedbacks:', error);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
 
   const updateDarkModeStyles = (isDark) => {
     const root = document.documentElement;
@@ -264,6 +364,7 @@ export default function Home() {
       model: promptData.model,
       tone: promptData.tone,
       language: promptData.language,
+      type: promptData.type || 'text'
     };
 
     setPromptHistory(prev => [historyItem, ...prev.slice(0, 49)]);
@@ -304,11 +405,92 @@ export default function Home() {
     throw new Error('All AI models are currently unavailable. Please try again.');
   };
 
+  // Smart Image Analysis with Fallback
+  const analyzeImageWithFallback = async (imageFile, promptType = 'describe') => {
+    setImageLoading(true);
+    setGenerationStatus('Analyzing image content...');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      formData.append('promptType', promptType);
+
+      const response = await fetch('/api/analyze-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result && result.success) {
+          return {
+            analysis: result.analysis,
+            modelUsed: result.model,
+            modelLabel: result.model,
+            free: result.free
+          };
+        }
+      }
+      
+      // Fallback to local analysis
+      return await analyzeImageLocally(imageFile, promptType);
+      
+    } catch (error) {
+      console.error('Analysis error:', error);
+      return await analyzeImageLocally(imageFile, promptType);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  // Local image analysis
+  const analyzeImageLocally = (imageFile, promptType) => {
+    return new Promise((resolve) => {
+      const fileName = imageFile.name.toLowerCase();
+      const fileSizeMB = (imageFile.size / (1024 * 1024)).toFixed(2);
+      const fileType = imageFile.type.split('/')[1]?.toUpperCase() || 'IMAGE';
+      
+      const analysis = generateFallbackAnalysis(fileName, promptType, fileSizeMB, fileType);
+      
+      resolve({
+        analysis: analysis,
+        modelUsed: 'basic-analyzer',
+        modelLabel: 'Basic Image Analyzer 🆓',
+        free: true
+      });
+    });
+  };
+
+  // Fallback analysis generator
+  const generateFallbackAnalysis = (fileName, promptType, fileSizeMB, fileType) => {
+    const baseAnalysis = `📁 **File Analysis:** ${fileName} • ${fileType} • ${fileSizeMB}MB\n\n`;
+    
+    if (promptType === 'describe') {
+      return baseAnalysis + 
+        `🔍 **Image Analysis:** This image contains visual content suitable for AI processing.\n\n` +
+        `💡 **Description Guide:**\n` +
+        `• Identify the main subjects and focal points\n` +
+        `• Describe colors, lighting, and composition\n` +
+        `• Note the overall mood and atmosphere\n` +
+        `• Mention any distinctive features or elements\n` +
+        `• Consider the style and artistic approach`;
+    } else {
+      return baseAnalysis +
+        `🚀 **AI Prompt Ready:**\n"Professional ${fileType} composition, high detail, excellent lighting, masterpiece quality, ultra detailed, vibrant colors, professional photography, perfect composition"\n\n` +
+        `⚡ **Prompt Optimization:**\n` +
+        `• Add specific details about the main subject\n` +
+        `• Include lighting and mood descriptions\n` +
+        `• Specify color palette and style\n` +
+        `• Mention composition and perspective\n` +
+        `• Add technical quality parameters`;
+    }
+  };
+
   const canGenerate = () => user || usageCount < 5;
 
-  // FIXED: Submit handler with regeneration support
+  // Submit handler
   const handleSubmit = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
+    if (e) e.preventDefault();
     if (!input.trim() || !canGenerate()) return;
 
     setLoading(true);
@@ -347,6 +529,7 @@ export default function Home() {
           model_used: result.modelUsed,
           language,
           tone,
+          type: 'text'
         });
       } catch (dbError) {
         console.error('Database error:', dbError);
@@ -359,6 +542,7 @@ export default function Home() {
         model: result.modelLabel,
         tone,
         language,
+        type: 'text'
       });
 
       // Update usage count
@@ -379,15 +563,111 @@ export default function Home() {
     }
   };
 
-  // FIXED: Regenerate function
+  // Handle Image Upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      alert('❌ Please upload an image file (JPEG, PNG, GIF, WebP, etc.)');
+      return;
+    }
+
+    // Check file size (max 10MB for better analysis)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('❌ Image size should be less than 10MB for optimal analysis');
+      return;
+    }
+
+    setSelectedImage(file);
+    setImageAnalysis('');
+    setImageUsedModel('');
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Analyze Image and Generate Prompt
+  const handleAnalyzeImage = async (promptType = 'describe') => {
+    if (!selectedImage || !canGenerate()) return;
+
+    setImageLoading(true);
+    setImageAnalysis('');
+    setImageUsedModel('');
+
+    try {
+      const result = await analyzeImageWithFallback(selectedImage, promptType);
+
+      setImageAnalysis(result.analysis);
+      setImageUsedModel(result.modelLabel);
+
+      // Add to history
+      addToHistory({
+        input: `[Image Analysis] ${promptType} - ${selectedImage.name}`,
+        output: result.analysis,
+        model: result.modelLabel,
+        tone: 'Descriptive',
+        language: 'English',
+        type: 'image'
+      });
+
+      // Update usage count
+      if (!user) {
+        const newCount = usageCount + 1;
+        setUsageCount(newCount);
+        localStorage.setItem('guestUsage', newCount.toString());
+      }
+
+      setGenerationStatus('Image analysis completed!');
+
+    } catch (err) {
+      console.error('Image analysis error:', err);
+      setGenerationStatus('Image analysis failed');
+      alert('❌ ' + err.message);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  // Use Image Analysis as Prompt Input
+  const useAnalysisAsPrompt = () => {
+    if (imageAnalysis) {
+      // Extract the main prompt from analysis
+      const promptMatch = imageAnalysis.match(/"([^"]+)"/);
+      if (promptMatch) {
+        setInput(promptMatch[1]);
+      } else {
+        // Use the first meaningful line as prompt
+        const lines = imageAnalysis.split('\n');
+        const mainLine = lines.find(line => line.includes('**AI Prompt**') || line.includes('**Optimized Prompt**') || (line.length > 20 && !line.startsWith('•')));
+        if (mainLine) {
+          setInput(mainLine.replace(/\*\*/g, '').trim());
+        } else {
+          setInput('Create an AI image based on the analyzed visual content');
+        }
+      }
+      setShowImageToPrompt(false);
+      setImageAnalysis('');
+      setImagePreview(null);
+      setSelectedImage(null);
+      alert('✅ Image analysis copied to prompt input! You can now generate the AI prompt.');
+    }
+  };
+
+  // Regenerate function
   const handleRegenerate = () => {
     if (lastInput.trim()) {
       setInput(lastInput);
       setTimeout(() => {
-        handleSubmit({ preventDefault: () => {} });
+        handleSubmit();
       }, 100);
     } else if (input.trim()) {
-      handleSubmit({ preventDefault: () => {} });
+      handleSubmit();
     }
   };
 
@@ -451,6 +731,7 @@ export default function Home() {
   const navigateTo = (path) => {
     router.push(path);
     setMobileMenuOpen(false);
+    setShowFeaturesDropdown(false);
   };
 
   const toggleMobileMenu = () => {
@@ -485,24 +766,37 @@ export default function Home() {
     }
   };
 
-  // FIXED STYLES - No function calls in styles
+  // RESPONSIVE STYLES
   const containerStyle = {
     fontFamily: "'Inter', sans-serif",
-    maxWidth: '1200px',
+    maxWidth: '100%',
     margin: '0 auto',
     padding: isMobile ? '12px' : '24px',
     paddingBottom: isMobile ? '80px' : '40px',
     minHeight: '100vh',
     backgroundColor: darkMode ? '#0f172a' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#1e293b',
+    boxSizing: 'border-box',
+    position: 'relative'
   };
 
+  // Updated Header Style
   const headerStyle = {
-    textAlign: 'center',
-    padding: isMobile ? '15px 0' : '30px 0',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: isMobile ? '15px 0' : '20px 0',
     borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
     marginBottom: '20px',
     position: 'relative',
+  };
+
+  const logoStyle = {
+    fontSize: isMobile ? '1.5rem' : '2rem',
+    fontWeight: '900',
+    color: '#3b82f6',
+    margin: 0,
+    textDecoration: 'none'
   };
 
   const mainTitleStyle = {
@@ -510,12 +804,56 @@ export default function Home() {
     fontWeight: '900',
     color: '#3b82f6',
     margin: '0 0 8px 0',
+    lineHeight: '1.2'
   };
 
   const subtitleStyle = {
     fontSize: isMobile ? '0.9rem' : '1.2rem',
     color: darkMode ? '#cbd5e1' : '#64748b',
     margin: '0',
+    lineHeight: '1.4'
+  };
+
+  // Features Dropdown Style
+  const featuresDropdownStyle = {
+    position: 'absolute',
+    top: '100%',
+    left: '0',
+    backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+    border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    borderRadius: '8px',
+    padding: '8px 0',
+    minWidth: '200px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    zIndex: 1000,
+    marginTop: '8px'
+  };
+
+  // MOBILE SIDEBAR STYLES
+  const mobileSidebarStyle = {
+    position: 'fixed',
+    top: 0,
+    left: mobileMenuOpen ? '0' : '-100%',
+    width: '280px',
+    height: '100vh',
+    backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+    zIndex: 1000,
+    transition: 'left 0.3s ease',
+    boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'auto'
+  };
+
+  const sidebarOverlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 999,
+    display: mobileMenuOpen ? 'block' : 'none'
   };
 
   const mobileMenuButtonStyle = {
@@ -533,54 +871,65 @@ export default function Home() {
     backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
   };
 
-  const navContainerStyle = {
-    display: isMobile ? (mobileMenuOpen ? 'flex' : 'none') : 'flex',
-    flexDirection: isMobile ? 'column' : 'row',
+  const sidebarHeaderStyle = {
+    padding: '20px',
+    borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center'
+  };
+
+  const sidebarNavStyle = {
+    flex: 1,
+    padding: '20px 0'
+  };
+
+  const sidebarFooterStyle = {
+    padding: '20px',
+    borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px'
+  };
+
+  const navItemStyle = {
+    display: 'flex',
     alignItems: 'center',
-    marginTop: '15px',
-    gap: isMobile ? '12px' : '8px',
-    position: isMobile ? 'absolute' : 'static',
-    top: isMobile ? '100%' : 'auto',
-    left: isMobile ? '0' : 'auto',
-    right: isMobile ? '0' : 'auto',
-    backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-    padding: isMobile ? '16px' : '0',
-    borderRadius: isMobile ? '0 0 12px 12px' : '0',
-    boxShadow: isMobile ? '0 4px 6px rgba(0,0,0,0.1)' : 'none',
-    zIndex: 99,
-    border: isMobile ? `1px solid ${darkMode ? '#334155' : '#e2e8f0'}` : 'none',
+    gap: '12px',
+    padding: '15px 20px',
+    color: darkMode ? '#cbd5e1' : '#64748b',
+    textDecoration: 'none',
+    border: 'none',
+    background: 'none',
+    width: '100%',
+    textAlign: 'left',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  };
+
+  const navItemActiveStyle = {
+    ...navItemStyle,
+    color: '#3b82f6',
+    backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+    borderRight: '3px solid #3b82f6'
   };
 
   const buttonStyle = (bgColor, textColor = '#fff') => ({
-    padding: isMobile ? '8px 12px' : '8px 16px',
+    padding: isMobile ? '10px 14px' : '8px 16px',
     backgroundColor: bgColor,
     color: textColor,
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: isMobile ? '0.8rem' : '0.9rem',
+    fontSize: isMobile ? '0.85rem' : '0.9rem',
     fontWeight: '600',
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: '6px',
+    minHeight: isMobile ? '44px' : 'auto',
+    minWidth: isMobile ? '44px' : 'auto'
   });
-
-  const navLinkBaseStyle = {
-    color: darkMode ? '#cbd5e1' : '#64748b',
-    cursor: 'pointer',
-    padding: isMobile ? '10px 12px' : '6px 12px',
-    borderRadius: '8px',
-    fontSize: isMobile ? '0.9rem' : '0.9rem',
-    backgroundColor: 'transparent',
-    border: 'none',
-    fontFamily: 'inherit',
-  };
-
-  const navLinkActiveStyle = {
-    color: '#3b82f6',
-    backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
-  };
 
   const cardStyle = {
     backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
@@ -588,40 +937,209 @@ export default function Home() {
     borderRadius: '12px',
     padding: isMobile ? '16px' : '20px',
     marginBottom: '16px',
+    boxSizing: 'border-box'
   };
 
   const inputStyle = {
     width: '100%',
-    padding: isMobile ? '10px' : '12px',
+    padding: isMobile ? '12px' : '12px',
     borderRadius: '8px',
     border: `1px solid ${darkMode ? '#334155' : '#d1d5db'}`,
     backgroundColor: darkMode ? '#0f172a' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#1e293b',
-    fontSize: isMobile ? '14px' : '16px',
+    fontSize: isMobile ? '16px' : '16px',
     marginBottom: '12px',
     boxSizing: 'border-box',
+    minHeight: isMobile ? '44px' : 'auto'
   };
 
-  const navItems = [
-    { path: '/', label: '🏠 Home' },
-    { path: '/seo', label: '🔍 SEO' },
-    { path: '/code', label: '💻 Code' },
-    { path: '/email', label: '✉️ Email' },
-    { path: '/translate', label: '🔄 Translate' },
-    { path: '/audio', label: '🎵 Audio' },
-    { path: '/catalog-maker', label: '📋 Catalog' },
-    { path: '/prompts', label: '📚 Library' },
-  ];
+  const textareaStyle = {
+    ...inputStyle,
+    minHeight: isMobile ? '120px' : '150px',
+    resize: 'vertical',
+    fontFamily: 'inherit',
+    lineHeight: '1.5'
+  };
+
+  const generateButtonStyle = {
+    width: '100%',
+    padding: isMobile ? '16px' : '16px',
+    backgroundColor: loading || !canGenerate() || !input.trim() ? '#9ca3af' : '#10b981',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '12px',
+    fontSize: isMobile ? '1.1rem' : '1.1rem',
+    fontWeight: '700',
+    cursor: (loading || !canGenerate() || !input.trim()) ? 'not-allowed' : 'pointer',
+    marginTop: '10px',
+    minHeight: '54px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
+  const mainContentStyle = {
+    display: 'flex',
+    flexDirection: isMobile ? 'column' : 'row',
+    gap: isMobile ? '16px' : '20px',
+    alignItems: 'stretch'
+  };
+
+  const sectionStyle = {
+    flex: 1,
+    minWidth: 0
+  };
+
+  const toolsGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+    gap: '20px',
+    marginBottom: '40px'
+  };
+
+  const footerStyle = {
+    backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+    padding: isMobile ? '30px 16px 16px' : '40px 20px 20px',
+    marginTop: '40px',
+    borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+  };
+
+  const footerGridStyle = {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+    gap: isMobile ? '20px' : '30px',
+    marginBottom: '20px'
+  };
 
   return (
     <>
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
+      {/* MOBILE SIDEBAR OVERLAY */}
+      {isMobile && (
+        <div 
+          style={sidebarOverlayStyle}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* MOBILE SIDEBAR */}
+      {isMobile && (
+        <div style={mobileSidebarStyle}>
+          {/* Sidebar Header */}
+          <div style={sidebarHeaderStyle}>
+            <h3 style={{ margin: 0, color: darkMode ? '#f8fafc' : '#1e293b' }}>
+              🚀 AI Tools
+            </h3>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                color: darkMode ? '#94a3b8' : '#64748b',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Sidebar Navigation */}
+          <div style={sidebarNavStyle}>
+            {navItems.map((item) => (
+              <div key={item.path}>
+                {item.dropdown ? (
+                  <div>
+                    <button
+                      onClick={() => setShowFeaturesDropdown(!showFeaturesDropdown)}
+                      style={navItemStyle}
+                    >
+                      <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                      {item.label} {showFeaturesDropdown ? '▲' : '▼'}
+                    </button>
+                    {showFeaturesDropdown && (
+                      <div style={{ paddingLeft: '20px' }}>
+                        {FEATURES_ITEMS.map((feature) => (
+                          <button
+                            key={feature.path}
+                            onClick={() => {
+                              navigateTo(feature.path);
+                              setMobileMenuOpen(false);
+                            }}
+                            style={navItemStyle}
+                          >
+                            <span style={{ fontSize: '1.2rem' }}>{feature.icon}</span>
+                            {feature.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      if (item.action) {
+                        item.action();
+                      } else {
+                        navigateTo(item.path);
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                    style={navItemStyle}
+                  >
+                    <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                    {item.label}
+                  </button>
+                )}
+              </div>
+            ))}
+            
+            {/* Additional Mobile Navigation Items */}
+            <button onClick={() => navigateTo('/')} style={navItemStyle}>
+              <span style={{ fontSize: '1.2rem' }}>🏠</span>
+              Home
+            </button>
+            <button onClick={() => setShowImageToPrompt(true)} style={navItemStyle}>
+              <span style={{ fontSize: '1.2rem' }}>🖼️</span>
+              Image to Prompt
+            </button>
+            <button onClick={() => setShowHistory(true)} style={navItemStyle}>
+              <span style={{ fontSize: '1.2rem' }}>📚</span>
+              History
+            </button>
+          </div>
+
+          {/* Sidebar Footer */}
+          <div style={sidebarFooterStyle}>
+            {user ? (
+              <button onClick={handleLogout} style={buttonStyle('#6b7280', '#fff')}>
+                👤 Logout
+              </button>
+            ) : (
+              <button onClick={handleLogin} style={buttonStyle('#3b82f6', '#fff')}>
+                🔐 Login
+              </button>
+            )}
+            
+            <button 
+              onClick={toggleDarkMode} 
+              style={buttonStyle(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}
+            >
+              {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div style={containerStyle}>
-        {/* HEADER */}
+        {/* UPDATED HEADER */}
         <header style={headerStyle}>
           {isMobile && (
             <button
@@ -629,72 +1147,207 @@ export default function Home() {
               style={mobileMenuButtonStyle}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? '✕' : '☰'}
+              ☰
             </button>
           )}
 
-          <h1 style={mainTitleStyle}>AI Prompt Maker</h1>
-          <p style={subtitleStyle}>Transform your ideas into perfect AI prompts</p>
-          
-          <div style={navContainerStyle}>
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: isMobile ? 'column' : 'row', 
-              gap: isMobile ? '8px' : '12px',
-              alignItems: 'center',
-              width: isMobile ? '100%' : 'auto',
-            }}>
-              {navItems.map((item) => (
-                <button 
-                  key={item.path}
-                  onClick={() => navigateTo(item.path)} 
-                  style={{
-                    ...navLinkBaseStyle,
-                    ...(router.pathname === item.path ? navLinkActiveStyle : {})
-                  }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 style={logoStyle}>AI Prompt Maker</h1>
+          </div>
 
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: isMobile ? 'column' : 'row', 
-              gap: isMobile ? '8px' : '12px',
-              alignItems: 'center',
-              width: isMobile ? '100%' : 'auto',
-            }}>
+          {/* Desktop Navigation */}
+          {!isMobile && (
+            <nav style={{ display: 'flex', alignItems: 'center', gap: '30px', position: 'relative' }}>
+              {navItems.map((item) => (
+                <div key={item.path} style={{ position: 'relative' }}>
+                  {item.dropdown ? (
+                    <div>
+                      <button 
+                        onClick={() => setShowFeaturesDropdown(!showFeaturesDropdown)}
+                        style={{
+                          color: darkMode ? '#cbd5e1' : '#64748b',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '1rem',
+                          fontWeight: '500',
+                          padding: '8px 16px',
+                          transition: 'color 0.2s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                        onMouseEnter={() => setShowFeaturesDropdown(true)}
+                      >
+                        {item.label} {showFeaturesDropdown ? '▲' : '▼'}
+                      </button>
+                      
+                      {showFeaturesDropdown && (
+                        <div 
+                          style={featuresDropdownStyle}
+                          onMouseLeave={() => setShowFeaturesDropdown(false)}
+                        >
+                          {FEATURES_ITEMS.map((feature) => (
+                            <button
+                              key={feature.path}
+                              onClick={() => {
+                                navigateTo(feature.path);
+                                setShowFeaturesDropdown(false);
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '12px 16px',
+                                color: darkMode ? '#cbd5e1' : '#64748b',
+                                textDecoration: 'none',
+                                border: 'none',
+                                background: 'none',
+                                width: '100%',
+                                textAlign: 'left',
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)';
+                                e.currentTarget.style.color = '#3b82f6';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                                e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
+                              }}
+                            >
+                              <span style={{ fontSize: '1rem' }}>{feature.icon}</span>
+                              {feature.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={item.action || (() => navigateTo(item.path))}
+                      style={{
+                        color: darkMode ? '#cbd5e1' : '#64748b',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        padding: '8px 16px',
+                        transition: 'color 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#3b82f6';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  )}
+                </div>
+              ))}
+              
+              {/* Additional Desktop Navigation Buttons */}
+              <button onClick={() => setShowImageToPrompt(true)} style={buttonStyle('#ec4899')}>
+                🖼️ Image to Prompt
+              </button>
               <button onClick={() => setShowHistory(!showHistory)} style={buttonStyle('#8b5cf6')}>
                 📚 History
               </button>
+            </nav>
+          )}
 
-              {user ? (
-                <button onClick={handleLogout} style={buttonStyle('#6b7280')}>
-                  Logout
-                </button>
-              ) : (
-                <button onClick={handleLogin} style={buttonStyle('#3b82f6')}>
-                  Login
-                </button>
-              )}
-              
-              <button onClick={toggleDarkMode} style={buttonStyle(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}>
+          {/* Auth Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {!isMobile && (
+              <>
+                {user ? (
+                  <button 
+                    onClick={handleLogout}
+                    style={{
+                      color: darkMode ? '#cbd5e1' : '#64748b',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: '500',
+                      padding: '8px 16px'
+                    }}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <>
+                    <button 
+                      onClick={handleLogin}
+                      style={{
+                        color: darkMode ? '#cbd5e1' : '#64748b',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        padding: '8px 16px'
+                      }}
+                    >
+                      Login
+                    </button>
+                    <button 
+                      onClick={handleLogin}
+                      style={{
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        padding: '8px 20px'
+                      }}
+                    >
+                      Sign Up
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+            
+            {!isMobile && (
+              <button onClick={toggleDarkMode} style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1.2rem',
+                padding: '8px'
+              }}>
                 {darkMode ? '☀️' : '🌙'}
               </button>
-            </div>
+            )}
           </div>
         </header>
 
-        {/* MAIN CONTENT */}
-        <main style={{ 
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          gap: isMobile ? '16px' : '20px',
+        {/* ORIGINAL HEADER CONTENT - EXACTLY AS BEFORE */}
+        <header style={{
+          textAlign: 'center',
+          padding: isMobile ? '15px 0' : '30px 0',
+          borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+          marginBottom: '20px',
+          position: 'relative',
         }}>
+          <h1 style={mainTitleStyle}>AI Prompt Maker</h1>
+          <p style={subtitleStyle}>Transform your ideas into perfect AI prompts</p>
+        </header>
+
+        {/* MAIN CONTENT - EXACTLY AS BEFORE */}
+        <main style={mainContentStyle}>
           
           {/* Input Section */}
-          <div style={{ flex: 1 }}>
+          <div style={sectionStyle}>
             {!canGenerate() && !user && (
               <div style={{
                 ...cardStyle,
@@ -712,9 +1365,8 @@ export default function Home() {
                 <button 
                   onClick={handleLogin}
                   style={{
-                    ...buttonStyle('#3b82f6'),
-                    marginTop: '10px',
-                    width: '100%',
+                    ...generateButtonStyle,
+                    backgroundColor: '#3b82f6',
                   }}
                 >
                   🔐 Login to Continue
@@ -795,11 +1447,12 @@ export default function Home() {
                   </div>
 
                   <div style={{ marginTop: '10px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                       <input 
                         type="checkbox" 
                         checked={includeNegativePrompt} 
                         onChange={(e) => setIncludeNegativePrompt(e.target.checked)} 
+                        style={{ width: '18px', height: '18px' }}
                       />
                       Include Negative Prompt
                     </label>
@@ -820,14 +1473,20 @@ export default function Home() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    padding: '0'
+                    padding: '0',
+                    minHeight: '44px'
                   }}
                 >
                   {advancedOptions ? '▼' : '▶'} Advanced Options
                 </button>
 
                 {advancedOptions && (
-                  <div style={{ marginTop: '10px', padding: '12px', backgroundColor: darkMode ? '#0f172a' : '#f1f5f9', borderRadius: '8px' }}>
+                  <div style={{ 
+                    marginTop: '10px', 
+                    padding: '12px', 
+                    backgroundColor: darkMode ? '#0f172a' : '#f1f5f9', 
+                    borderRadius: '8px' 
+                  }}>
                     <div style={{ marginBottom: '10px' }}>
                       <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600' }}>
                         Creativity Level
@@ -850,7 +1509,7 @@ export default function Home() {
                         step="0.1"
                         value={temperature}
                         onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', height: '6px' }}
                       />
                     </div>
                   </div>
@@ -868,7 +1527,7 @@ export default function Home() {
                   step="200"
                   value={maxTokens}
                   onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', height: '6px' }}
                 />
               </div>
 
@@ -876,22 +1535,24 @@ export default function Home() {
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>
                   Language
                 </label>
-                <div style={{ display: 'flex', gap: isMobile ? '12px' : '16px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: isMobile ? '12px' : '16px', flexWrap: 'wrap' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     <input 
                       type="radio" 
                       name="lang" 
                       checked={language === 'English'} 
                       onChange={() => setLanguage('English')} 
+                      style={{ width: '18px', height: '18px' }}
                     />
                     English
                   </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '0.9rem' : '1rem' }}>
                     <input 
                       type="radio" 
                       name="lang" 
                       checked={language === 'Hindi'} 
                       onChange={() => setLanguage('Hindi')} 
+                      style={{ width: '18px', height: '18px' }}
                     />
                     हिंदी
                   </label>
@@ -908,11 +1569,7 @@ export default function Home() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Describe what you want to create..."
                   rows={isMobile ? 4 : 5}
-                  style={{
-                    ...inputStyle,
-                    minHeight: isMobile ? '100px' : '120px',
-                    resize: 'vertical',
-                  }}
+                  style={textareaStyle}
                   required
                 />
                 
@@ -923,6 +1580,7 @@ export default function Home() {
                     borderRadius: '8px',
                     marginBottom: '12px',
                     textAlign: 'center',
+                    fontSize: isMobile ? '0.9rem' : '1rem'
                   }}>
                     {generationStatus}
                   </div>
@@ -931,22 +1589,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={loading || !canGenerate() || !input.trim()}
-                  style={{
-                    width: '100%',
-                    padding: isMobile ? '14px' : '16px',
-                    backgroundColor: loading || !canGenerate() || !input.trim() 
-                      ? '#9ca3af' 
-                      : '#10b981',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontSize: isMobile ? '1rem' : '1.1rem',
-                    fontWeight: '700',
-                    cursor: (loading || !canGenerate() || !input.trim()) 
-                      ? 'not-allowed' 
-                      : 'pointer',
-                    marginTop: '10px',
-                  }}
+                  style={generateButtonStyle}
                 >
                   {loading ? '⚡ Generating...' : '✨ Generate AI Prompt'}
                 </button>
@@ -955,7 +1598,7 @@ export default function Home() {
           </div>
 
           {/* Output Section */}
-          <div style={{ flex: 1 }}>
+          <div style={sectionStyle}>
             {output ? (
               <div style={cardStyle}>
                 <div style={{ 
@@ -986,6 +1629,8 @@ export default function Home() {
                   borderRadius: '8px',
                   padding: isMobile ? '12px' : '16px',
                   marginBottom: '12px',
+                  maxHeight: isMobile ? '300px' : '400px',
+                  overflowY: 'auto'
                 }}>
                   <pre style={{
                     whiteSpace: 'pre-wrap',
@@ -993,6 +1638,7 @@ export default function Home() {
                     margin: 0,
                     fontSize: isMobile ? '0.85rem' : '0.9rem',
                     lineHeight: '1.5',
+                    fontFamily: 'inherit'
                   }}>
                     {output}
                   </pre>
@@ -1007,12 +1653,16 @@ export default function Home() {
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     borderRadius: '8px',
                     marginBottom: '12px',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: isMobile ? '8px' : '0',
+                    textAlign: isMobile ? 'center' : 'left'
                   }}>
                     <span>Generated with:</span>
                     <code style={{ 
                       backgroundColor: 'rgba(59, 130, 246, 0.2)',
                       padding: '4px 8px',
                       borderRadius: '4px',
+                      fontSize: isMobile ? '0.8rem' : '0.9rem'
                     }}>
                       {usedModel}
                     </code>
@@ -1024,12 +1674,18 @@ export default function Home() {
                 ...cardStyle,
                 textAlign: 'center',
                 padding: isMobile ? '30px 16px' : '40px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: isMobile ? '200px' : '300px'
               }}>
                 <div style={{ fontSize: isMobile ? '2.5rem' : '3rem', marginBottom: '12px' }}>🚀</div>
                 <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? '1.2rem' : '1.4rem' }}>Ready to Create?</h3>
                 <p style={{ 
                   margin: 0, 
                   color: darkMode ? '#cbd5e1' : '#64748b',
+                  fontSize: isMobile ? '0.9rem' : '1rem'
                 }}>
                   Enter your idea above to generate AI prompts
                 </p>
@@ -1049,12 +1705,7 @@ export default function Home() {
             🛠️ Our Free AI Tools
           </h2>
           
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-            gap: '20px',
-            marginBottom: '40px'
-          }}>
+          <div style={toolsGridStyle}>
             {TOOL_CARDS.map((tool) => (
               <div
                 key={tool.id}
@@ -1066,6 +1717,10 @@ export default function Home() {
                   padding: '20px',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
+                  minHeight: '160px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-5px)';
@@ -1082,7 +1737,8 @@ export default function Home() {
                   fontSize: '0.8rem',
                   fontWeight: '600',
                   display: 'inline-block',
-                  marginBottom: '12px'
+                  marginBottom: '12px',
+                  alignSelf: 'flex-start'
                 }}>
                   {tool.label}
                 </div>
@@ -1099,7 +1755,8 @@ export default function Home() {
                   margin: '0 0 15px 0',
                   color: darkMode ? '#cbd5e1' : '#64748b',
                   fontSize: '0.9rem',
-                  lineHeight: '1.5'
+                  lineHeight: '1.5',
+                  flex: 1
                 }}>
                   {tool.description}
                 </p>
@@ -1119,21 +1776,265 @@ export default function Home() {
           </div>
         </section>
 
-        {/* COMPLETE FOOTER SECTION */}
-        <footer style={{
+        {/* FEEDBACK DISPLAY SECTION - FOOTER SE PAHLE */}
+        <section style={{
+          marginTop: '60px',
+          padding: isMobile ? '20px 0' : '40px 0',
           backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-          padding: isMobile ? '30px 16px 16px' : '40px 20px 20px',
-          marginTop: '40px',
           borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+          borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
         }}>
           <div style={{
             maxWidth: '1200px',
             margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: isMobile ? '20px' : '30px',
-            marginBottom: '20px'
+            padding: isMobile ? '0 16px' : '0 20px'
           }}>
+            <div style={{
+              textAlign: 'center',
+              marginBottom: '40px'
+            }}>
+              <h2 style={{
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                fontSize: isMobile ? '1.8rem' : '2.5rem',
+                margin: '0 0 12px 0',
+                fontWeight: '700'
+              }}>
+                💬 User Feedback
+              </h2>
+              <p style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                margin: '0',
+                maxWidth: '600px',
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }}>
+                See what our users are saying about their experience
+              </p>
+            </div>
+
+            {feedbackLoading ? (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px',
+                color: darkMode ? '#cbd5e1' : '#64748b'
+              }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  border: `3px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  borderTop: `3px solid #3b82f6`,
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  margin: '0 auto 16px'
+                }}></div>
+                <p>Loading feedback...</p>
+              </div>
+            ) : recentFeedbacks.length > 0 ? (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                gap: '20px',
+                marginBottom: '30px'
+              }}>
+                {recentFeedbacks.map((feedback) => (
+                  <div key={feedback.id} style={{
+                    backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+                    border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                    borderRadius: '12px',
+                    padding: '20px',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    minHeight: '200px',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
+                    {/* Rating */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '15px',
+                      right: '15px',
+                      fontSize: '1.5rem'
+                    }}>
+                      {feedback.rating ? '👍' : '👎'}
+                    </div>
+
+                    {/* User Info */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      marginBottom: '15px'
+                    }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: feedback.rating ? '#10b981' : '#ef4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '1rem'
+                      }}>
+                        {feedback.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <h4 style={{
+                          margin: '0 0 4px 0',
+                          color: darkMode ? '#f8fafc' : '#1e293b',
+                          fontSize: '1rem'
+                        }}>
+                          {feedback.name}
+                        </h4>
+                        <p style={{
+                          margin: '0',
+                          color: darkMode ? '#94a3b8' : '#64748b',
+                          fontSize: '0.8rem'
+                        }}>
+                          {new Date(feedback.created_at).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Feedback Message */}
+                    <div style={{ flex: 1 }}>
+                      <p style={{
+                        margin: '0',
+                        color: darkMode ? '#cbd5e1' : '#64748b',
+                        fontSize: '0.9rem',
+                        lineHeight: '1.5',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {feedback.comment}
+                      </p>
+                    </div>
+
+                    {/* Category */}
+                    <div style={{
+                      marginTop: '15px',
+                      paddingTop: '15px',
+                      borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
+                    }}>
+                      <span style={{
+                        backgroundColor: feedback.rating ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                        color: feedback.rating ? '#10b981' : '#ef4444',
+                        padding: '4px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.7rem',
+                        fontWeight: '600'
+                      }}>
+                        {feedback.category}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px',
+                color: darkMode ? '#94a3b8' : '#64748b'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>💬</div>
+                <h3 style={{ margin: '0 0 12px 0' }}>No Feedback Yet</h3>
+                <p style={{ margin: '0 0 20px 0' }}>
+                  Be the first to share your experience with us!
+                </p>
+                <button 
+                  onClick={() => navigateTo('/feedback')}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '600'
+                  }}
+                >
+                  Share Your Feedback
+                </button>
+              </div>
+            )}
+
+            {/* Call to Action */}
+            <div style={{
+              textAlign: 'center',
+              padding: '30px',
+              backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+              borderRadius: '12px',
+              border: `1px solid ${darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`
+            }}>
+              <h3 style={{
+                margin: '0 0 12px 0',
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                fontSize: isMobile ? '1.3rem' : '1.5rem'
+              }}>
+                Share Your Experience
+              </h3>
+              <p style={{
+                margin: '0 0 20px 0',
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                fontSize: isMobile ? '0.9rem' : '1rem'
+              }}>
+                Help us improve by sharing your feedback and suggestions
+              </p>
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center',
+                flexWrap: 'wrap'
+              }}>
+                <button 
+                  onClick={() => navigateTo('/feedback')}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  💬 Give Feedback
+                </button>
+                <button 
+                  onClick={() => navigateTo('/contact')}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: 'transparent',
+                    color: darkMode ? '#cbd5e1' : '#64748b',
+                    border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`,
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '600'
+                  }}
+                >
+                  Contact Support
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* COMPLETE FOOTER SECTION */}
+        <footer style={footerStyle}>
+          <div style={footerGridStyle}>
             
             {/* Company Info */}
             <div>
@@ -1379,6 +2280,316 @@ export default function Home() {
           </div>
         </footer>
 
+        {/* IMAGE TO PROMPT MODAL */}
+        {showImageToPrompt && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            padding: isMobile ? '10px' : '20px'
+          }}>
+            <div style={{
+              backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+              borderRadius: '12px',
+              padding: isMobile ? '16px' : '20px',
+              width: isMobile ? '100%' : '600px',
+              maxHeight: '80vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+                paddingBottom: '10px',
+                borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`
+              }}>
+                <h2 style={{ margin: 0 }}>🖼️ Image to Prompt</h2>
+                <button
+                  onClick={() => {
+                    setShowImageToPrompt(false);
+                    setSelectedImage(null);
+                    setImagePreview(null);
+                    setImageAnalysis('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                    color: darkMode ? '#94a3b8' : '#64748b',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                marginBottom: '16px'
+              }}>
+                {!imagePreview ? (
+                  <div style={{
+                    border: `2px dashed ${darkMode ? '#475569' : '#cbd5e1'}`,
+                    borderRadius: '12px',
+                    padding: '40px 20px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onClick={() => document.getElementById('image-upload').click()}
+                  >
+                    <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📁</div>
+                    <h3 style={{ margin: '0 0 10px 0' }}>Upload Image</h3>
+                    <p style={{ margin: 0, color: darkMode ? '#94a3b8' : '#64748b' }}>
+                      Click to upload or drag and drop
+                    </p>
+                    <p style={{ margin: '10px 0 0 0', fontSize: '0.8rem', color: darkMode ? '#64748b' : '#94a3b8' }}>
+                      Supports JPEG, PNG, GIF, WebP • Max 10MB
+                    </p>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: 'none' }}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    {/* Image Preview */}
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '20px'
+                    }}>
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '300px',
+                          borderRadius: '8px',
+                          border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          setSelectedImage(null);
+                          setImagePreview(null);
+                          setImageAnalysis('');
+                        }}
+                        style={{
+                          marginTop: '10px',
+                          background: 'rgba(239, 68, 68, 0.1)',
+                          color: '#ef4444',
+                          border: 'none',
+                          padding: '8px 16px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        🗑️ Remove Image
+                      </button>
+                    </div>
+
+                    {/* Analysis Options */}
+                    {!imageAnalysis && !imageLoading && (
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+                        gap: '10px',
+                        marginBottom: '20px'
+                      }}>
+                        <button
+                          onClick={() => handleAnalyzeImage('describe')}
+                          disabled={imageLoading}
+                          style={{
+                            padding: '12px',
+                            backgroundColor: imageLoading ? '#9ca3af' : '#3b82f6',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: imageLoading ? 'not-allowed' : 'pointer',
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          🔍 Analyze & Describe
+                        </button>
+                        <button
+                          onClick={() => handleAnalyzeImage('prompt')}
+                          disabled={imageLoading}
+                          style={{
+                            padding: '12px',
+                            backgroundColor: imageLoading ? '#9ca3af' : '#8b5cf6',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: imageLoading ? 'not-allowed' : 'pointer',
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          🎨 Generate AI Prompt
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Analysis Result */}
+                    {imageAnalysis && (
+                      <div>
+                        <div style={{
+                          backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                          border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                          borderRadius: '8px',
+                          padding: '16px',
+                          marginBottom: '16px'
+                        }}>
+                          <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#f8fafc' : '#1e293b' }}>
+                            🎯 Analysis Result:
+                          </h4>
+                          <pre style={{ 
+                            margin: 0, 
+                            lineHeight: '1.5',
+                            fontSize: '0.9rem',
+                            whiteSpace: 'pre-wrap',
+                            fontFamily: 'inherit',
+                            color: darkMode ? '#cbd5e1' : '#64748b'
+                          }}>
+                            {imageAnalysis}
+                          </pre>
+                        </div>
+
+                        {imageUsedModel && (
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '12px',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderRadius: '8px',
+                            marginBottom: '16px'
+                          }}>
+                            <span>Analyzed with:</span>
+                            <code style={{ 
+                              backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              fontSize: '0.8rem'
+                            }}>
+                              {imageUsedModel}
+                            </code>
+                          </div>
+                        )}
+
+                        <div style={{
+                          display: 'flex',
+                          gap: '10px',
+                          flexWrap: 'wrap',
+                          marginBottom: '16px'
+                        }}>
+                          <button
+                            onClick={useAnalysisAsPrompt}
+                            style={{
+                              padding: '10px 16px',
+                              backgroundColor: '#10b981',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.9rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            💡 Use as Prompt
+                          </button>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(imageAnalysis.split('\n\n')[0]);
+                              alert('✅ Analysis copied to clipboard!');
+                            }}
+                            style={{
+                              padding: '10px 16px',
+                              backgroundColor: '#3b82f6',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.9rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            📋 Copy Analysis
+                          </button>
+                          <button
+                            onClick={() => {
+                              setImageAnalysis('');
+                              setImageUsedModel('');
+                            }}
+                            style={{
+                              padding: '10px 16px',
+                              backgroundColor: '#6b7280',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.9rem'
+                            }}
+                          >
+                            🔄 Analyze Again
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Loading State */}
+                    {imageLoading && (
+                      <div style={{
+                        textAlign: 'center',
+                        padding: '20px',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderRadius: '8px'
+                      }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⏳</div>
+                        <p style={{ margin: 0 }}>Analyzing image content... This may take a few seconds.</p>
+                        {generationStatus && (
+                          <p style={{ margin: '10px 0 0 0', fontSize: '0.8rem' }}>
+                            {generationStatus}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div style={{
+                paddingTop: '12px',
+                borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                fontSize: '0.8rem',
+                color: darkMode ? '#94a3b8' : '#64748b'
+              }}>
+                <p style={{ margin: 0 }}>
+                  <strong>Smart Analysis:</strong> Uses advanced algorithms to analyze image content and generate unique descriptions for each upload
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* HISTORY MODAL */}
         {showHistory && (
           <div style={{
@@ -1527,6 +2738,17 @@ export default function Home() {
                             }}>
                               {item.model}
                             </span>
+                            {item.type === 'image' && (
+                              <span style={{
+                                backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                                color: '#ec4899',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontSize: '0.75rem'
+                              }}>
+                                🖼️ Image
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1567,7 +2789,203 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* PRICING MODAL */}
+        {showPricingModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            padding: isMobile ? '10px' : '20px'
+          }}>
+            <div style={{
+              backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+              borderRadius: '12px',
+              padding: isMobile ? '16px' : '30px',
+              width: isMobile ? '100%' : '900px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative'
+            }}>
+              {/* Close Button */}
+              <button
+                onClick={() => setShowPricingModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '15px',
+                  right: '15px',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  color: darkMode ? '#94a3b8' : '#64748b',
+                }}
+              >
+                ✕
+              </button>
+
+              <h2 style={{ 
+                textAlign: 'center', 
+                marginBottom: '30px',
+                color: darkMode ? '#f8fafc' : '#1e293b',
+                fontSize: isMobile ? '1.8rem' : '2.5rem'
+              }}>
+                💰 Choose Your Plan
+              </h2>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                gap: '20px',
+                marginBottom: '30px'
+              }}>
+                {PRICING_PLANS.map((plan, index) => (
+                  <div key={index} style={{
+                    backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                    border: plan.popular ? '2px solid #3b82f6' : `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                    borderRadius: '12px',
+                    padding: '25px',
+                    position: 'relative',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    {plan.popular && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '-12px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        padding: '4px 16px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: '600'
+                      }}>
+                        MOST POPULAR
+                      </div>
+                    )}
+
+                    <h3 style={{
+                      textAlign: 'center',
+                      margin: '0 0 15px 0',
+                      color: darkMode ? '#f8fafc' : '#1e293b',
+                      fontSize: '1.5rem'
+                    }}>
+                      {plan.name}
+                    </h3>
+
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '20px'
+                    }}>
+                      <span style={{
+                        fontSize: '2.5rem',
+                        fontWeight: 'bold',
+                        color: '#3b82f6'
+                      }}>
+                        {plan.price}
+                      </span>
+                      <span style={{
+                        color: darkMode ? '#94a3b8' : '#64748b',
+                        marginLeft: '5px'
+                      }}>
+                        /{plan.period}
+                      </span>
+                    </div>
+
+                    <ul style={{
+                      listStyle: 'none',
+                      padding: 0,
+                      margin: '0 0 25px 0'
+                    }}>
+                      {plan.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          marginBottom: '10px',
+                          color: darkMode ? '#cbd5e1' : '#64748b',
+                          fontSize: '0.9rem'
+                        }}>
+                          <span style={{ color: '#10b981' }}>✓</span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button 
+                      onClick={() => {
+                        if (plan.name === 'Free') {
+                          // Free plan - continue without login
+                          setShowPricingModal(false);
+                        } else if (plan.name === 'Pro') {
+                          handleLogin();
+                        } else {
+                          // Enterprise - contact sales
+                          window.location.href = 'mailto:sales@aipromptmaker.com';
+                        }
+                        setShowPricingModal(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: plan.popular ? '#3b82f6' : (plan.name === 'Free' ? '#10b981' : '#8b5cf6'),
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.9';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      {plan.buttonText}
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                textAlign: 'center',
+                padding: '20px',
+                backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+                borderRadius: '8px',
+                border: `1px solid ${darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`
+              }}>
+                <p style={{ 
+                  margin: 0, 
+                  color: darkMode ? '#cbd5e1' : '#64748b',
+                  fontSize: '0.9rem'
+                }}>
+                  💡 <strong>All plans include:</strong> Multi-AI model support, Template library, Mobile responsive design, and Regular updates
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   );
-    }
+}
