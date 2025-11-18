@@ -105,7 +105,7 @@ const FEATURES_ITEMS = [
   { path: '/email', label: '✉️ Email Writer', icon: '✉️' },
   { path: '/translate', label: '🔄 Translator', icon: '🔄' },
   { path: '/audio', label: '🎵 Audio Tool', icon: '🎵' },
-  { path: '/prompts', label: '📚 Prompt Library', icon: '📚' },
+  { path: '/prompts', label: '📚 Prompt Library' },
 ];
 
 // Pricing Plans
