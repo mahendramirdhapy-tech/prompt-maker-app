@@ -41,9 +41,9 @@ export default function Feedback() {
     setSubmitStatus('');
 
     try {
-      // Aapke existing table structure ke hisaab se insert
+      // user_feedback table mein insert karenge
       const { data, error } = await supabase
-        .from('feedback')
+        .from('user_feedback') // Table name changed to user_feedback
         .insert([
           {
             name: formData.name,
@@ -52,8 +52,8 @@ export default function Feedback() {
             category: formData.category,
             comment: formData.message, // 'comment' column mein save hoga
             status: 'new',
-            created_at: new Date().toISOString(),
-            ip_address: '' // optional
+            created_at: new Date().toISOString()
+            // ip_address remove kiya, agar chahiye toh wapas add kar sakte hain
           }
         ])
         .select();
