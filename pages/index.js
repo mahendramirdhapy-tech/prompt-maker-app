@@ -142,16 +142,11 @@ export default function Home() {
   const pageTitle = "AI Prompt Maker - Free AI Prompt Generator Tool";
   const pageDescription = "Transform your ideas into perfect AI prompts with our free AI Prompt Generator. Support for multiple AI models including GPT-4, Gemini, Claude, and Llama.";
 
-  // Navigation items
+  // Navigation items - Updated to match Originality.ai style
   const navItems = [
-    { path: '/', label: '🏠 Home', icon: '🏠' },
-    { path: '/seo', label: '🔍 SEO', icon: '🔍' },
-    { path: '/code', label: '💻 Code', icon: '💻' },
-    { path: '/email', label: '✉️ Email', icon: '✉️' },
-    { path: '/translate', label: '🔄 Translate', icon: '🔄' },
-    { path: '/audio', label: '🎵 Audio', icon: '🎵' },
-    { path: '/prompts', label: '📚 Library', icon: '📚' },
-    { path: '/feedback', label: '💬 Feedback', icon: '💬' },
+    { path: '/pricing', label: 'Pricing', icon: '💰' },
+    { path: '/features', label: 'Features', icon: '⚡' },
+    { path: '/resources', label: 'Resources', icon: '📚' },
   ];
 
   // Initialize component
@@ -723,12 +718,23 @@ export default function Home() {
     position: 'relative'
   };
 
+  // Updated Header Style to match Originality.ai
   const headerStyle = {
-    textAlign: 'center',
-    padding: isMobile ? '15px 0' : '30px 0',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: isMobile ? '15px 0' : '20px 0',
     borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
     marginBottom: '20px',
     position: 'relative',
+  };
+
+  const logoStyle = {
+    fontSize: isMobile ? '1.5rem' : '2rem',
+    fontWeight: '900',
+    color: '#3b82f6',
+    margin: 0,
+    textDecoration: 'none'
   };
 
   const mainTitleStyle = {
@@ -736,14 +742,16 @@ export default function Home() {
     fontWeight: '900',
     color: '#3b82f6',
     margin: '0 0 8px 0',
-    lineHeight: '1.2'
+    lineHeight: '1.2',
+    textAlign: 'center'
   };
 
   const subtitleStyle = {
     fontSize: isMobile ? '0.9rem' : '1.2rem',
     color: darkMode ? '#cbd5e1' : '#64748b',
     margin: '0',
-    lineHeight: '1.4'
+    lineHeight: '1.4',
+    textAlign: 'center'
   };
 
   // MOBILE SIDEBAR STYLES
@@ -1026,7 +1034,7 @@ export default function Home() {
       )}
 
       <div style={containerStyle}>
-        {/* HEADER */}
+        {/* UPDATED HEADER - Originality.ai Style */}
         <header style={headerStyle}>
           {isMobile && (
             <button
@@ -1038,63 +1046,99 @@ export default function Home() {
             </button>
           )}
 
-          <h1 style={mainTitleStyle}>AI Prompt Maker</h1>
-          <p style={subtitleStyle}>Transform your ideas into perfect AI prompts</p>
-          
-          {/* Desktop Navigation */}
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 style={logoStyle}>AI Prompt Maker</h1>
+          </div>
+
+          {/* Desktop Navigation - Originality.ai Style */}
           {!isMobile && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '12px',
-              marginTop: '15px',
-              flexWrap: 'wrap'
-            }}>
+            <nav style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
               {navItems.map((item) => (
                 <button 
                   key={item.path}
                   onClick={() => navigateTo(item.path)} 
                   style={{
-                    padding: '8px 16px',
-                    color: router.pathname === item.path ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
-                    backgroundColor: router.pathname === item.path ? 
-                      (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
+                    color: darkMode ? '#cbd5e1' : '#64748b',
+                    backgroundColor: 'transparent',
                     border: 'none',
-                    borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    fontWeight: '600'
+                    fontSize: '1rem',
+                    fontWeight: '500',
+                    padding: '8px 0',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#3b82f6';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
                   }}
                 >
                   {item.label}
                 </button>
               ))}
-              
-              <button onClick={() => setShowImageToPrompt(true)} style={buttonStyle('#ec4899')}>
-                🖼️ Image to Prompt
-              </button>
+            </nav>
+          )}
 
-              <button onClick={() => setShowHistory(!showHistory)} style={buttonStyle('#8b5cf6')}>
-                📚 History
-              </button>
-
-              {user ? (
-                <button onClick={handleLogout} style={buttonStyle('#6b7280')}>
-                  Logout
-                </button>
-              ) : (
-                <button onClick={handleLogin} style={buttonStyle('#3b82f6')}>
+          {/* Auth Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {!isMobile && (
+              <>
+                <button 
+                  onClick={handleLogin}
+                  style={{
+                    color: darkMode ? '#cbd5e1' : '#64748b',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '500',
+                    padding: '8px 16px'
+                  }}
+                >
                   Login
                 </button>
-              )}
-              
-              <button onClick={toggleDarkMode} style={buttonStyle(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}>
+                <button 
+                  onClick={handleLogin}
+                  style={{
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '500',
+                    padding: '8px 20px'
+                  }}
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
+            
+            {!isMobile && (
+              <button onClick={toggleDarkMode} style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1.2rem',
+                padding: '8px'
+              }}>
                 {darkMode ? '☀️' : '🌙'}
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </header>
+
+        {/* HERO SECTION */}
+        <section style={{ textAlign: 'center', padding: isMobile ? '40px 0' : '60px 0' }}>
+          <h1 style={mainTitleStyle}>AI Prompt Generator</h1>
+          <p style={subtitleStyle}>
+            Content creation has become more critical and complex than ever. Many writers or content creators experience a block in their creation journey and often require a tool or software to assist or inspire them to proceed with their journey.<br />
+            AI prompt generator is one of the tools that can be used by writers or content creators to stimulate creativity and inspire them to create more engaging content.
+          </p>
+        </section>
 
         {/* MAIN CONTENT */}
         <main style={mainContentStyle}>
@@ -1529,7 +1573,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEEDBACK DISPLAY SECTION - FOOTER SE PAHLE */}
+        {/* FEEDBACK DISPLAY SECTION */}
         <section style={{
           marginTop: '60px',
           padding: isMobile ? '20px 0' : '40px 0',
@@ -1785,7 +1829,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* COMPLETE FOOTER SECTION */}
+        {/* FOOTER SECTION */}
         <footer style={footerStyle}>
           <div style={footerGridStyle}>
             
