@@ -1,4 +1,4 @@
-// pages/index.js - COMPLETE FIXED CODE FOR VERCEL
+// pages/index.js - MOBILE RESPONSIVE WITH SIDEBAR
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -138,6 +138,17 @@ export default function Home() {
   const pageTitle = "AI Prompt Maker - Free AI Prompt Generator Tool";
   const pageDescription = "Transform your ideas into perfect AI prompts with our free AI Prompt Generator. Support for multiple AI models including GPT-4, Gemini, Claude, and Llama.";
 
+  // Navigation items
+  const navItems = [
+    { path: '/', label: '🏠 Home', icon: '🏠' },
+    { path: '/seo', label: '🔍 SEO', icon: '🔍' },
+    { path: '/code', label: '💻 Code', icon: '💻' },
+    { path: '/email', label: '✉️ Email', icon: '✉️' },
+    { path: '/translate', label: '🔄 Translate', icon: '🔄' },
+    { path: '/audio', label: '🎵 Audio', icon: '🎵' },
+    { path: '/prompts', label: '📚 Library', icon: '📚' },
+  ];
+
   // Initialize component
   useEffect(() => {
     console.log('Component mounted');
@@ -146,8 +157,9 @@ export default function Home() {
       try {
         // Check screen size
         const checkScreenSize = () => {
-          setIsMobile(window.innerWidth < 768);
-          if (window.innerWidth >= 768) {
+          const mobile = window.innerWidth < 768;
+          setIsMobile(mobile);
+          if (!mobile) {
             setMobileMenuOpen(false);
           }
         };
@@ -671,17 +683,6 @@ export default function Home() {
     }
   };
 
-  // Navigation items - CATALOG LINK REMOVED
-  const navItems = [
-    { path: '/', label: '🏠 Home' },
-    { path: '/seo', label: '🔍 SEO' },
-    { path: '/code', label: '💻 Code' },
-    { path: '/email', label: '✉️ Email' },
-    { path: '/translate', label: '🔄 Translate' },
-    { path: '/audio', label: '🎵 Audio' },
-    { path: '/prompts', label: '📚 Library' },
-  ];
-
   // RESPONSIVE STYLES
   const containerStyle = {
     fontFamily: "'Inter', sans-serif",
@@ -692,7 +693,8 @@ export default function Home() {
     minHeight: '100vh',
     backgroundColor: darkMode ? '#0f172a' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#1e293b',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    position: 'relative'
   };
 
   const headerStyle = {
@@ -718,6 +720,33 @@ export default function Home() {
     lineHeight: '1.4'
   };
 
+  // MOBILE SIDEBAR STYLES
+  const mobileSidebarStyle = {
+    position: 'fixed',
+    top: 0,
+    left: mobileMenuOpen ? '0' : '-100%',
+    width: '280px',
+    height: '100vh',
+    backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+    zIndex: 1000,
+    transition: 'left 0.3s ease',
+    boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'auto'
+  };
+
+  const sidebarOverlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 999,
+    display: mobileMenuOpen ? 'block' : 'none'
+  };
+
   const mobileMenuButtonStyle = {
     position: 'absolute',
     top: isMobile ? '15px' : '25px',
@@ -733,25 +762,48 @@ export default function Home() {
     backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
   };
 
-  const navContainerStyle = {
-    display: isMobile ? (mobileMenuOpen ? 'flex' : 'none') : 'flex',
-    flexDirection: isMobile ? 'column' : 'row',
+  const sidebarHeaderStyle = {
+    padding: '20px',
+    borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center'
+  };
+
+  const sidebarNavStyle = {
+    flex: 1,
+    padding: '20px 0'
+  };
+
+  const sidebarFooterStyle = {
+    padding: '20px',
+    borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px'
+  };
+
+  const navItemStyle = {
+    display: 'flex',
     alignItems: 'center',
-    marginTop: '15px',
-    gap: isMobile ? '12px' : '8px',
-    position: isMobile ? 'absolute' : 'static',
-    top: isMobile ? '100%' : 'auto',
-    left: isMobile ? '0' : 'auto',
-    right: isMobile ? '0' : 'auto',
-    backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-    padding: isMobile ? '16px' : '0',
-    borderRadius: isMobile ? '0 0 12px 12px' : '0',
-    boxShadow: isMobile ? '0 4px 6px rgba(0,0,0,0.1)' : 'none',
-    zIndex: 99,
-    border: isMobile ? `1px solid ${darkMode ? '#334155' : '#e2e8f0'}` : 'none',
-    width: isMobile ? '100%' : 'auto',
-    boxSizing: 'border-box'
+    gap: '12px',
+    padding: '15px 20px',
+    color: darkMode ? '#cbd5e1' : '#64748b',
+    textDecoration: 'none',
+    border: 'none',
+    background: 'none',
+    width: '100%',
+    textAlign: 'left',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  };
+
+  const navItemActiveStyle = {
+    ...navItemStyle,
+    color: '#3b82f6',
+    backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+    borderRight: '3px solid #3b82f6'
   };
 
   const buttonStyle = (bgColor, textColor = '#fff') => ({
@@ -769,28 +821,6 @@ export default function Home() {
     minHeight: isMobile ? '44px' : 'auto',
     minWidth: isMobile ? '44px' : 'auto'
   });
-
-  const navLinkBaseStyle = {
-    color: darkMode ? '#cbd5e1' : '#64748b',
-    cursor: 'pointer',
-    padding: isMobile ? '12px 14px' : '6px 12px',
-    borderRadius: '8px',
-    fontSize: isMobile ? '0.9rem' : '0.9rem',
-    backgroundColor: 'transparent',
-    border: 'none',
-    fontFamily: 'inherit',
-    minHeight: isMobile ? '44px' : 'auto',
-    minWidth: isMobile ? '44px' : 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center'
-  };
-
-  const navLinkActiveStyle = {
-    color: '#3b82f6',
-    backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
-  };
 
   const cardStyle = {
     backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
@@ -882,6 +912,93 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Head>
 
+      {/* MOBILE SIDEBAR OVERLAY */}
+      {isMobile && (
+        <div 
+          style={sidebarOverlayStyle}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* MOBILE SIDEBAR */}
+      {isMobile && (
+        <div style={mobileSidebarStyle}>
+          {/* Sidebar Header */}
+          <div style={sidebarHeaderStyle}>
+            <h3 style={{ margin: 0, color: darkMode ? '#f8fafc' : '#1e293b' }}>
+              🚀 AI Tools
+            </h3>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                color: darkMode ? '#94a3b8' : '#64748b',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Sidebar Navigation */}
+          <div style={sidebarNavStyle}>
+            {navItems.map((item) => (
+              <button
+                key={item.path}
+                onClick={() => {
+                  navigateTo(item.path);
+                  setMobileMenuOpen(false);
+                }}
+                style={
+                  router.pathname === item.path 
+                    ? navItemActiveStyle 
+                    : navItemStyle
+                }
+              >
+                <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Sidebar Footer */}
+          <div style={sidebarFooterStyle}>
+            <button 
+              onClick={() => setShowImageToPrompt(true)}
+              style={buttonStyle('#ec4899', '#fff')}
+            >
+              🖼️ Image to Prompt
+            </button>
+            
+            <button 
+              onClick={() => setShowHistory(true)}
+              style={buttonStyle('#8b5cf6', '#fff')}
+            >
+              📚 History
+            </button>
+
+            {user ? (
+              <button onClick={handleLogout} style={buttonStyle('#6b7280', '#fff')}>
+                👤 Logout
+              </button>
+            ) : (
+              <button onClick={handleLogin} style={buttonStyle('#3b82f6', '#fff')}>
+                🔐 Login
+              </button>
+            )}
+            
+            <button 
+              onClick={toggleDarkMode} 
+              style={buttonStyle(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}
+            >
+              {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div style={containerStyle}>
         {/* HEADER */}
         <header style={headerStyle}>
@@ -891,42 +1008,43 @@ export default function Home() {
               style={mobileMenuButtonStyle}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? '✕' : '☰'}
+              ☰
             </button>
           )}
 
           <h1 style={mainTitleStyle}>AI Prompt Maker</h1>
           <p style={subtitleStyle}>Transform your ideas into perfect AI prompts</p>
           
-          <div style={navContainerStyle}>
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: isMobile ? 'column' : 'row', 
-              gap: isMobile ? '8px' : '12px',
+          {/* Desktop Navigation */}
+          {!isMobile && (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
               alignItems: 'center',
-              width: isMobile ? '100%' : 'auto',
+              gap: '12px',
+              marginTop: '15px',
+              flexWrap: 'wrap'
             }}>
               {navItems.map((item) => (
                 <button 
                   key={item.path}
                   onClick={() => navigateTo(item.path)} 
                   style={{
-                    ...navLinkBaseStyle,
-                    ...(router.pathname === item.path ? navLinkActiveStyle : {})
+                    padding: '8px 16px',
+                    color: router.pathname === item.path ? '#3b82f6' : (darkMode ? '#cbd5e1' : '#64748b'),
+                    backgroundColor: router.pathname === item.path ? 
+                      (darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: '600'
                   }}
                 >
                   {item.label}
                 </button>
               ))}
-            </div>
-
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: isMobile ? 'column' : 'row', 
-              gap: isMobile ? '8px' : '12px',
-              alignItems: 'center',
-              width: isMobile ? '100%' : 'auto',
-            }}>
+              
               <button onClick={() => setShowImageToPrompt(true)} style={buttonStyle('#ec4899')}>
                 🖼️ Image to Prompt
               </button>
@@ -949,7 +1067,7 @@ export default function Home() {
                 {darkMode ? '☀️' : '🌙'}
               </button>
             </div>
-          </div>
+          )}
         </header>
 
         {/* MAIN CONTENT */}
