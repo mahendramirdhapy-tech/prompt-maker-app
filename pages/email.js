@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import AdsComponent from '../components/AdsComponent';
 
 export default function EmailGenerator() {
   const [input, setInput] = useState('');
