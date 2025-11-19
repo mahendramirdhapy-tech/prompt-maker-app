@@ -1,6 +1,6 @@
 // pages/blog-outline.js
 import { useState } from 'react';
-
+import AdsComponent from '../components/AdsComponent';
 export default function BlogOutline() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
