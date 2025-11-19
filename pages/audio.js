@@ -559,7 +559,11 @@ export default function AudioSilenceRemover() {
               />
             )}
           </div>
-
+          <AdsComponent 
+              type="native" 
+              position="config-after" 
+              showLabel={false}
+            />
           <div>
             <h3 style={{ color: '#10b981', marginBottom: '1rem' }}>✨ Processed Audio</h3>
             {processedAudio && (
@@ -591,7 +595,11 @@ export default function AudioSilenceRemover() {
             )}
           </div>
         </div>
-
+              <AdsComponent 
+              type="native" 
+              position="output-sidebar" 
+              showLabel={true}
+            />
         {/* Logs */}
         <div style={{
           background: 'white',
