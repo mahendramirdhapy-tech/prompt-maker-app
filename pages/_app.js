@@ -47,7 +47,8 @@ export default function App({ Component, pageProps }) {
         <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8739462043637379"
      crossorigin="anonymous"></script>
-      </Head>
+     <meta name="monetag" content="2ff36e6e9d16445611d088cf9546df1d">
+ </Head>
 
       {/* Google Analytics */}
       <Script
