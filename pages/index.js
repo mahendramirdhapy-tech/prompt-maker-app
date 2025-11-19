@@ -100,11 +100,11 @@ const IMAGE_STYLES = [
 
 // Features Dropdown Items
 const FEATURES_ITEMS = [
-  { path: '/seo', label: '🔍 SEO Tool', icon: '🔍' },
-  { path: '/code', label: '💻 Code Assistant', icon: '💻' },
-  { path: '/email', label: '✉️ Email Writer', icon: '✉️' },
-  { path: '/translate', label: '🔄 Translator', icon: '🔄' },
-  { path: '/audio', label: '🎵 Audio Tool', icon: '🎵' },
+  { path: '/seo', label: '🔍 SEO Tool' },
+  { path: '/code', label: '💻 Code Assistant' },
+  { path: '/email', label: '✉️ Email Writer' },
+  { path: '/translate', label: '🔄 Translator' },
+  { path: '/audio', label: '🎵 Audio Tool' },
   { path: '/prompts', label: '📚 Prompt Library' },
 ];
 
@@ -1339,7 +1339,7 @@ export default function Home() {
           marginBottom: '20px',
           position: 'relative',
         }}>
-          <h1 style={mainTitleStyle}>AI Prompt Maker</h1>
+          <h1 style={mainTitleStyle}></h1>
           <p style={subtitleStyle}>Transform your ideas into perfect AI prompts</p>
         </header>
 
