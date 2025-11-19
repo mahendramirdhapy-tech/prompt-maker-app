@@ -1153,7 +1153,7 @@ export default function Home() {
 
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <h1 style={logoStyle}>AI Prompt Maker</h1>
+            <h1 style={logoStyle}></h1>
           </div>
 
           {/* Desktop Navigation */}
@@ -1339,7 +1339,7 @@ export default function Home() {
           marginBottom: '20px',
           position: 'relative',
         }}>
-          <h1 style={mainTitleStyle}></h1>
+          <h1 style={mainTitleStyle}>AI Prompt Maker</h1>
           <p style={subtitleStyle}>Transform your ideas into perfect AI prompts</p>
         </header>
 
