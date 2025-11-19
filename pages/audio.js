@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import AdsComponent from '../components/AdsComponent';
 
 export default function AudioSilenceRemover() {
   const [originalAudio, setOriginalAudio] = useState(null);
@@ -240,7 +241,12 @@ export default function AudioSilenceRemover() {
           content="audio silence remover, remove silence from audio, offline audio tool, audio processing, web audio api" 
         />
       </Head>
-
+      // ADS 1 - Header ke baad
+        <AdsComponent 
+          type="banner" 
+          position="top" 
+          showLabel={true}
+        />
       <div style={{ 
         maxWidth: '900px', 
         margin: '0 auto', 
