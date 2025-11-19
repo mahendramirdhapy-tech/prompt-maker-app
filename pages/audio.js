@@ -241,12 +241,7 @@ export default function AudioSilenceRemover() {
           content="audio silence remover, remove silence from audio, offline audio tool, audio processing, web audio api" 
         />
       </Head>
-      // ADS 1 - Header ke baad
-        <AdsComponent 
-          type="banner" 
-          position="top" 
-          showLabel={true}
-        />
+   
       <div style={{ 
         maxWidth: '900px', 
         margin: '0 auto', 
@@ -559,11 +554,7 @@ export default function AudioSilenceRemover() {
               />
             )}
           </div>
-          <AdsComponent 
-              type="native" 
-              position="config-after" 
-              showLabel={false}
-            />
+        
           <div>
             <h3 style={{ color: '#10b981', marginBottom: '1rem' }}>✨ Processed Audio</h3>
             {processedAudio && (
@@ -595,11 +586,7 @@ export default function AudioSilenceRemover() {
             )}
           </div>
         </div>
-              <AdsComponent 
-              type="native" 
-              position="output-sidebar" 
-              showLabel={true}
-            />
+            
         {/* Logs */}
         <div style={{
           background: 'white',
