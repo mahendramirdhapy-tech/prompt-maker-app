@@ -241,7 +241,11 @@ export default function AudioSilenceRemover() {
           content="audio silence remover, remove silence from audio, offline audio tool, audio processing, web audio api" 
         />
       </Head>
-   
+   <AdsComponent 
+  type="banner" 
+  position="test" 
+  showLabel={true}
+/>
       <div style={{ 
         maxWidth: '900px', 
         margin: '0 auto', 
