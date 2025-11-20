@@ -122,7 +122,7 @@ export default function AudioSilenceRemover() {
         output.push(channel[i]);
       }
 
-      // Update progress
+      // Update progress 
       if (i % updateInterval === 0) {
         const progress = 30 + (i / channel.length) * 50;
         setProgress(progress);
