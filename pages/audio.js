@@ -2,7 +2,6 @@
 import { useState, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import AdsComponent from '../components/AdsComponent';
 
 export default function AudioSilenceRemover() {
   const [originalAudio, setOriginalAudio] = useState(null);
