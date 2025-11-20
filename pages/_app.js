@@ -45,7 +45,24 @@ export default function App({ Component, pageProps }) {
         <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
       </Head>
 
-      {/* ❌ AUTO ADS CODE REMOVED FROM HERE */}
+      {/* ✅ AUTO ADS CODE */}
+      <Script
+        strategy="afterInteractive"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8739462043637379"
+        crossOrigin="anonymous"
+      />
+      <Script
+        id="google-auto-ads"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8739462043637379",
+              enable_page_level_ads: true
+            });
+          `,
+        }}
+      />
 
       {/* Google Analytics */}
       <Script
