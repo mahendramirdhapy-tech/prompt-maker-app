@@ -48,7 +48,7 @@ export default function App({ Component, pageProps }) {
         <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
       </Head>
 
-      {/* Google AdSense Auto Ads */}
+      {/* Google AdSense Auto Ads - YAHI KAAM KAREGA */}
       <Script
         strategy="afterInteractive"
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8739462043637379"
