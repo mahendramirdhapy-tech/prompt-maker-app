@@ -1,6 +1,5 @@
 // pages/blog.js
 import Head from 'next/head';
-import AdsComponent from '../components/AdsComponent';
 export default function Blog() {
   const articles = [
     {
