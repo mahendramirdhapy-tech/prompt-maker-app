@@ -1,23 +1,8 @@
 // pages/_app.js
 import Head from 'next/head';
 import Script from 'next/script';
-import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }) {
-  // Service Worker Registration for PropellerAds
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
-        });
-    }
-  }, []);
-
   return (
     <>
       <Head>
@@ -32,9 +17,6 @@ export default function App({ Component, pageProps }) {
         <meta name="author" content="Prompt Maker" />
         <meta name="robots" content="index, follow" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-        {/* PropellerAds Monetag */}
-        <meta name="monetag" content="2ff36e6e9d16445611d088cf9546df1d" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
@@ -99,17 +81,6 @@ export default function App({ Component, pageProps }) {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-EQXC7722KC');
-          `,
-        }}
-      />
-
-      {/* PropellerAds Script */}
-      <Script
-        id="propellerads-script"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function(s){s.dataset.zone="10209689",s.src="https://nap5k.com/tag.min.js"})(document.createElement("script"));
           `,
         }}
       />
