@@ -612,9 +612,6 @@ export default function AudioSilenceRemover() {
             ))}
           </div>
         </div>
-
-        {/* Ads Component - Clean and Organized */}
-        <AdsComponent />
       </div>
 
       <style jsx>{`
