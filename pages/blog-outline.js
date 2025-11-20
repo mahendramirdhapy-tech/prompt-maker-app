@@ -1,5 +1,6 @@
 // pages/blog-outline.js
 import { useState } from 'react';
+
 export default function BlogOutline() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
@@ -55,7 +56,7 @@ export default function BlogOutline() {
       </form>
 
       {output && (
-        <div style={{ marginTop: '2rem', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+        <div style={{ marginTop: '2rem', padding: '1rem', border: '1px solid '#e5e7eb', borderRadius: '8px' }}>
           <h3>Your Blog Outline:</h3>
           <pre style={{ whiteSpace: 'pre-wrap', backgroundColor: '#f9fafb', padding: '10px', borderRadius: '4px' }}>{output}</pre>
         </div>
