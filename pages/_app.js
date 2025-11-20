@@ -20,23 +20,23 @@ export default function App({ Component, pageProps }) {
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://alpromptmaker.online/" />
+        <meta property="og:url" content="https://aipromptmaker.online/" />
         <meta property="og:title" content="Prompt Maker - Free AI Tools Platform" />
         <meta
           property="og:description"
           content="Free AI tools - Prompt Generator, Code Debugger, Translator, SEO Tools. No Signup Required."
         />
-        <meta property="og:image" content="https://alpromptmaker.online/og-image.jpg" />
+        <meta property="og:image" content="https://aipromptmaker.online/og-image.jpg" />
 
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://alpromptmaker.online/" />
+        <meta property="twitter:url" content="https://aipromptmaker.online/" />
         <meta property="twitter:title" content="Prompt Maker - Free AI Tools Platform" />
         <meta
           property="twitter:description"
           content="Free AI tools - Prompt Generator, Code Debugger, Translator, SEO Tools."
         />
-        <meta property="twitter:image" content="https://alpromptmaker.online/og-image.jpg" />
+        <meta property="twitter:image" content="https://aipromptmaker.online/og-image.jpg" />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
@@ -64,10 +64,10 @@ export default function App({ Component, pageProps }) {
         }}
       />
 
-      {/* Google Analytics */}
+      {/* ✅ NEW GOOGLE TAG - UPDATED CODE */}
       <Script
         strategy="afterInteractive"
-        src="https://www.googletagmanager.com/gtag/js?id=G-EQXC7722KC"
+        src="https://www.googletagmanager.com/gtag/js?id=GTN-GL5G74"
       />
       <Script
         id="google-analytics"
@@ -77,7 +77,7 @@ export default function App({ Component, pageProps }) {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-EQXC7722KC');
+            gtag('config', 'GTN-GL5G74');
           `,
         }}
       />
