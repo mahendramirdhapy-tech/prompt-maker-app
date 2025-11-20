@@ -3,12 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['alpromptmaker.online'], // यदि external images use कर रहे हैं
+    domains: ['aipromptmaker.online'],
   },
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
-  // Build errors को temporarily ignore करने के लिए
   eslint: {
     ignoreDuringBuilds: true,
   },
