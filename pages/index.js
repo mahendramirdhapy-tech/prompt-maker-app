@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import AdsComponent from '../components/AdsComponent';
 
 // Enhanced Templates
 const TEMPLATES = [
