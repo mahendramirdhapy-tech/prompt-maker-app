@@ -241,11 +241,6 @@ export default function AudioSilenceRemover() {
           content="audio silence remover, remove silence from audio, offline audio tool, audio processing, web audio api" 
         />
       </Head>
-   <AdsComponent 
-  type="banner" 
-  position="test" 
-  showLabel={true}
-/>
       <div style={{ 
         maxWidth: '900px', 
         margin: '0 auto', 
@@ -616,6 +611,36 @@ export default function AudioSilenceRemover() {
             ))}
           </div>
         </div>
+ <script
+    dangerouslySetInnerHTML={{
+      __html: `
+        // Push Ads
+        var script1 = document.createElement('script');
+        script1.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
+        script1.setAttribute('data-cfasync', 'false');
+        script1.async = true;
+        document.head.appendChild(script1);
+        
+        // Native Ads  
+        var script2 = document.createElement('script');
+        script2.innerHTML = '(function(s){s.dataset.zone="10209689",s.src="https://nap5k.com/tag.min.js"})(document.createElement("script"));';
+        document.head.appendChild(script2);
+        
+        // Interstitial Ads
+        var script3 = document.createElement('script');
+        script3.innerHTML = '(function(s){s.dataset.zone="10209722",s.src="https://groleegni.net/vignette.min.js"})(document.createElement("script"));';
+        document.head.appendChild(script3);
+        
+        // New Interstitial Ads
+        var script4 = document.createElement('script');
+        script4.innerHTML = '(function(s){s.dataset.zone="10212308",s.src="https://gizokraijaw.net/vignette.min.js"})(document.createElement("script"));';
+        document.head.appendChild(script4);
+      `,
+    }}
+  />
+
+
+            
       </div>
 
       <style jsx>{`
