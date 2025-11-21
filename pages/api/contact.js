@@ -1,58 +1,58 @@
 // pages/api/contact.js
+import nodemailer from 'nodemailer';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
   const { name, email, subject, message } = req.body;
 
+  // Input validation
   if (!name || !email || !subject || !message) {
-    return res.status(400).json({ 
-      success: false,
-      message: 'All fields are required' 
-    });
+    return res.status(400).json({ success: false, message: 'All fields are required' });
   }
 
   try {
-    // EmailJS API call with environment variables
-    const emailjsResponse = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'aipromptmakerinfo@gmail.com',
+        pass: process.env.GMAIL_APP_PASSWORD, // Gmail App Password
       },
-      body: JSON.stringify({
-        service_id: process.env.EMAILJS_SERVICE_ID,
-        template_id: process.env.EMAILJS_TEMPLATE_ID,
-        user_id: process.env.EMAILJS_PUBLIC_KEY,
-        template_params: {
-          from_name: name,
-          from_email: email,
-          subject: `Contact Form: ${subject}`,
-          message: message,
-          to_email: 'aipromptmakerinfo@gmail.com',
-          reply_to: email,
-          date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
-        }
-      })
     });
 
-    if (emailjsResponse.ok) {
-      console.log('✅ Email sent successfully to aipromptmakerinfo@gmail.com');
-      res.status(200).json({ 
-        success: true,
-        message: 'Thank you! Your message has been sent successfully. We will get back to you within 24 hours.' 
-      });
-    } else {
-      const errorText = await emailjsResponse.text();
-      console.error('❌ EmailJS error:', errorText);
-      throw new Error('Email sending failed');
-    }
+    // Email content
+    const mailOptions = {
+      from: email,
+      to: 'aipromptmakerinfo@gmail.com',
+      subject: `Contact Form: ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #3b82f6;">New Contact Form Submission</h2>
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px;">
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Message:</strong></p>
+            <div style="background: white; padding: 15px; border-radius: 5px; margin-top: 10px;">
+              ${message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+          <p style="color: #64748b; font-size: 12px; margin-top: 20px;">
+            This email was sent from your website contact form.
+          </p>
+        </div>
+      `,
+    };
 
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ success: true, message: 'Email sent successfully' });
   } catch (error) {
-    console.error('❌ Error sending email:', error);
-    res.status(500).json({ 
-      success: false,
-      message: 'Sorry, there was an error sending your message. Please try again later.' 
-    });
+    console.error('Email error:', error);
+    res.status(500).json({ success: false, message: 'Failed to send email' });
   }
 }
