@@ -1,7 +1,7 @@
 // pages/seo.js
 import { useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
+import Layout from '../components/Layout';
 
 export default function SeoGenerator() {
   const [input, setInput] = useState('');
@@ -68,7 +68,7 @@ export default function SeoGenerator() {
   };
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>SEO Meta Description Generator | Free AI-Powered Tool</title>
         <meta 
@@ -80,49 +80,7 @@ export default function SeoGenerator() {
           content="seo meta description generator, meta description creator, seo tool, search engine optimization, meta tag generator, free seo tool" 
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="author" content="Your Company Name" />
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="SEO Meta Description Generator | Free AI-Powered Tool" />
-        <meta property="og:description" content="Generate compelling SEO meta descriptions instantly. Free AI-powered tool for creating search-engine-optimized meta descriptions." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yoursite.com/seo" />
-        <meta property="og:image" content="https://yoursite.com/seo-generator-og-image.jpg" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="SEO Meta Description Generator" />
-        <meta name="twitter:description" content="Free AI-powered tool for creating compelling SEO meta descriptions instantly." />
-        <meta name="twitter:image" content="https://yoursite.com/seo-generator-twitter-image.jpg" />
-        
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://yoursite.com/seo" />
-        
-        {/* Schema.org Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "SEO Meta Description Generator",
-              "description": "Free AI-powered tool for generating compelling SEO meta descriptions",
-              "url": "https://yoursite.com/seo",
-              "applicationCategory": "BusinessApplication",
-              "operatingSystem": "Any",
-              "permissions": "browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
-              "author": {
-                "@type": "Organization",
-                "name": "Your Company Name"
-              }
-            })
-          }}
-        />
+        <meta name="author" content="AI Prompt Maker" />
       </Head>
 
       <div style={{ 
@@ -132,48 +90,15 @@ export default function SeoGenerator() {
         fontFamily: 'system-ui, -apple-system, sans-serif',
         backgroundColor: '#f8fafc',
         borderRadius: '12px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        position: 'relative'
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
       }}>
-        {/* Back to Home Button */}
-        <Link href="index" passHref>
-          <button
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              left: '1rem',
-              padding: '8px 16px',
-              backgroundColor: '#64748b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#475569';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = '#64748b';
-            }}
-          >
-            ← Back to Home
-          </button>
-        </Link>
 
         <h1 style={{ 
           textAlign: 'center', 
           color: '#1e293b',
           marginBottom: '0.5rem',
           fontSize: '2.25rem',
-          fontWeight: '700',
-          paddingTop: '0.5rem'
+          fontWeight: '700'
         }}>
           🔍 SEO Meta Description Generator
         </h1>
@@ -247,7 +172,6 @@ export default function SeoGenerator() {
               fontSize: '16px',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -332,14 +256,7 @@ export default function SeoGenerator() {
                   fontWeight: '500',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#0f766e';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = '#0d9488';
+                  gap: '6px'
                 }}
                 aria-label="Copy SEO description to clipboard"
               >
@@ -419,6 +336,6 @@ export default function SeoGenerator() {
           }
         `}</style>
       </div>
-    </>
+    </Layout>
   );
 }
