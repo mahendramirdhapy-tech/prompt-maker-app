@@ -12,6 +12,7 @@ export default function ContactUs() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -25,7 +26,8 @@ export default function ContactUs() {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('');
-    
+    setStatusMessage('');
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -39,14 +41,20 @@ export default function ContactUs() {
 
       if (result.success) {
         setSubmitStatus('success');
+        setStatusMessage(result.message || 'Thank you! Your message has been sent successfully.');
         setFormData({ name: '', email: '', subject: '', message: '' });
-        setTimeout(() => setSubmitStatus(''), 5000);
+        setTimeout(() => {
+          setSubmitStatus('');
+          setStatusMessage('');
+        }, 5000);
       } else {
         setSubmitStatus('error');
+        setStatusMessage(result.message || 'There was an error sending your message. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);
       setSubmitStatus('error');
+      setStatusMessage('Network error. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -80,13 +88,13 @@ export default function ContactUs() {
           {/* Status Messages */}
           {submitStatus === 'success' && (
             <div style={styles.successMessage}>
-              ✅ Thank you! Your message has been sent successfully. We will get back to you within 24 hours.
+              ✅ {statusMessage}
             </div>
           )}
 
           {submitStatus === 'error' && (
             <div style={styles.errorMessage}>
-              ❌ There was an error sending your message. Please try again.
+              ❌ {statusMessage}
             </div>
           )}
 
@@ -158,6 +166,7 @@ export default function ContactUs() {
                     required
                     style={styles.input}
                     placeholder="Enter your full name"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -174,6 +183,7 @@ export default function ContactUs() {
                     required
                     style={styles.input}
                     placeholder="Enter your email address"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -190,6 +200,7 @@ export default function ContactUs() {
                     required
                     style={styles.input}
                     placeholder="What is this regarding?"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -206,6 +217,7 @@ export default function ContactUs() {
                     rows="6"
                     style={styles.textarea}
                     placeholder="Tell us how we can help you..."
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -400,6 +412,7 @@ const styles = {
     borderRadius: '6px',
     fontSize: '14px',
     fontFamily: 'inherit',
+    transition: 'border-color 0.2s',
   },
   textarea: {
     padding: '10px 12px',
@@ -409,6 +422,7 @@ const styles = {
     fontFamily: 'inherit',
     resize: 'vertical',
     minHeight: '100px',
+    transition: 'border-color 0.2s',
   },
   submitButton: {
     padding: '12px 20px',
@@ -420,6 +434,7 @@ const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     marginTop: '8px',
+    transition: 'background-color 0.2s',
   },
   submitButtonDisabled: {
     padding: '12px 20px',
@@ -450,14 +465,7 @@ const styles = {
 
 // Responsive design
 if (typeof window !== 'undefined') {
-  // Initial check
-  if (window.innerWidth >= 768) {
-    styles.grid.gridTemplateColumns = '1fr 1fr';
-    styles.grid.gap = '40px';
-  }
-
-  // Update on resize
-  window.addEventListener('resize', () => {
+  const updateStyles = () => {
     if (window.innerWidth >= 768) {
       styles.grid.gridTemplateColumns = '1fr 1fr';
       styles.grid.gap = '40px';
@@ -465,5 +473,11 @@ if (typeof window !== 'undefined') {
       styles.grid.gridTemplateColumns = '1fr';
       styles.grid.gap = '32px';
     }
-  });
+  };
+
+  // Initial check
+  updateStyles();
+
+  // Update on resize
+  window.addEventListener('resize', updateStyles);
 }
