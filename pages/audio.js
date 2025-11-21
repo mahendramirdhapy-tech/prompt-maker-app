@@ -1,9 +1,11 @@
-// pages/audio.js
-import { useState, useRef } from 'react';
+// pages/audio.js - UPDATED VERSION WITH LAYOUT
+import { useState, useRef, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import Head from 'next/head';
-import Link from 'next/link';
+import Layout from '../components/Layout';
 
 export default function AudioSilenceRemover() {
+  const [user, setUser] = useState(null);
   const [originalAudio, setOriginalAudio] = useState(null);
   const [processedAudio, setProcessedAudio] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -15,6 +17,39 @@ export default function AudioSilenceRemover() {
   const fileInputRef = useRef(null);
   const originalAudioRef = useRef(null);
   const processedAudioRef = useRef(null);
+
+  // Auth functions
+  const handleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed: ' + error.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    initializeAuth();
+  }, []);
 
   const log = (message) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -230,110 +265,383 @@ export default function AudioSilenceRemover() {
   return (
     <>
       <Head>
-        <title>Audio Silence Remover | FileOptimizeTools</title>
+        <title>Audio Silence Remover | AI Prompt Maker</title>
         <meta 
           name="description" 
           content="Remove silence from audio files completely offline. No data leaves your browser. Free and easy to use audio silence removal tool." 
         />
       </Head>
 
-      <div style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
-        {/* Simple Header */}
-        <header style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          padding: '1rem 2rem',
-          borderRadius: '12px',
-          marginBottom: '2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+      <Layout user={user} handleLogin={handleLogin} handleLogout={handleLogout}>
+        {/* ONLY AUDIO TOOL SPECIFIC CONTENT */}
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto', 
+          padding: '1rem',
+          fontFamily: 'system-ui, -apple-system, sans-serif'
         }}>
-          <Link href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.5rem', fontWeight: 'bold' }}>
-            🛠️ FileOptimizeTools
-          </Link>
-          <nav style={{ display: 'flex', gap: '1rem' }}>
-            <Link href="/" style={{ color: 'white', textDecoration: 'none' }}>Home</Link>
-            <Link href="/audio" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Audio Tools</Link>
-          </nav>
-        </header>
-
-        {/* Main Content */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ color: '#1e293b', marginBottom: '1rem', fontSize: '2.5rem' }}>
-            🎵 Audio Silence Remover
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '1.2rem' }}>
-            Remove silence from audio files completely offline. No data leaves your browser.
-          </p>
-        </div>
-
-        {/* Rest of your audio tool code here */}
-        <div style={{
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          marginBottom: '1.5rem'
-        }}>
-          {/* File Input */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>
-              📁 Select Audio File
-            </label>
-            <div style={{ position: 'relative', overflow: 'hidden' }}>
-              <div 
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '12px 16px',
-                  background: '#f1f5f9',
-                  border: '2px dashed #cbd5e1',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <span>📎 Choose Audio File or Drag & Drop</span>
-              </div>
-              <input 
-                ref={fileInputRef}
-                type="file" 
-                accept="audio/*"
-                onChange={handleFileSelect}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  opacity: 0,
-                  width: '100%',
-                  height: '100%',
-                  cursor: 'pointer'
-                }}
-              />
-            </div>
-            {fileName && (
-              <div style={{ marginTop: '0.5rem', color: '#64748b' }}>
-                Selected: {fileName}
-              </div>
-            )}
+          {/* Page Header */}
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h1 style={{ 
+              color: '#1e293b', 
+              marginBottom: '1rem', 
+              fontSize: '2.5rem',
+              fontWeight: '700'
+            }}>
+              🎵 Audio Silence Remover
+            </h1>
+            <p style={{ 
+              color: '#64748b', 
+              fontSize: '1.2rem',
+              maxWidth: '600px',
+              margin: '0 auto',
+              lineHeight: '1.6'
+            }}>
+              Remove silence from audio files completely offline. No data leaves your browser.
+            </p>
           </div>
 
-          {/* Settings and other components... */}
-          {/* ... (rest of your audio.js code) ... */}
+          {/* Main Audio Tool Content */}
+          <div style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            marginBottom: '1.5rem',
+            border: '1px solid #e2e8f0'
+          }}>
+            {/* File Input Section */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                fontWeight: '600', 
+                color: '#1e293b',
+                fontSize: '1.1rem'
+              }}>
+                📁 Select Audio File
+              </label>
+              <div style={{ position: 'relative', overflow: 'hidden' }}>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '20px 16px',
+                    background: '#f8fafc',
+                    border: '2px dashed #cbd5e1',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    fontSize: '1rem'
+                  }}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <span>📎 Choose Audio File or Drag & Drop</span>
+                </div>
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  accept="audio/*"
+                  onChange={handleFileSelect}
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    opacity: 0,
+                    width: '100%',
+                    height: '100%',
+                    cursor: 'pointer'
+                  }}
+                />
+              </div>
+              {fileName && (
+                <div style={{ 
+                  marginTop: '0.5rem', 
+                  color: '#64748b',
+                  fontSize: '0.9rem'
+                }}>
+                  ✅ Selected: {fileName}
+                </div>
+              )}
+            </div>
+
+            {/* Settings Section */}
+            <div style={{ 
+              marginBottom: '2rem',
+              padding: '1.5rem',
+              background: '#f8fafc',
+              borderRadius: '8px'
+            }}>
+              <h3 style={{ margin: '0 0 1rem 0', color: '#1e293b' }}>⚙️ Processing Settings</h3>
+              
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <div>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '0.5rem', 
+                    fontWeight: '500',
+                    color: '#374151'
+                  }}>
+                    Silence Threshold
+                  </label>
+                  <input 
+                    id="threshold"
+                    type="number" 
+                    step="0.001"
+                    min="0.001"
+                    max="0.1"
+                    defaultValue="0.02"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '1rem'
+                    }}
+                  />
+                  <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                    Lower = more sensitive (0.001-0.1)
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '0.5rem', 
+                    fontWeight: '500',
+                    color: '#374151'
+                  }}>
+                    Min Silence Duration (ms)
+                  </label>
+                  <input 
+                    id="minDur"
+                    type="number" 
+                    min="50"
+                    max="1000"
+                    defaultValue="150"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '1rem'
+                    }}
+                  />
+                  <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                    Shorter pauses won't be removed
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={processAudio}
+                disabled={isProcessing || !originalAudio}
+                style={{
+                  padding: '12px 24px',
+                  background: isProcessing || !originalAudio ? '#9ca3af' : '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: isProcessing || !originalAudio ? 'not-allowed' : 'pointer',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  width: '100%',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {isProcessing ? '🔄 Processing...' : '🚀 Remove Silence'}
+              </button>
+
+              {/* Progress Bar */}
+              {isProcessing && (
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{
+                    width: '100%',
+                    height: '8px',
+                    background: '#e5e7eb',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${progress}%`,
+                      height: '100%',
+                      background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                      transition: 'width 0.3s ease',
+                      borderRadius: '4px'
+                    }}></div>
+                  </div>
+                  <div style={{ 
+                    textAlign: 'center', 
+                    marginTop: '0.5rem', 
+                    color: '#6b7280',
+                    fontSize: '0.9rem'
+                  }}>
+                    {Math.round(progress)}% Complete
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Audio Players */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+              gap: '1.5rem',
+              marginBottom: '2rem'
+            }}>
+              {/* Original Audio */}
+              <div>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#1e293b' }}>🎵 Original Audio</h4>
+                {originalAudio ? (
+                  <audio 
+                    ref={originalAudioRef}
+                    controls 
+                    src={originalAudio}
+                    style={{ width: '100%' }}
+                  />
+                ) : (
+                  <div style={{
+                    padding: '2rem',
+                    background: '#f8fafc',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    color: '#6b7280'
+                  }}>
+                    No audio loaded
+                  </div>
+                )}
+              </div>
+
+              {/* Processed Audio */}
+              <div>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#1e293b' }}>🎯 Processed Audio</h4>
+                {processedAudio ? (
+                  <div>
+                    <audio 
+                      ref={processedAudioRef}
+                      controls 
+                      src={processedAudio}
+                      style={{ width: '100%', marginBottom: '1rem' }}
+                    />
+                    {stats && (
+                      <a 
+                        href={stats.downloadUrl}
+                        download={`processed_${fileName || 'audio.wav'}`}
+                        style={{
+                          display: 'inline-block',
+                          padding: '8px 16px',
+                          background: '#10b981',
+                          color: 'white',
+                          textDecoration: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.9rem',
+                          fontWeight: '500'
+                        }}
+                      >
+                        💾 Download Processed Audio
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{
+                    padding: '2rem',
+                    background: '#f8fafc',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    color: '#6b7280'
+                  }}>
+                    Processed audio will appear here
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Statistics */}
+            {stats && (
+              <div style={{ 
+                marginBottom: '2rem',
+                padding: '1.5rem',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '8px'
+              }}>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#166534' }}>📊 Processing Results</h4>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>Original Duration</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b' }}>{stats.originalDuration}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>Processed Duration</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b' }}>{stats.processedDuration}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>Silence Removed</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#dc2626' }}>{stats.silenceRemoved}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>File Size</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b' }}>{stats.fileSize}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Logs */}
+            <div>
+              <h4 style={{ margin: '0 0 1rem 0', color: '#1e293b' }}>📝 Processing Log</h4>
+              <div style={{
+                height: '200px',
+                overflowY: 'auto',
+                background: '#1e293b',
+                color: '#e2e8f0',
+                padding: '1rem',
+                borderRadius: '8px',
+                fontFamily: 'monospace',
+                fontSize: '0.85rem',
+                lineHeight: '1.4'
+              }}>
+                {logs.map((log, index) => (
+                  <div key={index} style={{ marginBottom: '0.25rem' }}>
+                    {log}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Info Section */}
+          <div style={{
+            background: '#f8fafc',
+            padding: '2rem',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            marginBottom: '2rem'
+          }}>
+            <h3 style={{ margin: '0 0 1rem 0', color: '#1e293b' }}>ℹ️ About This Tool</h3>
+            <div style={{ color: '#64748b', lineHeight: '1.6' }}>
+              <p><strong>🔒 Privacy First:</strong> All processing happens in your browser. No audio data is uploaded to any server.</p>
+              <p><strong>⚡ Fast Processing:</strong> Uses Web Audio API for efficient silence detection and removal.</p>
+              <p><strong>🎯 Smart Detection:</strong> Configurable threshold and minimum silence duration for precise control.</p>
+              <p><strong>💾 WAV Output:</strong> Processed audio is exported in high-quality WAV format.</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </Layout>
     </>
   );
 }
