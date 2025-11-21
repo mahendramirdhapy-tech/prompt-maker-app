@@ -2,7 +2,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 
-export default function App({ Component, pageProps }) {
+export default function app({ Component, pageProps }) {
   return (
     <>
       <Head>
