@@ -1,7 +1,7 @@
 // pages/code.js
 import { useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
+import Layout from '../components/Layout';
 
 export default function CodeInterpreter() {
   const [input, setInput] = useState('');
@@ -81,7 +81,7 @@ console.log(result);`;
   };
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>Code Interpreter & Explainer | Free AI-Powered Code Analysis</title>
         <meta 
@@ -91,52 +91,6 @@ console.log(result);`;
         <meta 
           name="keywords" 
           content="code interpreter, code explainer, python code explanation, javascript explanation, learn programming, code analysis, ai code helper" 
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="author" content="AI Prompt Maker" />
-
- 
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="Code Interpreter & Explainer | Free AI-Powered Code Analysis" />
-        <meta property="og:description" content="Understand any code instantly. Free AI-powered code interpreter that explains Python, JavaScript, and other programming languages in simple terms." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yoursite.com/code" />
-        <meta property="og:image" content="https://yoursite.com/code-interpreter-og-image.jpg" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Code Interpreter & Explainer" />
-        <meta name="twitter:description" content="Free AI-powered tool to understand any code in simple terms." />
-        <meta name="twitter:image" content="https://yoursite.com/code-interpreter-twitter-image.jpg" />
-        
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://yoursite.com/code" />
-        
-        {/* Schema.org Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "Code Interpreter & Explainer",
-              "description": "Free AI-powered tool for explaining code in simple terms",
-              "url": "https://yoursite.com/code",
-              "applicationCategory": "DeveloperApplication",
-              "operatingSystem": "Any",
-              "permissions": "browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
-              "author": {
-                "@type": "Organization",
-                "name": "Your Company Name"
-              }
-            })
-          }}
         />
       </Head>
 
@@ -150,37 +104,6 @@ console.log(result);`;
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         position: 'relative'
       }}>
-        {/* Back to Home Button */}
-        <Link href="index" passHref>
-          <button
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              left: '1rem',
-              padding: '8px 16px',
-              backgroundColor: '#64748b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#475569';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = '#64748b';
-            }}
-          >
-            ← Back to Home
-          </button>
-        </Link>
 
         <h1 style={{ 
           textAlign: 'center', 
@@ -386,12 +309,6 @@ console.log(result);`;
                   gap: '6px',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#0f766e';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = '#0d9488';
-                }}
                 aria-label="Copy explanation to clipboard"
               >
                 📋 Copy Explanation
@@ -471,6 +388,6 @@ console.log(result);`;
           }
         `}</style>
       </div>
-    </>
+    </Layout>
   );
 }
