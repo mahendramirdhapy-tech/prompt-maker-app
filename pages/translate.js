@@ -1,7 +1,7 @@
 // pages/translate.js
 import { useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
+import Layout from '../components/Layout';
 
 export default function Translator() {
   const [input, setInput] = useState('');
@@ -64,8 +64,17 @@ export default function Translator() {
     setOutput('');
   };
 
+  const copyTranslation = async () => {
+    try {
+      await navigator.clipboard.writeText(output);
+      alert('✅ Translation copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
   return (
-    <>
+    <Layout>
       <Head>
         <title>Hindi ↔ English Translator | Free Online Translation Tool</title>
         <meta 
@@ -77,49 +86,7 @@ export default function Translator() {
           content="hindi to english translator, english to hindi translation, free translator, online translation, hindi english converter, language translator" 
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="author" content="Your Company Name" />
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="Hindi ↔ English Translator | Free Online Translation Tool" />
-        <meta property="og:description" content="Free online Hindi to English and English to Hindi translator. Fast, accurate translations with professional results." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yoursite.com/translate" />
-        <meta property="og:image" content="https://yoursite.com/translator-og-image.jpg" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Hindi ↔ English Translator" />
-        <meta name="twitter:description" content="Free online Hindi to English and English to Hindi translator." />
-        <meta name="twitter:image" content="https://yoursite.com/translator-twitter-image.jpg" />
-        
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://yoursite.com/translate" />
-        
-        {/* Schema.org Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "Hindi English Translator",
-              "description": "Free online Hindi to English and English to Hindi translation tool",
-              "url": "https://yoursite.com/translate",
-              "applicationCategory": "UtilityApplication",
-              "operatingSystem": "Any",
-              "permissions": "browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
-              "author": {
-                "@type": "Organization",
-                "name": "Your Company Name"
-              }
-            })
-          }}
-        />
+        <meta name="author" content="AI Prompt Maker" />
       </Head>
 
       <div style={{ 
@@ -129,48 +96,15 @@ export default function Translator() {
         fontFamily: 'system-ui, -apple-system, sans-serif',
         backgroundColor: '#f8fafc',
         borderRadius: '12px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        position: 'relative'
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
       }}>
-        {/* Back to Home Button */}
-        <Link href="index" passHref>
-          <button
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              left: '1rem',
-              padding: '8px 16px',
-              backgroundColor: '#64748b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#475569';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = '#64748b';
-            }}
-          >
-            ← Back to Home
-          </button>
-        </Link>
 
         <h1 style={{ 
           textAlign: 'center', 
           color: '#1e293b',
           marginBottom: '1.5rem',
           fontSize: '2rem',
-          fontWeight: '700',
-          paddingTop: '0.5rem'
+          fontWeight: '700'
         }}>
           🔄 Hindi ↔ English Translator
         </h1>
@@ -191,8 +125,7 @@ export default function Translator() {
             backgroundColor: fromLang === 'English' ? '#3b82f6' : '#e2e8f0',
             color: fromLang === 'English' ? 'white' : '#64748b',
             borderRadius: '8px',
-            fontWeight: '600',
-            transition: 'all 0.2s'
+            fontWeight: '600'
           }}>
             <span>{fromLang === 'English' ? '🇺🇸' : '🇮🇳'}</span>
             {fromLang}
@@ -225,8 +158,7 @@ export default function Translator() {
             backgroundColor: fromLang === 'Hindi' ? '#3b82f6' : '#e2e8f0',
             color: fromLang === 'Hindi' ? 'white' : '#64748b',
             borderRadius: '8px',
-            fontWeight: '600',
-            transition: 'all 0.2s'
+            fontWeight: '600'
           }}>
             <span>{fromLang === 'Hindi' ? '🇺🇸' : '🇮🇳'}</span>
             {fromLang === 'English' ? 'Hindi' : 'English'}
@@ -292,7 +224,6 @@ export default function Translator() {
               fontSize: '16px',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -341,17 +272,18 @@ export default function Translator() {
                 Translation Result:
               </h2>
               <button
-                onClick={() => navigator.clipboard.writeText(output)}
+                onClick={copyTranslation}
                 style={{
-                  padding: '6px 12px',
-                  backgroundColor: '#f1f5f9',
-                  border: '1px solid #cbd5e1',
+                  padding: '8px 16px',
+                  backgroundColor: '#0d9488',
+                  color: 'white',
+                  border: 'none',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '6px'
                 }}
                 aria-label="Copy translation to clipboard"
               >
@@ -365,7 +297,8 @@ export default function Translator() {
               borderRadius: '6px',
               fontSize: '16px',
               lineHeight: '1.5',
-              minHeight: '100px'
+              minHeight: '100px',
+              borderLeft: '4px solid #3b82f6'
             }}>
               {output}
             </div>
@@ -400,6 +333,6 @@ export default function Translator() {
           }
         `}</style>
       </div>
-    </>
+    </Layout>
   );
 }
