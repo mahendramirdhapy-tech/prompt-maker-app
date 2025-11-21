@@ -1,3 +1,4 @@
+// components/Header.js - COMPLETE VERSION
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -67,7 +68,8 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     fontWeight: '900',
     color: '#3b82f6',
     margin: 0,
-    textDecoration: 'none'
+    textDecoration: 'none',
+    cursor: 'pointer'
   };
 
   const mobileMenuButtonStyle = {
@@ -85,10 +87,10 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
   };
 
-  const buttonStyle = {
+  const buttonStyle = (bgColor = '#3b82f6', textColor = '#fff') => ({
     padding: isMobile ? '10px 14px' : '8px 16px',
-    backgroundColor: '#3b82f6',
-    color: '#fff',
+    backgroundColor: bgColor,
+    color: textColor,
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
@@ -97,7 +99,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
-  };
+  });
 
   // Mobile Sidebar Styles
   const mobileSidebarStyle = {
@@ -124,6 +126,37 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     backgroundColor: 'rgba(0,0,0,0.5)',
     zIndex: 999,
     display: mobileMenuOpen ? 'block' : 'none'
+  };
+
+  const navItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '15px 20px',
+    color: darkMode ? '#cbd5e1' : '#64748b',
+    textDecoration: 'none',
+    border: 'none',
+    background: 'none',
+    width: '100%',
+    textAlign: 'left',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  };
+
+  // Features Dropdown Style
+  const featuresDropdownStyle = {
+    position: 'absolute',
+    top: '100%',
+    left: '0',
+    backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+    border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+    borderRadius: '8px',
+    padding: '8px 0',
+    minWidth: '220px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    zIndex: 1000,
+    marginTop: '8px'
   };
 
   return (
@@ -164,28 +197,56 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
           </div>
 
           <div style={{ flex: 1, padding: '20px 0' }}>
-            {navItems.map((item) => (
+            {/* Home Link */}
+            <button
+              onClick={() => navigateTo('/')}
+              style={navItemStyle}
+            >
+              <span style={{ fontSize: '1.2rem' }}>🏠</span>
+              Home
+            </button>
+
+            {/* Features Dropdown in Mobile */}
+            <div>
               <button
-                key={item.path}
-                onClick={() => navigateTo(item.path)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '15px 20px',
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  textDecoration: 'none',
-                  border: 'none',
-                  background: 'none',
-                  width: '100%',
-                  textAlign: 'left',
-                  fontSize: '1rem',
-                  cursor: 'pointer',
-                }}
+                onClick={() => setShowFeaturesDropdown(!showFeaturesDropdown)}
+                style={navItemStyle}
               >
-                <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
-                {item.label}
+                <span style={{ fontSize: '1.2rem' }}>⚡</span>
+                Features {showFeaturesDropdown ? '▲' : '▼'}
               </button>
+              {showFeaturesDropdown && (
+                <div style={{ paddingLeft: '20px' }}>
+                  {FEATURES_ITEMS.map((feature) => (
+                    <button
+                      key={feature.path}
+                      onClick={() => navigateTo(feature.path)}
+                      style={{
+                        ...navItemStyle,
+                        fontSize: '0.9rem',
+                        padding: '12px 20px'
+                      }}
+                    >
+                      <span style={{ fontSize: '1.1rem' }}>{feature.icon}</span>
+                      {feature.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Other Navigation Items */}
+            {navItems.map((item) => (
+              !item.dropdown && (
+                <button
+                  key={item.path}
+                  onClick={() => navigateTo(item.path)}
+                  style={navItemStyle}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                  {item.label}
+                </button>
+              )
             ))}
           </div>
 
@@ -197,15 +258,15 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
             gap: '10px'
           }}>
             {user ? (
-              <button onClick={handleLogout} style={buttonStyle}>
+              <button onClick={handleLogout} style={buttonStyle('#6b7280')}>
                 👤 Logout
               </button>
             ) : (
-              <button onClick={handleLogin} style={buttonStyle}>
+              <button onClick={handleLogin} style={buttonStyle()}>
                 🔐 Login
               </button>
             )}
-            <button onClick={toggleDarkMode} style={buttonStyle}>
+            <button onClick={toggleDarkMode} style={buttonStyle(darkMode ? '#4b5563' : '#e5e7eb', darkMode ? '#f9fafb' : '#374151')}>
               {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
             </button>
           </div>
@@ -226,28 +287,143 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
 
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <h1 style={logoStyle}>AI Prompt Maker</h1>
+          <h1 
+            style={logoStyle}
+            onClick={() => navigateTo('/')}
+          >
+            AI Prompt Maker
+          </h1>
         </div>
 
         {/* Desktop Navigation */}
         {!isMobile && (
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <nav style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '30px', 
+            position: 'relative' 
+          }}>
+            {/* Home Link */}
+            <button
+              onClick={() => navigateTo('/')}
+              style={{
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: '500',
+                padding: '8px 16px',
+                transition: 'color 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#3b82f6';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
+              }}
+            >
+              🏠 Home
+            </button>
+
             {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => navigateTo(item.path)}
-                style={{
-                  color: darkMode ? '#cbd5e1' : '#64748b',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  fontWeight: '500',
-                  padding: '8px 16px',
-                }}
-              >
-                {item.label}
-              </button>
+              <div key={item.path} style={{ position: 'relative' }}>
+                {item.dropdown ? (
+                  // Features Dropdown
+                  <div
+                    onMouseEnter={() => setShowFeaturesDropdown(true)}
+                    onMouseLeave={() => setShowFeaturesDropdown(false)}
+                  >
+                    <button 
+                      style={{
+                        color: darkMode ? '#cbd5e1' : '#64748b',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        padding: '8px 16px',
+                        transition: 'color 0.2s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#3b82f6';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!showFeaturesDropdown) {
+                          e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
+                        }
+                      }}
+                    >
+                      <span>{item.icon}</span>
+                      {item.label} {showFeaturesDropdown ? '▲' : '▼'}
+                    </button>
+                    
+                    {showFeaturesDropdown && (
+                      <div style={featuresDropdownStyle}>
+                        {FEATURES_ITEMS.map((feature) => (
+                          <button
+                            key={feature.path}
+                            onClick={() => navigateTo(feature.path)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '12px',
+                              padding: '12px 16px',
+                              color: darkMode ? '#cbd5e1' : '#64748b',
+                              textDecoration: 'none',
+                              border: 'none',
+                              background: 'none',
+                              width: '100%',
+                              textAlign: 'left',
+                              fontSize: '0.9rem',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)';
+                              e.currentTarget.style.color = '#3b82f6';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
+                            }}
+                          >
+                            <span style={{ fontSize: '1rem' }}>{feature.icon}</span>
+                            {feature.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Regular Navigation Items
+                  <button 
+                    onClick={() => navigateTo(item.path)}
+                    style={{
+                      color: darkMode ? '#cbd5e1' : '#64748b',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: '500',
+                      padding: '8px 16px',
+                      transition: 'color 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#3b82f6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = darkMode ? '#cbd5e1' : '#64748b';
+                    }}
+                  >
+                    <span>{item.icon}</span>
+                    {item.label}
+                  </button>
+                )}
+              </div>
             ))}
           </nav>
         )}
@@ -257,13 +433,27 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
           {!isMobile && (
             <>
               {user ? (
-                <button onClick={handleLogout} style={buttonStyle}>
-                  Logout
+                <button 
+                  onClick={handleLogout}
+                  style={buttonStyle('#6b7280')}
+                >
+                  👤 Logout
                 </button>
               ) : (
-                <button onClick={handleLogin} style={buttonStyle}>
-                  Login
-                </button>
+                <>
+                  <button 
+                    onClick={handleLogin}
+                    style={buttonStyle()}
+                  >
+                    🔐 Login
+                  </button>
+                  <button 
+                    onClick={handleLogin}
+                    style={buttonStyle('#10b981')}
+                  >
+                    📝 Sign Up
+                  </button>
+                </>
               )}
             </>
           )}
@@ -274,7 +464,9 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
               border: 'none',
               cursor: 'pointer',
               fontSize: '1.2rem',
-              padding: '8px'
+              padding: '8px',
+              borderRadius: '6px',
+              backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
             }}>
               {darkMode ? '☀️' : '🌙'}
             </button>
