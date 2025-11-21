@@ -2,9 +2,6 @@
 import Head from 'next/head';
 import Script from 'next/script';
 
-export default function App({ Component, pageProps }) {
-  return (
-    <>
       <Head>
         {/* Primary Meta Tags */}
         <title>Prompt Maker - Free AI Tools | Code Debugger, Translator, SEO Tools</title>
