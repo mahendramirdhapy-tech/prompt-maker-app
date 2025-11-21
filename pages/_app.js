@@ -151,8 +151,6 @@ import Script from 'next/script';
           })
         }}
       />
-
-      {/* Main Component */}
       <Component {...pageProps} />
     </>
   );
