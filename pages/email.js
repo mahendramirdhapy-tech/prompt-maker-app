@@ -1,7 +1,7 @@
 // pages/email.js
 import { useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
+import Layout from '../components/Layout';
 
 export default function EmailGenerator() {
   const [input, setInput] = useState('');
@@ -107,7 +107,7 @@ export default function EmailGenerator() {
   };
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>AI Email Generator | Professional Email Writing Tool</title>
         <meta 
@@ -120,50 +120,6 @@ export default function EmailGenerator() {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="author" content="AI Prompt Maker" />
-
-
-        
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="AI Email Generator | Professional Email Writing Tool" />
-        <meta property="og:description" content="Generate professional emails instantly. Free AI-powered email writer for business, marketing, sales, and personal communication." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yoursite.com/email" />
-        <meta property="og:image" content="https://yoursite.com/email-generator-og-image.jpg" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="AI Email Generator" />
-        <meta name="twitter:description" content="Free AI-powered tool for generating professional emails instantly." />
-        <meta name="twitter:image" content="https://yoursite.com/email-generator-twitter-image.jpg" />
-        
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://yoursite.com/email" />
-        
-        {/* Schema.org Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "AI Email Generator",
-              "description": "Free AI-powered tool for generating professional emails",
-              "url": "https://yoursite.com/email",
-              "applicationCategory": "BusinessApplication",
-              "operatingSystem": "Any",
-              "permissions": "browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
-              "author": {
-                "@type": "Organization",
-                "name": "Your Company Name"
-              }
-            })
-          }}
-        />
       </Head>
 
       <div style={{ 
@@ -173,48 +129,15 @@ export default function EmailGenerator() {
         fontFamily: 'system-ui, -apple-system, sans-serif',
         backgroundColor: '#f8fafc',
         borderRadius: '12px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        position: 'relative'
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
       }}>
-        {/* Back to Home Button */}
-        <Link href="/" passHref>
-          <button
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              left: '1rem',
-              padding: '8px 16px',
-              backgroundColor: '#64748b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#475569';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = '#64748b';
-            }}
-          >
-            ← Back to Home
-          </button>
-        </Link>
 
         <h1 style={{ 
           textAlign: 'center', 
           color: '#1e293b',
           marginBottom: '0.5rem',
           fontSize: '2.25rem',
-          fontWeight: '700',
-          paddingTop: '0.5rem'
+          fontWeight: '700'
         }}>
           ✉️ AI Email Generator
         </h1>
@@ -436,14 +359,7 @@ export default function EmailGenerator() {
                     fontWeight: '500',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseOver={(e) => {
-                    e.target.style.backgroundColor = '#0f766e';
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.backgroundColor = '#0d9488';
+                    gap: '6px'
                   }}
                   aria-label="Copy email to clipboard"
                 >
@@ -541,6 +457,6 @@ export default function EmailGenerator() {
           }
         `}</style>
       </div>
-    </>
+    </Layout>
   );
 }
