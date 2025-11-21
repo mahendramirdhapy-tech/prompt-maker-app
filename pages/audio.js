@@ -230,394 +230,711 @@ export default function AudioSilenceRemover() {
   return (
     <>
       <Head>
-        <title>Audio Silence Remover | Free Offline Tool</title>
+        <title>Audio Silence Remover | Free Offline Tool - FileOptimizeTools</title>
         <meta 
           name="description" 
-          content="Remove silence from audio files completely offline. No data leaves your browser. Free and easy to use." 
+          content="Remove silence from audio files completely offline. No data leaves your browser. Free and easy to use audio silence removal tool." 
         />
         <meta 
           name="keywords" 
-          content="audio silence remover, remove silence from audio, offline audio tool, audio processing, web audio api" 
+          content="audio silence remover, remove silence from audio, offline audio tool, audio processing, web audio api, free audio tool, silence removal" 
         />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+        
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content="Audio Silence Remover | Free Offline Tool - FileOptimizeTools" />
+        <meta property="og:description" content="Remove silence from audio files completely offline. No data leaves your browser. Free and easy to use." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://fileoptimizetools.com/audio" />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Audio Silence Remover | Free Offline Tool" />
+        <meta name="twitter:description" content="Remove silence from audio files completely offline. No data leaves your browser." />
       </Head>
       
-      <div style={{ 
-        maxWidth: '900px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
+      {/* Header */}
+      <header style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        padding: '1rem 0',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
       }}>
-        {/* Back to Home Button */}
-        <Link href="/" passHref>
-          <button
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              left: '1rem',
-              padding: '8px 16px',
-              backgroundColor: '#64748b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Link href="/" passHref>
+            <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#475569';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = '#64748b';
-            }}
-          >
-            ← Back to Home
-          </button>
-        </Link>
-
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ 
-            color: '#2563eb',
-            marginBottom: '0.5rem',
-            fontSize: '2.25rem'
-          }}>
-            🎵 Audio Silence Remover
-          </h1>
-          <p style={{
-            color: '#64748b',
-            fontSize: '1.125rem'
-          }}>
-            Completely offline tool - No data leaves your browser
-          </p>
-        </div>
-
-        <div style={{
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          marginBottom: '1.5rem'
-        }}>
-          {/* File Input */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '0.5rem', 
-              fontWeight: '600',
-              color: '#1e293b'
+              gap: '10px',
+              cursor: 'pointer'
             }}>
-              📁 Select Audio File
-            </label>
-            <div 
-              style={{
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
+              <span style={{
+                fontSize: '1.8rem',
+                fontWeight: 'bold'
+              }}>
+                🛠️ FileOptimizeTools
+              </span>
+            </div>
+          </Link>
+          
+          <nav style={{
+            display: 'flex',
+            gap: '2rem',
+            alignItems: 'center'
+          }}>
+            <Link href="/" passHref>
+              <span style={{
+                color: 'white',
+                textDecoration: 'none',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'opacity 0.2s'
+              }} onMouseOver={(e) => e.target.style.opacity = '0.8'} onMouseOut={(e) => e.target.style.opacity = '1'}>
+                Home
+              </span>
+            </Link>
+            <Link href="/audio" passHref>
+              <span style={{
+                color: 'white',
+                textDecoration: 'none',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                background: 'rgba(255,255,255,0.2)',
+                padding: '8px 16px',
+                borderRadius: '20px'
+              }}>
+                Audio Tools
+              </span>
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main style={{
+        minHeight: '80vh',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        padding: '2rem 0'
+      }}>
+        <div style={{ 
+          maxWidth: '1000px', 
+          margin: '0 auto', 
+          padding: '0 2rem'
+        }}>
+          {/* Breadcrumb */}
+          <div style={{ marginBottom: '2rem' }}>
+            <Link href="/" passHref>
+              <span style={{
+                color: '#64748b',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}>
+                Home
+              </span>
+            </Link>
+            <span style={{ color: '#64748b', margin: '0 8px' }}>/</span>
+            <span style={{ color: '#2563eb', fontSize: '0.9rem', fontWeight: '500' }}>
+              Audio Silence Remover
+            </span>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h1 style={{ 
+              color: '#1e293b',
+              marginBottom: '1rem',
+              fontSize: '2.5rem',
+              fontWeight: '700'
+            }}>
+              🎵 Audio Silence Remover
+            </h1>
+            <p style={{
+              color: '#64748b',
+              fontSize: '1.2rem',
+              maxWidth: '600px',
+              margin: '0 auto',
+              lineHeight: '1.6'
+            }}>
+              Remove silence from audio files completely offline. No data leaves your browser - 100% private and secure.
+            </p>
+          </div>
+
+          {/* Tool Card */}
+          <div style={{
+            background: 'white',
+            padding: '2.5rem',
+            borderRadius: '16px',
+            boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            marginBottom: '2rem'
+          }}>
+            {/* File Input */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '1rem', 
+                fontWeight: '600',
+                color: '#1e293b',
+                fontSize: '1.1rem'
+              }}>
+                📁 Select Audio File
+              </label>
               <div 
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '12px 16px',
-                  background: '#f1f5f9',
-                  border: '2px dashed #cbd5e1',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
               >
-                <span>📎 Choose Audio File or Drag & Drop</span>
+                <div 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    padding: '20px',
+                    background: '#f8fafc',
+                    border: '2px dashed #cbd5e1',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    fontSize: '1.1rem'
+                  }}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <span>📎 Choose Audio File or Drag & Drop</span>
+                </div>
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  accept="audio/*"
+                  onChange={handleFileSelect}
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    opacity: 0,
+                    width: '100%',
+                    height: '100%',
+                    cursor: 'pointer'
+                  }}
+                />
               </div>
-              <input 
-                ref={fileInputRef}
-                type="file" 
-                accept="audio/*"
-                onChange={handleFileSelect}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  opacity: 0,
-                  width: '100%',
-                  height: '100%',
-                  cursor: 'pointer'
-                }}
-              />
+              {fileName && (
+                <div style={{ 
+                  marginTop: '1rem', 
+                  color: '#059669',
+                  background: '#d1fae5',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #a7f3d0',
+                  fontSize: '1rem'
+                }}>
+                  ✅ Selected: {fileName}
+                </div>
+              )}
             </div>
-            {fileName && (
-              <div style={{ marginTop: '0.5rem', color: '#64748b' }}>
-                Selected: {fileName}
+
+            {/* Settings */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr',
+              gap: '2rem',
+              marginBottom: '2rem'
+            }}>
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.75rem', 
+                  fontWeight: '600',
+                  color: '#1e293b',
+                  fontSize: '1rem'
+                }}>
+                  🎚️ Silence Threshold (0.001 - 0.1)
+                </label>
+                <input 
+                  id="threshold"
+                  type="number" 
+                  defaultValue="0.02"
+                  step="0.001"
+                  min="0.001"
+                  max="0.1"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    transition: 'border-color 0.2s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+                  onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                />
+                <small style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '0.5rem', display: 'block' }}>
+                  Lower values = more sensitive to silence detection
+                </small>
+              </div>
+
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.75rem', 
+                  fontWeight: '600',
+                  color: '#1e293b',
+                  fontSize: '1rem'
+                }}>
+                  ⏱️ Minimum Silence (ms)
+                </label>
+                <input 
+                  id="minDur"
+                  type="number" 
+                  defaultValue="150"
+                  min="50"
+                  max="5000"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    transition: 'border-color 0.2s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+                  onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                />
+                <small style={{ color: '#64748b', fontSize: '0.875rem', marginTop: '0.5rem', display: 'block' }}>
+                  Shorter silence periods won't be removed
+                </small>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            {isProcessing && (
+              <div style={{
+                width: '100%',
+                height: '8px',
+                background: '#f1f5f9',
+                borderRadius: '4px',
+                overflow: 'hidden',
+                margin: '2rem 0'
+              }}>
+                <div 
+                  style={{
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #2563eb, #3b82f6)',
+                    width: `${progress}%`,
+                    transition: 'width 0.3s ease',
+                    borderRadius: '4px'
+                  }}
+                />
               </div>
             )}
+
+            {/* Process Button */}
+            <button
+              onClick={processAudio}
+              disabled={isProcessing || !fileName}
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: isProcessing ? '#94a3b8' : 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                cursor: isProcessing ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                transition: 'all 0.3s ease',
+                boxShadow: isProcessing ? 'none' : '0 4px 15px rgba(37, 99, 235, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                if (!isProcessing && fileName) {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(37, 99, 235, 0.4)';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (!isProcessing && fileName) {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(37, 99, 235, 0.3)';
+                }
+              }}
+            >
+              {isProcessing ? (
+                <>
+                  <div style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '2px solid transparent',
+                    borderTop: '2px solid white',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }} />
+                  Processing Audio...
+                </>
+              ) : (
+                '⚡ Process Audio'
+              )}
+            </button>
           </div>
 
-          {/* Settings */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 1fr',
-            gap: '1rem',
-            marginBottom: '1.5rem'
-          }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontWeight: '600',
-                color: '#1e293b'
-              }}>
-                🎚️ Silence Threshold (0.001 - 0.1)
-              </label>
-              <input 
-                id="threshold"
-                type="number" 
-                defaultValue="0.02"
-                step="0.001"
-                min="0.001"
-                max="0.1"
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '2px solid #e2e8f0',
-                  borderRadius: '6px',
-                  fontSize: '16px'
-                }}
-              />
-              <small style={{ color: '#64748b' }}>Lower = more sensitive</small>
-            </div>
-
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontWeight: '600',
-                color: '#1e293b'
-              }}>
-                ⏱️ Minimum Silence (ms)
-              </label>
-              <input 
-                id="minDur"
-                type="number" 
-                defaultValue="150"
-                min="50"
-                max="5000"
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '2px solid #e2e8f0',
-                  borderRadius: '6px',
-                  fontSize: '16px'
-                }}
-              />
-              <small style={{ color: '#64748b' }}>Shorter pauses won't be removed</small>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          {isProcessing && (
+          {/* Statistics */}
+          {stats && (
             <div style={{
-              width: '100%',
-              height: '6px',
-              background: '#e2e8f0',
-              borderRadius: '3px',
-              overflow: 'hidden',
-              margin: '1rem 0'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1.5rem',
+              marginBottom: '2rem'
             }}>
-              <div 
-                style={{
-                  height: '100%',
-                  background: '#2563eb',
-                  width: `${progress}%`,
-                  transition: 'width 0.3s ease'
-                }}
-              />
+              <div style={{
+                background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                textAlign: 'center',
+                border: '1px solid #bae6fd',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#0369a1', marginBottom: '0.5rem' }}>
+                  {stats.originalDuration}
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: '500' }}>
+                  Original Duration
+                </div>
+              </div>
+              <div style={{
+                background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                textAlign: 'center',
+                border: '1px solid #a7f3d0',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#059669', marginBottom: '0.5rem' }}>
+                  {stats.processedDuration}
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: '500' }}>
+                  Processed Duration
+                </div>
+              </div>
+              <div style={{
+                background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                textAlign: 'center',
+                border: '1px solid #fcd34d',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#d97706', marginBottom: '0.5rem' }}>
+                  {stats.silenceRemoved}
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: '500' }}>
+                  Silence Removed
+                </div>
+              </div>
+              <div style={{
+                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                textAlign: 'center',
+                border: '1px solid #fca5a5',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#dc2626', marginBottom: '0.5rem' }}>
+                  {stats.fileSize}
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: '500' }}>
+                  File Size
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Process Button */}
-          <button
-            onClick={processAudio}
-            disabled={isProcessing || !fileName}
-            style={{
-              width: '100%',
-              padding: '12px',
-              background: isProcessing ? '#94a3b8' : '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
+          {/* Audio Players */}
+          <div style={{
+            background: 'white',
+            padding: '2.5rem',
+            borderRadius: '16px',
+            boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            marginBottom: '2rem'
+          }}>
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ 
+                color: '#1e293b', 
+                marginBottom: '1.5rem',
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                <span style={{ fontSize: '1.8rem' }}>🎧</span>
+                Original Audio
+              </h3>
+              {originalAudio && (
+                <audio 
+                  ref={originalAudioRef}
+                  src={originalAudio} 
+                  controls 
+                  style={{ 
+                    width: '100%',
+                    borderRadius: '12px',
+                    background: '#f8fafc'
+                  }}
+                />
+              )}
+            </div>
+          
+            <div>
+              <h3 style={{ 
+                color: '#1e293b', 
+                marginBottom: '1.5rem',
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                <span style={{ fontSize: '1.8rem' }}>✨</span>
+                Processed Audio
+              </h3>
+              {processedAudio && (
+                <>
+                  <audio 
+                    ref={processedAudioRef}
+                    src={processedAudio} 
+                    controls 
+                    style={{ 
+                      width: '100%', 
+                      marginBottom: '1.5rem',
+                      borderRadius: '12px',
+                      background: '#f8fafc'
+                    }}
+                  />
+                  <a 
+                    href={stats?.downloadUrl}
+                    download={`silence_removed_${Date.now()}.wav`}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '14px 28px',
+                      background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                      color: 'white',
+                      textDecoration: 'none',
+                      borderRadius: '12px',
+                      fontWeight: '600',
+                      fontSize: '1.1rem',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 15px rgba(5, 150, 105, 0.3)'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 6px 20px rgba(5, 150, 105, 0.4)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 15px rgba(5, 150, 105, 0.3)';
+                    }}
+                  >
+                    💾 Download Processed Audio
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
+                
+          {/* Logs */}
+          <div style={{
+            background: 'white',
+            padding: '2.5rem',
+            borderRadius: '16px',
+            boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            marginBottom: '2rem'
+          }}>
+            <h3 style={{ 
+              color: '#1e293b', 
+              marginBottom: '1.5rem',
+              fontSize: '1.5rem',
               fontWeight: '600',
-              cursor: isProcessing ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
-          >
-            {isProcessing ? '⏳ Processing...' : '⚡ Process Audio'}
-          </button>
+              gap: '10px'
+            }}>
+              <span style={{ fontSize: '1.8rem' }}>📊</span>
+              Processing Log
+            </h3>
+            <div style={{
+              background: '#1e293b',
+              color: '#10b981',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              fontFamily: 'Courier New, monospace',
+              fontSize: '14px',
+              height: '250px',
+              overflowY: 'auto',
+              border: '1px solid #374151'
+            }}>
+              {logs.map((log, index) => (
+                <div key={index} style={{ 
+                  marginBottom: '0.75rem',
+                  lineHeight: '1.4',
+                  borderBottom: index < logs.length - 1 ? '1px solid #374151' : 'none',
+                  paddingBottom: index < logs.length - 1 ? '0.75rem' : '0'
+                }}>
+                  {log}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      </main>
 
-        {/* Statistics */}
-        {stats && (
+      {/* Footer */}
+      <footer style={{
+        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        color: 'white',
+        padding: '3rem 0 2rem',
+        marginTop: '2rem'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem'
+        }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-            gap: '1rem',
-            marginBottom: '1.5rem'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '3rem',
+            marginBottom: '3rem'
           }}>
-            <div style={{
-              background: '#f8fafc',
-              padding: '1rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-              borderLeft: '4px solid #2563eb'
-            }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#2563eb' }}>
-                {stats.originalDuration}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.25rem' }}>
-                Original Duration
-              </div>
+            <div>
+              <h3 style={{
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                marginBottom: '1rem',
+                color: '#fbbf24'
+              }}>
+                🛠️ FileOptimizeTools
+              </h3>
+              <p style={{
+                color: '#cbd5e1',
+                lineHeight: '1.6',
+                fontSize: '1rem'
+              }}>
+                Free, fast, and secure file optimization tools that work completely in your browser. 
+                No uploads, no data sharing, 100% private.
+              </p>
             </div>
-            <div style={{
-              background: '#f8fafc',
-              padding: '1rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-              borderLeft: '4px solid #10b981'
-            }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10b981' }}>
-                {stats.processedDuration}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.25rem' }}>
-                Processed Duration
-              </div>
-            </div>
-            <div style={{
-              background: '#f8fafc',
-              padding: '1rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-              borderLeft: '4px solid #f59e0b'
-            }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#f59e0b' }}>
-                {stats.silenceRemoved}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.25rem' }}>
-                Silence Removed
-              </div>
-            </div>
-            <div style={{
-              background: '#f8fafc',
-              padding: '1rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-              borderLeft: '4px solid #ef4444'
-            }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#ef4444' }}>
-                {stats.fileSize}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.25rem' }}>
-                File Size
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Audio Players */}
-        <div style={{
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          marginBottom: '1.5rem'
-        }}>
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ color: '#2563eb', marginBottom: '1rem' }}>🎧 Original Audio</h3>
-            {originalAudio && (
-              <audio 
-                ref={originalAudioRef}
-                src={originalAudio} 
-                controls 
-                style={{ width: '100%' }}
-              />
-            )}
-          </div>
-        
-          <div>
-            <h3 style={{ color: '#10b981', marginBottom: '1rem' }}>✨ Processed Audio</h3>
-            {processedAudio && (
-              <>
-                <audio 
-                  ref={processedAudioRef}
-                  src={processedAudio} 
-                  controls 
-                  style={{ width: '100%', marginBottom: '1rem' }}
-                />
-                <a 
-                  href={stats?.downloadUrl}
-                  download={`silence_removed_${Date.now()}.wav`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 20px',
-                    background: '#10b981',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '6px',
-                    fontWeight: '600'
-                  }}
-                >
-                  💾 Download Processed Audio
-                </a>
-              </>
-            )}
-          </div>
-        </div>
             
-        {/* Logs */}
-        <div style={{
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          marginBottom: '1.5rem'
-        }}>
-          <h3 style={{ color: '#1e293b', marginBottom: '1rem' }}>📊 Processing Log</h3>
-          <div style={{
-            background: '#1e293b',
-            color: '#10b981',
-            padding: '1rem',
-            borderRadius: '8px',
-            fontFamily: 'Courier New, monospace',
-            fontSize: '14px',
-            height: '200px',
-            overflowY: 'auto'
-          }}>
-            {logs.map((log, index) => (
-              <div key={index} style={{ marginBottom: '0.5rem' }}>
-                {log}
+            <div>
+              <h4 style={{
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                marginBottom: '1rem',
+                color: 'white'
+              }}>
+                Quick Links
+              </h4>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem'
+              }}>
+                <Link href="/" passHref>
+                  <span style={{
+                    color: '#cbd5e1',
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s',
+                    fontSize: '1rem'
+                  }} onMouseOver={(e) => e.target.style.color = 'white'} onMouseOut={(e) => e.target.style.color = '#cbd5e1'}>
+                    Home
+                  </span>
+                </Link>
+                <Link href="/audio" passHref>
+                  <span style={{
+                    color: '#cbd5e1',
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s',
+                    fontSize: '1rem'
+                  }} onMouseOver={(e) => e.target.style.color = 'white'} onMouseOut={(e) => e.target.style.color = '#cbd5e1'}>
+                    Audio Tools
+                  </span>
+                </Link>
               </div>
-            ))}
+            </div>
+            
+            <div>
+              <h4 style={{
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                marginBottom: '1rem',
+                color: 'white'
+              }}>
+                Features
+              </h4>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                color: '#cbd5e1',
+                fontSize: '1rem'
+              }}>
+                <div>🔒 100% Offline Processing</div>
+                <div>⚡ No File Uploads</div>
+                <div>🎯 Fast & Efficient</div>
+                <div>💾 Privacy First</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{
+            borderTop: '1px solid #475569',
+            paddingTop: '2rem',
+            textAlign: 'center',
+            color: '#94a3b8',
+            fontSize: '0.9rem'
+          }}>
+            <p>© 2024 FileOptimizeTools. All rights reserved. Made with ❤️ for the open web.</p>
           </div>
         </div>
-      </div>
+      </footer>
 
-      <style jsx>{`
+      <style jsx global>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 768px) {
           div > div {
             grid-template-columns: 1fr;
+          }
+          
+          header > div {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+          }
+          
+          nav {
+            gap: 1rem;
           }
         }
       `}</style>
