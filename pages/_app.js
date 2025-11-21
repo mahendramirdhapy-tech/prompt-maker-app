@@ -116,7 +116,7 @@ function MyApp({ Component, pageProps }) {
       {/* ✅ Google Analytics - Fixed Measurement ID */}
       <Script
         strategy="afterInteractive"
-        src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+        src="https://www.googletagmanager.com/gtag/js?id=GTN-GL5G74"
       />
       <Script
         id="google-analytics"
@@ -126,7 +126,7 @@ function MyApp({ Component, pageProps }) {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX', {
+            gtag('config', 'GTN-GL5G74', {
               page_title: document.title,
               page_location: window.location.href,
               page_path: window.location.pathname,
