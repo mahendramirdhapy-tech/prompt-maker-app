@@ -2,6 +2,9 @@
 import Head from 'next/head';
 import Script from 'next/script';
 
+function MyApp({ Component, pageProps }) {
+  return (
+    <>
       <Head>
         {/* Primary Meta Tags */}
         <title>Prompt Maker - Free AI Tools | Code Debugger, Translator, SEO Tools</title>
@@ -123,7 +126,7 @@ import Script from 'next/script';
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'GTN-GL5G74', {
+            gtag('config', 'G-XXXXXXXXXX', {
               page_title: document.title,
               page_location: window.location.href,
               page_path: window.location.pathname,
@@ -151,7 +154,11 @@ import Script from 'next/script';
           })
         }}
       />
+
+      {/* Main Component */}
       <Component {...pageProps} />
     </>
   );
 }
+
+export default MyApp;
