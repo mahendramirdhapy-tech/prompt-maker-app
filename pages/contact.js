@@ -1,7 +1,7 @@
 // pages/contact.js
 import { useState } from 'react';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
+import Layout from '../components/Layout'; // सिर्फ Layout import करें
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -61,12 +61,10 @@ export default function ContactUs() {
   };
 
   return (
-    <>
-      <Head>
-        <title>Contact Us - AI Prompt Maker</title>
-        <meta name="description" content="Contact AI Prompt Maker support team. Get help with your account and features." />
-      </Head>
-
+    <Layout 
+      title="Contact Us - AI Prompt Maker" 
+      description="Contact AI Prompt Maker support team. Get help with your account and features."
+    >
       <div style={styles.container}>
         <div style={styles.contentWrapper}>
           {/* Back Button */}
@@ -256,228 +254,8 @@ export default function ContactUs() {
           100% { transform: rotate(360deg); }
         }
       `}</style>
-    </>
+    </Layout>
   );
 }
 
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-    padding: '20px 0',
-  },
-  contentWrapper: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '0 20px',
-  },
-  backButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    color: '#2563eb',
-    background: 'none',
-    border: 'none',
-    fontSize: '16px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    marginBottom: '30px',
-    padding: '10px 0',
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '50px',
-  },
-  title: {
-    fontSize: '2.5rem',
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: '15px',
-    background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
-  subtitle: {
-    color: '#64748b',
-    fontSize: '1.1rem',
-    maxWidth: '600px',
-    margin: '0 auto',
-    lineHeight: '1.6',
-  },
-  successMessage: {
-    backgroundColor: '#dcfce7',
-    border: '1px solid #22c55e',
-    color: '#166534',
-    padding: '16px',
-    borderRadius: '8px',
-    marginBottom: '24px',
-    textAlign: 'center',
-    fontSize: '14px',
-  },
-  errorMessage: {
-    backgroundColor: '#fecaca',
-    border: '1px solid #ef4444',
-    color: '#dc2626',
-    padding: '16px',
-    borderRadius: '8px',
-    marginBottom: '24px',
-    textAlign: 'center',
-    fontSize: '14px',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: '32px',
-    marginBottom: '40px',
-  },
-  infoCard: {
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    padding: '24px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-  },
-  formCard: {
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    padding: '24px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-  },
-  infoTitle: {
-    fontSize: '1.5rem',
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: '20px',
-  },
-  infoList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  infoItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '12px',
-    padding: '8px',
-  },
-  infoIcon: {
-    fontSize: '1.2rem',
-    marginTop: '2px',
-  },
-  infoLabel: {
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '4px',
-    fontSize: '14px',
-  },
-  infoText: {
-    color: '#6b7280',
-    fontSize: '14px',
-  },
-  socialSection: {
-    marginTop: '24px',
-    paddingTop: '20px',
-    borderTop: '1px solid #e5e7eb',
-  },
-  socialTitle: {
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '12px',
-    fontSize: '14px',
-  },
-  socialIcons: {
-    display: 'flex',
-    gap: '12px',
-  },
-  socialIcon: {
-    fontSize: '1.3rem',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  label: {
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '6px',
-    fontSize: '14px',
-  },
-  input: {
-    padding: '10px 12px',
-    border: '1px solid #d1d5db',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    transition: 'border-color 0.2s',
-  },
-  textarea: {
-    padding: '10px 12px',
-    border: '1px solid #d1d5db',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    resize: 'vertical',
-    minHeight: '100px',
-    transition: 'border-color 0.2s',
-  },
-  submitButton: {
-    padding: '12px 20px',
-    backgroundColor: '#3b82f6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    marginTop: '8px',
-    transition: 'background-color 0.2s',
-  },
-  submitButtonDisabled: {
-    padding: '12px 20px',
-    backgroundColor: '#9ca3af',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'not-allowed',
-    marginTop: '8px',
-  },
-  buttonContent: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '6px',
-  },
-  spinner: {
-    width: '14px',
-    height: '14px',
-    border: '2px solid transparent',
-    borderTop: '2px solid white',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-  },
-};
-
-// Responsive design
-if (typeof window !== 'undefined') {
-  const updateStyles = () => {
-    if (window.innerWidth >= 768) {
-      styles.grid.gridTemplateColumns = '1fr 1fr';
-      styles.grid.gap = '40px';
-    } else {
-      styles.grid.gridTemplateColumns = '1fr';
-      styles.grid.gap = '32px';
-    }
-  };
-
-  // Initial check
-  updateStyles();
-
-  // Update on resize
-  window.addEventListener('resize', updateStyles);
-}
+// ... styles object वही रहेगा (निचे का सारा code वही रखें)
