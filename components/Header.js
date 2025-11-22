@@ -38,7 +38,6 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
   // Navigation items
   const navItems = [
     { path: '/features', label: 'Features', icon: '⚡', dropdown: true },
-    { path: '/pricing', label: 'Pricing', icon: '💰' },
     { path: '/about', label: 'About', icon: '👥' },
     { path: '/contact', label: 'Contact', icon: '📞' },
   ];
