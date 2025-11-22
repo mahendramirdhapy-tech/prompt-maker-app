@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website Builder - Prompt Maker App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0f172a;
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .website-name-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            background-color: #0f172a;
+            color: white;
+            min-width: 200px;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .btn:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 350px;
+            background-color: #1e293b;
+            padding: 1.5rem;
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+            font-size: 1.25rem;
+        }
+        
+        .sidebar h4 {
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            background-color: #0f172a;
+            color: white;
+            font-size: 1rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .examples {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        
+        .template-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .template-btn {
+            padding: 1rem;
+            background-color: #334155;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.3s ease;
+        }
+        
+        .template-btn:hover {
+            background-color: #475569;
+        }
+        
+        .template-btn.active {
+            background-color: #3b82f6;
+        }
+        
+        .template-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .template-icon {
+            font-size: 1.25rem;
+        }
+        
+        .template-info {
+            flex: 1;
+        }
+        
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .template-desc {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            background-color: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Preview */
+        .preview-container {
+            flex: 1;
+            padding: 0;
+            background-color: white;
+            position: relative;
+        }
+        
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Code Editor */
+        .code-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .code-editor {
+            flex: 1;
+            background-color: #1e293b;
+            padding: 1rem;
+            overflow: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            border: none;
+            outline: none;
+            resize: none;
+            width: 100%;
+            min-height: 100%;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+        
+        .empty-desc {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+        
+        .empty-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        /* Alert */
+        .alert {
+            padding: 1rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .alert-error {
+            background-color: #fecaca;
+            color: #dc2626;
+        }
+        
+        .alert-success {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #334155;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .header-controls {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+            
+            .empty-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                    AI Website Builder
+                </div>
+                <div class="header-controls">
+                    <input type="text" class="website-name-input" id="websiteName" placeholder="Website name" value="My AI Website">
+                    <button class="btn btn-primary" id="saveBtn">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="btn btn-secondary" id="loadBtn">
+                        <i class="fas fa-folder-open"></i> Load
+                    </button>
+                    <button class="btn btn-success" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-danger" id="resetBtn">
+                        <i class="fas fa-trash"></i> Reset
+                    </button>
+                    <button class="btn btn-warning" id="testBtn">
+                        <i class="fas fa-wrench"></i> Test AI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Alert Area -->
+    <div id="alertArea"></div>
+
+    <!-- Main Content -->
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-robot"></i> AI Website Generator</h3>
+                <div class="form-group">
+                    <label for="aiPrompt">Describe your website:</label>
+                    <textarea id="aiPrompt" placeholder="Example: Create a modern restaurant website with menu and contact section..."></textarea>
+                    <button class="btn btn-secondary" id="generateBtn" style="width: 100%; margin-top: 0.5rem;">
+                        <i class="fas fa-magic"></i> Generate with AI
+                    </button>
+                    <div class="examples">
+                        <strong>Working Examples:</strong><br>
+                        • "Create a portfolio for a web developer"<br>
+                        • "Make a restaurant website with menu"<br>
+                        • "Build an e-commerce store for clothes"
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4><i class="fas fa-palette"></i> Quick Templates</h4>
+                <div class="template-grid" id="templateGrid">
+                    <!-- Templates will be added by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="preview">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button class="tab" data-tab="code">
+                    <i class="fas fa-code"></i> Code
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Preview Tab -->
+                <div class="tab-content active" id="previewTab">
+                    <div class="preview-container">
+                        <iframe class="preview-iframe" id="previewFrame" title="Website Preview"></iframe>
+                    </div>
+                </div>
+
+                <!-- Code Tab -->
+                <div class="tab-content" id="codeTab">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <h3>HTML Code</h3>
+                            <button class="btn btn-primary" id="copyBtn">
+                                <i class="fas fa-copy"></i> Copy Code
+                            </button>
+                        </div>
+                        <textarea class="code-editor" id="codeEditor" spellcheck="false"></textarea>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h2 class="empty-title">Create Your Website with AI</h2>
+                    <p class="empty-desc">
+                        Describe the website you want to create and let AI generate the complete code, 
+                        or start with one of our professional templates.
+                    </p>
+                    <div class="empty-actions">
+                        <button class="btn btn-secondary" id="startWithAI">
+                            <i class="fas fa-palette"></i> Describe Your Website
+                        </button>
+                        <button class="btn btn-primary" id="startWithTemplate">
+                            <i class="fas fa-briefcase"></i> Start with Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pre-built Templates
+        const PRE_BUILT_TEMPLATES = [
+            {
+                id: 'business',
+                name: 'Business Website',
+                description: 'Professional corporate website',
+                category: 'Business',
+                icon: 'fas fa-briefcase',
+                code: `<!DOCTYPE html>
+<html>
+<head>
+    <title>Business Pro</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6;
+        }
+        .header { 
+            background: #3b82f6; 
+            color: white; 
+            padding: 4rem 2rem; 
+            text-align: center; 
+        }
+        .services { 
+            padding: 4rem 2rem; 
+            background: #f8fafc; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .service-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 2rem; 
+            margin-top: 2rem;
+        }
+        .service-card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 10px; 
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .service-card h3 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .service-card p {
+            color: #6b7280;
+        }
+        .contact {
+            padding: 4rem 2rem;
+            background: #1f2937;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Business Solutions</h1>
+        <p>Professional services for growth</p>
+    </header>
+    <section class="services">
+        <div class="container">
+            <h2 style="text-align: center; color: #1f2937;">Our Services</h2>
+            <div class="service-grid">
+                <div class="service-card">
+                    <h3>Web Development</h3>
+                    <p>Custom websites and web applications</p>
+                </div>
+                <div class="service-card">
+                    <h3>Digital Marketing</h3>
+                    <p>Grow your online presence</p>
+                </div>
+                <div class="service-card">
+                    <h3>SEO Optimization</h3>
+                    <p>Improve search engine rankings</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Get in touch to discuss your project</p>
+            <p>Email: hello@business.com</p>
+        </div>
+    </section>
+</body>
+</html>`
+            },
+            {
+                id: 'portfolio',
+                name: 'Portfolio Website',
+                description: 'Showcase your work and skills',
+                category: 'Portfolio',
+                icon: 'fas fa-palette',
+                code: `<!DOCTYPE html>
+<html>
+<head>
+    <title>My Portfolio</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6;
+            color: #333;
+        }
+        .hero { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 6rem 2rem; 
+            text-align: center; 
+        }
+        .projects { 
+            padding: 4rem 2rem; 
+            background: #f8fafc; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .project-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 2rem; 
+            margin-top: 2rem;
+        }
+        .project-card { 
+            background: white; 
+            border-radius: 10px; 
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+        .project-image {
+            height: 200px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+        .project-content {
+            padding: 1.5rem;
+        }
+        .skills {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .skill-tag {
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="container">
+            <h1>John Doe</h1>
+            <p>Web Developer & Designer</p>
+            <p>Creating beautiful and functional websites</p>
+        </div>
+    </section>
+    <section class="projects">
+        <div class="container">
+            <h2 style="text-align: center;">My Projects</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-image">Project Image</div>
+                    <div class="project-content">
+                        <h3>E-commerce Website</h3>
+                        <p>Modern online store with payment integration</p>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">Project Image</div>
+                    <div class="project-content">
+                        <h3>Business Dashboard</h3>
+                        <p>Analytics dashboard for business metrics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="skills">
+        <div class="container">
+            <h2>Skills</h2>
+            <div class="skill-tags">
+                <span class="skill-tag">HTML/CSS</span>
+                <span class="skill-tag">JavaScript</span>
+                <span class="skill-tag">React</span>
+                <span class="skill-tag">Node.js</span>
+                <span class="skill-tag">UI/UX Design</span>
+            </div>
+        </div>
+    </section>
+</body>
+</html>`
+            },
+            {
+                id: 'ecommerce',
+                name: 'E-commerce Store',
+                description: 'Online shop with product listings',
+                category: 'E-commerce',
+                icon: 'fas fa-shopping-cart',
+                code: `<!DOCTYPE html>
+<html>
+<head>
+    <title>ShopStore - Online Shopping</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .navbar {
+            background: #1f2937;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .hero {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .products {
+            padding: 4rem 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .product-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .product-image {
+            height: 200px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+        .price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #059669;
+            margin: 1rem 0;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">ShopStore</div>
+        <div class="nav-links">
+            <a href="#" style="color: white; text-decoration: none;">Home</a>
+            <a href="#" style="color: white; text-decoration: none;">Products</a>
+            <a href="#" style="color: white; text-decoration: none;">Contact</a>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="container">
+            <h1>Welcome to ShopStore</h1>
+            <p>Discover amazing products at great prices</p>
+        </div>
+    </section>
+    <section class="products">
+        <div class="container">
+            <h2 style="text-align: center;">Featured Products</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-image">Product Image</div>
+                    <h3>Wireless Headphones</h3>
+                    <p>High-quality sound with noise cancellation</p>
+                    <div class="price">$99.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">Product Image</div>
+                    <h3>Smart Watch</h3>
+                    <p>Track your fitness and stay connected</p>
+                    <div class="price">$199.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">Product Image</div>
+                    <h3>Laptop Backpack</h3>
+                    <p>Durable and stylish backpack for professionals</p>
+                    <div class="price">$49.99</div>
+                    <button class="btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 ShopStore. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>`
+            },
+            {
+                id: 'restaurant',
+                name: 'Restaurant Website',
+                description: 'Food ordering and menu display',
+                category: 'Food',
+                icon: 'fas fa-utensils',
+                code: `<!DOCTYPE html>
+<html>
+<head>
+    <title>Tasty Bites Restaurant</title>
+    <style>
+        body { 
+            font-family: 'Georgia', serif; 
+            margin: 0; 
+            padding: 0; 
+            color: #333;
+        }
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+        .menu {
+            padding: 4rem 2rem;
+            background: #fef7ed;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .menu-category {
+            margin-bottom: 3rem;
+        }
+        .menu-items {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .menu-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #92400e;
+        }
+        .item-info p {
+            margin: 0;
+            color: #6b7280;
+        }
+        .price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #059669;
+        }
+        .about {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: #92400e;
+            color: white;
+        }
+        .btn {
+            background: #d97706;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="container">
+            <h1 style="font-size: 3rem; margin-bottom: 1rem;">Tasty Bites</h1>
+            <p style="font-size: 1.25rem; margin-bottom: 2rem;">Authentic cuisine made with love</p>
+            <button class="btn">View Menu</button>
+        </div>
+    </section>
+    <section class="menu">
+        <div class="container">
+            <h2 style="text-align: center; color: #92400e; margin-bottom: 3rem;">Our Menu</h2>
+            
+            <div class="menu-category">
+                <h3 style="color: #92400e;">Appetizers</h3>
+                <div class="menu-items">
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h3>Bruschetta</h3>
+                            <p>Toasted bread topped with tomatoes, garlic, and fresh basil</p>
+                        </div>
+                        <div class="price">$8.99</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h3>Garlic Bread</h3>
+                            <p>Freshly baked bread with garlic butter and herbs</p>
+                        </div>
+                        <div class="price">$6.99</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-category">
+                <h3 style="color: #92400e;">Main Courses</h3>
+                <div class="menu-items">
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h3>Spaghetti Carbonara</h3>
+                            <p>Classic pasta with eggs, cheese, pancetta, and pepper</p>
+                        </div>
+                        <div class="price">$16.99</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h3>Grilled Salmon</h3>
+                            <p>Fresh salmon with lemon butter sauce and seasonal vegetables</p>
+                        </div>
+                        <div class="price">$22.99</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="about">
+        <div class="container">
+            <h2>About Our Restaurant</h2>
+            <p>Founded in 2010, Tasty Bites has been serving authentic cuisine made from locally sourced ingredients. Our chefs combine traditional recipes with modern techniques to create unforgettable dining experiences.</p>
+            <p>Visit us today and taste the difference!</p>
+        </div>
+    </section>
+</body>
+</html>`
+            },
+            {
+                id: 'blog',
+                name: 'Blog Website',
+                description: 'Content publishing platform',
+                category: 'Blog',
+                icon: 'fas fa-blog',
+                code: `<!DOCTYPE html>
+<html>
+<head>
+    <title>Tech Insights Blog</title>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.7;
+            color: #333;
+        }
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+        .blog-posts {
+            padding: 4rem 2rem;
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .post-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+        }
+        .post-image {
+            height: 200px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+        .post-content {
+            padding: 1.5rem;
+        }
+        .post-meta {
+            display: flex;
+            gap: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .tag {
+            background: #e5e7eb;
+            color: #4b5563;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+        .read-more {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">TechInsights</div>
+            <div class="nav-links">
+                <a href="#" style="color: #4b5563; text-decoration: none;">Home</a>
+                <a href="#" style="color: #4b5563; text-decoration: none;">Categories</a>
+                <a href="#" style="color: #4b5563; text-decoration: none;">About</a>
+                <a href="#" style="color: #4b5563; text-decoration: none;">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="container">
+            <h1 style="font-size: 3rem; margin-bottom: 1rem;">Tech Insights Blog</h1>
+            <p style="font-size: 1.25rem;">Stay updated with the latest in technology, programming, and digital innovation</p>
+        </div>
+    </section>
+    <section class="blog-posts">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem;">Latest Articles</h2>
+            <div class="posts-grid">
+                <div class="post-card">
+                    <div class="post-image">Featured Image</div>
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span>June 15, 2024</span>
+                            <span>•</span>
+                            <span>5 min read</span>
+                        </div>
+                        <h3>The Future of Web Development in 2024</h3>
+                        <p>Exploring the latest trends and technologies shaping the future of web development...</p>
+                        <div class="post-tags">
+                            <span class="tag">Web Development</span>
+                            <span class="tag">Trends</span>
+                        </div>
+                        <a href="#" class="read-more">Read More →</a>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-image">Featured Image</div>
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span>June 12, 2024</span>
+                            <span>•</span>
+                            <span>4 min read</span>
+                        </div>
+                        <h3>Getting Started with React Hooks</h3>
+                        <p>A comprehensive guide to understanding and using React Hooks in your projects...</p>
+                        <div class="post-tags">
+                            <span class="tag">React</span>
+                            <span class="tag">JavaScript</span>
+                        </div>
+                        <a href="#" class="read-more">Read More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 TechInsights Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>`
+            }
+        ];
+
+        // State Management
+        let state = {
+            websiteCode: '',
+            aiPrompt: '',
+            isGenerating: false,
+            previewHtml: '',
+            generatedCode: '',
+            websiteName: 'My AI Website',
+            activeTab: 'preview',
+            selectedTemplate: 'business',
+            aiError: ''
+        };
+
+        // DOM Elements
+        const elements = {
+            websiteName: document.getElementById('websiteName'),
+            aiPrompt: document.getElementById('aiPrompt'),
+            generateBtn: document.getElementById('generateBtn'),
+            templateGrid: document.getElementById('templateGrid'),
+            previewFrame: document.getElementById('previewFrame'),
+            codeEditor: document.getElementById('codeEditor'),
+            emptyState: document.getElementById('emptyState'),
+            previewTab: document.getElementById('previewTab'),
+            codeTab: document.getElementById('codeTab'),
+            alertArea: document.getElementById('alertArea'),
+            saveBtn: document.getElementById('saveBtn'),
+            loadBtn: document.getElementById('loadBtn'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            testBtn: document.getElementById('testBtn'),
+            copyBtn: document.getElementById('copyBtn'),
+            startWithAI: document.getElementById('startWithAI'),
+            startWithTemplate: document.getElementById('startWithTemplate')
+        };
+
+        // Initialize the application
+        function init() {
+            renderTemplates();
+            setupEventListeners();
+            applyTemplate(PRE_BUILT_TEMPLATES[0]);
+            updateUI();
+        }
+
+        // Render templates in the sidebar
+        function renderTemplates() {
+            elements.templateGrid.innerHTML = PRE_BUILT_TEMPLATES.map(template => `
+                <button class="template-btn ${state.selectedTemplate === template.id ? 'active' : ''}" 
+                        data-template="${template.id}">
+                    <div class="template-content">
+                        <div class="template-icon">
+                            <i class="${template.icon}"></i>
+                        </div>
+                        <div class="template-info">
+                            <div class="template-name">${template.name}</div>
+                            <div class="template-desc">${template.description}</div>
+                        </div>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Template selection
+            elements.templateGrid.addEventListener('click', (e) => {
+                const templateBtn = e.target.closest('.template-btn');
+                if (templateBtn) {
+                    const templateId = templateBtn.dataset.template;
+                    const template = PRE_BUILT_TEMPLATES.find(t => t.id === templateId);
+                    if (template) {
+                        applyTemplate(template);
+                    }
+                }
+            });
+
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // AI Generation
+            elements.generateBtn.addEventListener('click', generateWithAI);
+            
+            // Control buttons
+            elements.saveBtn.addEventListener('click', saveWebsite);
+            elements.loadBtn.addEventListener('click', loadSavedWebsite);
+            elements.downloadBtn.addEventListener('click', downloadCode);
+            elements.resetBtn.addEventListener('click', resetWebsite);
+            elements.testBtn.addEventListener('click', testAIConnection);
+            elements.copyBtn.addEventListener('click', copyCode);
+            
+            // Empty state actions
+            elements.startWithAI.addEventListener('click', () => elements.aiPrompt.focus());
+            elements.startWithTemplate.addEventListener('click', () => applyTemplate(PRE_BUILT_TEMPLATES[0]));
+            
+            // Real-time code editing
+            elements.codeEditor.addEventListener('input', (e) => {
+                state.generatedCode = e.target.value;
+                state.previewHtml = e.target.value;
+                updatePreview();
+            });
+            
+            // Website name changes
+            elements.websiteName.addEventListener('input', (e) => {
+                state.websiteName = e.target.value;
+            });
+        }
+
+        // Apply template
+        function applyTemplate(template) {
+            state.generatedCode = template.code;
+            state.previewHtml = template.code;
+            state.selectedTemplate = template.id;
+            state.aiError = '';
+            
+            renderTemplates();
+            updateUI();
+            switchTab('preview');
+            showAlert(`Applied ${template.name} template`, 'success');
+        }
+
+        // AI Generation function
+        async function generateWithAI() {
+            const prompt = elements.aiPrompt.value.trim();
+            if (!prompt) {
+                showAlert('Please describe the website you want to create', 'error');
+                return;
+            }
+
+            state.isGenerating = true;
+            state.aiError = '';
+            updateUI();
+
+            try {
+                showAlert('Generating website with AI...', 'success');
+                
+                // Use your existing API endpoint
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        type: 'website',
+                        context: 'Generate complete HTML website code with CSS and JavaScript if needed'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API responded with status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.result) {
+                    const htmlCode = extractHTMLFromResponse(data.result);
+                    state.generatedCode = htmlCode;
+                    state.previewHtml = htmlCode;
+                    state.aiError = '';
+                    showAlert('Website generated successfully!', 'success');
+                } else if (data.error) {
+                    throw new Error(data.error);
+                } else {
+                    throw new Error('No response from AI');
+                }
+            } catch (error) {
+                console.error('AI Generation error:', error);
+                state.aiError = error.message;
+                generateFromTemplate(prompt);
+                showAlert('AI is currently unavailable. Using template instead.', 'warning');
+            } finally {
+                state.isGenerating = false;
+                updateUI();
+                switchTab('preview');
+            }
+        }
+
+        // Extract HTML from AI response
+        function extractHTMLFromResponse(response) {
+            const patterns = [
+                /```html\n([\s\S]*?)\n```/,
+                /```\n([\s\S]*?)\n```/,
+                /<html[\s\S]*<\/html>/i,
+                /<\!DOCTYPE html[\s\S]*<\/html>/i,
+            ];
+
+            for (let pattern of patterns) {
+                const match = response.match(pattern);
+                if (match) {
+                    return match[1] || match[0];
+                }
+            }
+
+            if (response.includes('<div') || response.includes('<h1') || response.includes('<p')) {
+                return response;
+            }
+
+            return `<!DOCTYPE html>
+<html>
+<head>
+    <title>${state.websiteName}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; line-height: 1.6; }
+        .content { max-width: 800px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="content">
+        ${response}
+    </div>
+</body>
+</html>`;
+        }
+
+        // Smart template fallback
+        function generateFromTemplate(prompt) {
+            let selectedTemplate = PRE_BUILT_TEMPLATES[0];
+            const promptLower = prompt.toLowerCase();
+            
+            if (promptLower.includes('blog') || promptLower.includes('article')) {
+                selectedTemplate = PRE_BUILT_TEMPLATES[4];
+            } else if (promptLower.includes('shop') || promptLower.includes('store') || promptLower.includes('product')) {
+                selectedTemplate = PRE_BUILT_TEMPLATES[2];
+            } else if (promptLower.includes('food') || promptLower.includes('restaurant') || promptLower.includes('menu')) {
+                selectedTemplate = PRE_BUILT_TEMPLATES[3];
+            } else if (promptLower.includes('portfolio') || promptLower.includes('design') || promptLower.includes('creative')) {
+                selectedTemplate = PRE_BUILT_TEMPLATES[1];
+            }
+            
+            applyTemplate(selectedTemplate);
+        }
+
+        // Switch between tabs
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === `${tabName}Tab`);
+            });
+            
+            updateUI();
+        }
+
+        // Update preview iframe
+        function updatePreview() {
+            if (state.previewHtml && elements.previewFrame) {
+                elements.previewFrame.srcdoc = state.previewHtml;
+            }
+        }
+
+        // Update code editor
+        function updateCodeEditor() {
+            if (elements.codeEditor) {
+                elements.codeEditor.value = state.generatedCode;
+            }
+        }
+
+        // Show/hide empty state
+        function updateEmptyState() {
+            if (elements.emptyState) {
+                elements.emptyState.style.display = state.generatedCode ? 'none' : 'flex';
+            }
+        }
+
+        // Update generate button state
+        function updateGenerateButton() {
+            if (elements.generateBtn) {
+                elements.generateBtn.disabled = state.isGenerating;
+                elements.generateBtn.innerHTML = state.isGenerating ? 
+                    '<i class="fas fa-spinner fa-spin"></i> AI is Generating...' : 
+                    '<i class="fas fa-magic"></i> Generate with AI';
+            }
+        }
+
+        // Main UI update function
+        function updateUI() {
+            updatePreview();
+            updateCodeEditor();
+            updateEmptyState();
+            updateGenerateButton();
+        }
+
+        // Save website to localStorage
+        function saveWebsite() {
+            if (!state.generatedCode) {
+                showAlert('No website to save', 'error');
+                return;
+            }
+            
+            const websiteData = {
+                name: state.websiteName,
+                code: state.generatedCode,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ai_website_builder_saved', JSON.stringify(websiteData));
+            showAlert('Website saved locally!', 'success');
+        }
+
+        // Load saved website
+        function loadSavedWebsite() {
+            try {
+                const saved = localStorage.getItem('ai_website_builder_saved');
+                if (saved) {
+                    const websiteData = JSON.parse(saved);
+                    state.websiteName = websiteData.name;
+                    state.generatedCode = websiteData.code;
+                    state.previewHtml = websiteData.code;
+                    elements.websiteName.value = websiteData.name;
+                    updateUI();
+                    switchTab('preview');
+                    showAlert('Website loaded from save!', 'success');
+                } else {
+                    showAlert('No saved website found', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading saved website:', error);
+                showAlert('Error loading saved website', 'error');
+            }
+        }
+
+        // Download website code
+        function downloadCode() {
+            if (!state.generatedCode) {
+                showAlert('No website code to download', 'error');
+                return;
+            }
+            
+            const blob = new Blob([state.generatedCode], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.websiteName.toLowerCase().replace(/\s+/g, '-')}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showAlert('Website downloaded successfully!', 'success');
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            if (!state.generatedCode) {
+                showAlert('No code to copy', 'error');
+                return;
+            }
+            
+            navigator.clipboard.writeText(state.generatedCode)
+                .then(() => showAlert('Code copied to clipboard!', 'success'))
+                .catch(() => showAlert('Failed to copy code', 'error'));
+        }
+
+        // Reset website
+        function resetWebsite() {
+            state.generatedCode = '';
+            state.previewHtml = '';
+            state.aiPrompt = '';
+            elements.aiPrompt.value = '';
+            state.selectedTemplate = null;
+            state.aiError = '';
+            renderTemplates();
+            updateUI();
+            showAlert('Website reset successfully', 'success');
+        }
+
+        // Test AI connection
+        async function testAIConnection() {
+            state.isGenerating = true;
+            updateUI();
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: 'Hello, are you working?',
+                        type: 'test'
+                    })
+                });
+                
+                const data = await response.json();
+                showAlert(`AI Connection Test: ${response.ok ? 'SUCCESS' : 'FAILED'}<br>Response: ${JSON.stringify(data)}`, 
+                         response.ok ? 'success' : 'error');
+            } catch (error) {
+                showAlert(`AI Connection Test: FAILED<br>Error: ${error.message}`, 'error');
+            } finally {
+                state.isGenerating = false;
+                updateUI();
+            }
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = message;
+            
+            elements.alertArea.innerHTML = '';
+            elements.alertArea.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
