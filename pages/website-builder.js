@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@supabase/supabase-js';
 
 export default function WebsiteBuilder() {
   const router = useRouter();
