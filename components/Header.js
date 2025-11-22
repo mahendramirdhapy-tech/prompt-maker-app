@@ -1,12 +1,30 @@
-// components/Header.js - PROFESSIONAL NAVBAR VERSION
+// components/Header.js - PROFESSIONAL NAVBAR VERSION WITH AUTH
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { supabase } from '../lib/supabase';
 
 const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobile }) => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFeaturesDropdown, setShowFeaturesDropdown] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [currentUser, setCurrentUser] = useState(user);
+
+  // Update user when prop changes
+  useEffect(() => {
+    setCurrentUser(user);
+  }, [user]);
+
+  // Auth state listener
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setCurrentUser(session?.user || null);
+      }
+    );
+
+    return () => subscription?.unsubscribe();
+  }, []);
 
   // Scroll effect for navbar
   useEffect(() => {
@@ -62,6 +80,34 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
       root.style.setProperty('--bg-secondary', '#f8fafc');
       root.style.setProperty('--text-primary', '#1e293b');
       root.style.setProperty('--text-secondary', '#64748b');
+    }
+  };
+
+  // Enhanced login handler
+  const enhancedHandleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed: ' + error.message);
+    }
+  };
+
+  // Enhanced logout handler
+  const enhancedHandleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setCurrentUser(null);
+      if (handleLogout) handleLogout();
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 
@@ -360,9 +406,9 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
             flexDirection: 'column',
             gap: '12px'
           }}>
-            {user ? (
+            {currentUser ? (
               <button 
-                onClick={handleLogout} 
+                onClick={enhancedHandleLogout} 
                 style={buttonStyle('#6b7280', '#fff')}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-1px)';
@@ -378,7 +424,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
             ) : (
               <>
                 <button 
-                  onClick={handleLogin} 
+                  onClick={enhancedHandleLogin} 
                   style={buttonStyle('#3b82f6', '#fff')}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-1px)';
@@ -392,7 +438,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
                   🔐 Login
                 </button>
                 <button 
-                  onClick={handleLogin} 
+                  onClick={enhancedHandleLogin} 
                   style={buttonStyle('#10b981', '#fff')}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-1px)';
@@ -604,25 +650,34 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {!isMobile && (
               <>
-                {user ? (
-                  <button 
-                    onClick={handleLogout}
-                    style={buttonStyle('#6b7280', '#fff')}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(107, 114, 128, 0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    👤 Logout
-                  </button>
+                {currentUser ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{
+                      color: darkMode ? '#cbd5e1' : '#64748b',
+                      fontSize: '0.9rem',
+                      fontWeight: '500'
+                    }}>
+                      👋 Hi, {currentUser.email?.split('@')[0]}
+                    </span>
+                    <button 
+                      onClick={enhancedHandleLogout}
+                      style={buttonStyle('#6b7280', '#fff')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(107, 114, 128, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      👤 Logout
+                    </button>
+                  </div>
                 ) : (
                   <>
                     <button 
-                      onClick={handleLogin}
+                      onClick={enhancedHandleLogin}
                       style={{
                         color: darkMode ? '#cbd5e1' : '#64748b',
                         backgroundColor: 'transparent',
@@ -646,7 +701,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
                       🔐 Login
                     </button>
                     <button 
-                      onClick={handleLogin}
+                      onClick={enhancedHandleLogin}
                       style={buttonStyle('#10b981', '#fff')}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-1px)';
