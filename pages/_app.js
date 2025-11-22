@@ -7,11 +7,11 @@ export default function App({ Component, pageProps }) {
     <>
       <Head>
         {/* Primary Meta Tags */}
-        <title>Prompt Maker - Free AI Tools | Code Debugger, Translator, SEO Tools</title>
+        <title>AI Prompt Maker - Free Prompt Generator | SEO, Code, Email, Translation Tools</title>
         <meta name="title" content="Prompt Maker - Free AI Tools | Code Debugger, Translator, SEO Tools" />
         <meta
           name="description"
-          content="Free AI tools platform - AI Prompt Generator, Code Debugger, AI Translator, SEO Meta Tools. 100% Free, No Signup Required. Try Now!"
+          content="Free AI prompt generator for SEO content, coding, email writing & translation. Create perfect ChatGPT prompts instantly. No signup required."
         />
         <meta name="keywords" content="ai prompt generator, free prompt maker, code debugger, ai translator, seo tools, free ai tools, no signup ai tools, prompt maker, promptmaker, chatgpt prompts, free ai tools, ai content generator, free ai prompt generator online, best chatgpt prompts for seo, ai prompt maker for content writing, free prompt generator for coding, ai email writer generator, seo content prompt generator, meta description ai generator, blog post ideas generator ai, content optimization prompts, keyword research ai tools" />
         <meta name="author" content="Prompt Maker" />
