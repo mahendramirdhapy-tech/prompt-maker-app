@@ -1,4 +1,4 @@
-// pages/website-builder.js - WITH INLINE CSS
+// pages/website-builder.js - WITH OPENROUTER AI INTEGRATION
 import { useState, useRef } from 'react';
 import Head from 'next/head';
 
@@ -9,7 +9,17 @@ export default function WebsiteBuilder() {
   const [aiResponse, setAiResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [websiteName, setWebsiteName] = useState('My Website');
+  const [selectedModel, setSelectedModel] = useState('openai/gpt-3.5-turbo');
   const canvasRef = useRef(null);
+
+  // OpenRouter Free Models
+  const AI_MODELS = [
+    { id: 'openai/gpt-3.5-turbo', name: 'GPT-3.5 Turbo', free: true },
+    { id: 'google/gemini-pro', name: 'Gemini Pro', free: true },
+    { id: 'meta-llama/llama-3-8b-instruct', name: 'Llama 3 8B', free: true },
+    { id: 'mistralai/mistral-7b-instruct', name: 'Mistral 7B', free: true },
+    { id: 'microsoft/wizardlm-2-8x22b', name: 'WizardLM 2', free: true }
+  ];
 
   // Add new element to canvas
   const addElement = (type) => {
@@ -57,17 +67,17 @@ export default function WebsiteBuilder() {
   const getDefaultStyles = (type) => {
     switch (type) {
       case 'header':
-        return 'padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;';
+        return { padding: '2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' };
       case 'text':
-        return 'padding: 1rem;';
+        return { padding: '1rem' };
       case 'button':
-        return 'text-align: center; padding: 1rem;';
+        return { textAlign: 'center', padding: '1rem' };
       case 'section':
-        return 'margin: 1rem 0;';
+        return { margin: '1rem 0' };
       case 'footer':
-        return 'margin-top: 2rem;';
+        return { marginTop: '2rem' };
       default:
-        return '';
+        return {};
     }
   };
 
@@ -88,7 +98,7 @@ export default function WebsiteBuilder() {
     alert('Website published successfully!');
   };
 
-  // Get AI assistance
+  // Get AI assistance with fallback system
   const getAIAssistance = async () => {
     if (!aiPrompt.trim()) {
       alert('Please enter a prompt for AI assistance');
@@ -96,25 +106,83 @@ export default function WebsiteBuilder() {
     }
 
     setIsLoading(true);
+    setAiResponse('');
+
     try {
-      const response = await fetch('/api/generate', {
+      // Try with selected model first
+      let response = await tryAIModel(selectedModel, aiPrompt);
+      
+      // If first model fails, try fallback models
+      if (!response.success) {
+        const fallbackModels = AI_MODELS.filter(model => model.id !== selectedModel);
+        
+        for (let model of fallbackModels) {
+          console.log(`Trying fallback model: ${model.name}`);
+          response = await tryAIModel(model.id, aiPrompt);
+          if (response.success) {
+            setSelectedModel(model.id); // Switch to working model
+            break;
+          }
+        }
+      }
+
+      if (response.success) {
+        setAiResponse(response.content);
+      } else {
+        setAiResponse('❌ All AI models are currently unavailable. Please try again later.');
+      }
+    } catch (error) {
+      console.error('AI Error:', error);
+      setAiResponse('❌ Error connecting to AI service. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Try a specific AI model
+  const tryAIModel = async (modelId, prompt) => {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Website Builder'
         },
         body: JSON.stringify({
-          prompt: `I'm building a website. ${aiPrompt}. Please provide helpful content or suggestions.`,
-          type: 'website-content'
+          model: modelId,
+          messages: [
+            {
+              role: 'user',
+              content: `I'm building a website and need help with content. Here's what I need: ${prompt}. Please provide relevant, professional website content.`
+            }
+          ],
+          max_tokens: 1000
         })
       });
 
+      if (!response.ok) {
+        throw new Error(`Model ${modelId} failed: ${response.status}`);
+      }
+
       const data = await response.json();
-      setAiResponse(data.result || 'No response from AI');
+      
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return {
+          success: true,
+          content: data.choices[0].message.content,
+          model: modelId
+        };
+      } else {
+        throw new Error('Invalid response format');
+      }
     } catch (error) {
-      console.error('AI Error:', error);
-      setAiResponse('Sorry, I encountered an error. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error(`Model ${modelId} error:`, error);
+      return {
+        success: false,
+        error: error.message
+      };
     }
   };
 
@@ -171,6 +239,14 @@ export default function WebsiteBuilder() {
     border: '1px solid #d1d5db',
     borderRadius: '0.375rem',
     fontSize: '0.875rem'
+  };
+
+  const selectStyle = {
+    padding: '0.5rem 0.75rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    fontSize: '0.875rem',
+    backgroundColor: 'white'
   };
 
   const mainContainerStyle = {
@@ -235,13 +311,20 @@ export default function WebsiteBuilder() {
     backgroundColor: '#f9fafb',
     borderRadius: '0.375rem',
     fontSize: '0.875rem',
-    lineHeight: '1.5'
+    lineHeight: '1.5',
+    whiteSpace: 'pre-wrap'
   };
 
   const emptyCanvasStyle = {
     textAlign: 'center',
     padding: '3rem',
     color: '#6b7280'
+  };
+
+  const modelInfoStyle = {
+    fontSize: '0.75rem',
+    color: '#6b7280',
+    marginTop: '0.25rem'
   };
 
   return (
@@ -340,13 +423,58 @@ export default function WebsiteBuilder() {
               </div>
             ) : (
               elements.map((element) => (
-                <WebsiteElement
+                <div
                   key={element.id}
-                  element={element}
-                  onUpdate={updateElement}
-                  onDelete={deleteElement}
-                  isPreview={isPreview}
-                />
+                  style={{
+                    position: 'relative',
+                    marginBottom: '1rem',
+                    ...element.styles
+                  }}
+                >
+                  <div dangerouslySetInnerHTML={{ __html: element.content }} />
+                  {!isPreview && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '0.5rem',
+                      right: '0.5rem',
+                      display: 'flex',
+                      gap: '0.25rem'
+                    }}>
+                      <button
+                        onClick={() => {
+                          const newContent = prompt('Edit content:', element.content.replace(/<[^>]*>/g, ''));
+                          if (newContent) {
+                            updateElement(element.id, newContent);
+                          }
+                        }}
+                        style={{
+                          background: 'white',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '0.25rem',
+                          cursor: 'pointer',
+                          padding: '0.25rem 0.5rem',
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteElement(element.id)}
+                        style={{
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.25rem',
+                          cursor: 'pointer',
+                          padding: '0.25rem 0.5rem',
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))
             )}
           </div>
@@ -359,156 +487,58 @@ export default function WebsiteBuilder() {
               AI Assistant
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              
+              {/* Model Selection */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                  AI Model:
+                </label>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  style={selectStyle}
+                >
+                  {AI_MODELS.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name} {model.free ? ' (Free)' : ''}
+                    </option>
+                  ))}
+                </select>
+                <div style={modelInfoStyle}>
+                  Current: {AI_MODELS.find(m => m.id === selectedModel)?.name}
+                </div>
+              </div>
+
               <textarea
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
-                placeholder="Tell me what kind of content you need for your website..."
+                placeholder="Tell me what kind of content you need for your website... (e.g., 'Write a header for a tech company', 'Create product descriptions')"
                 style={textareaStyle}
               />
               <button
                 onClick={getAIAssistance}
                 disabled={isLoading}
-                style={{ ...buttonStyle, backgroundColor: '#8b5cf6' }}
+                style={{ 
+                  ...buttonStyle, 
+                  backgroundColor: '#8b5cf6',
+                  opacity: isLoading ? 0.6 : 1
+                }}
               >
-                {isLoading ? 'Generating...' : 'Get AI Help'}
+                {isLoading ? '🔄 Generating...' : '🤖 Get AI Help'}
               </button>
               
               {aiResponse && (
                 <div style={aiResponseStyle}>
-                  <h4 style={{ fontWeight: '600', marginBottom: '0.5rem' }}>AI Suggestion:</h4>
-                  <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{aiResponse}</p>
+                  <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: aiResponse.startsWith('❌') ? '#ef4444' : '#059669' }}>
+                    {aiResponse.startsWith('❌') ? 'Error' : 'AI Suggestion'}:
+                  </h4>
+                  <p style={{ margin: 0 }}>{aiResponse}</p>
                 </div>
               )}
             </div>
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Website Element Component with Inline CSS
-function WebsiteElement({ element, onUpdate, onDelete, isPreview }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [content, setContent] = useState(element.content);
-
-  const handleSave = () => {
-    onUpdate(element.id, content);
-    setIsEditing(false);
-  };
-
-  const elementStyle = {
-    position: 'relative',
-    marginBottom: '1rem',
-    ...(isEditing && !isPreview ? {
-      border: '2px solid #3b82f6',
-      borderRadius: '0.5rem',
-      padding: '1rem'
-    } : {})
-  };
-
-  const controlsStyle = {
-    position: 'absolute',
-    top: '0.5rem',
-    right: '0.5rem',
-    opacity: 0,
-    transition: 'opacity 0.2s',
-    display: 'flex',
-    gap: '0.25rem'
-  };
-
-  const controlButtonStyle = {
-    background: 'white',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.25rem',
-    cursor: 'pointer',
-    fontSize: '0.75rem',
-    width: '1.875rem',
-    height: '1.875rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  };
-
-  const editAreaStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem'
-  };
-
-  const editTextareaStyle = {
-    width: '100%',
-    height: '8rem',
-    padding: '0.5rem',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.375rem',
-    fontSize: '0.875rem'
-  };
-
-  const editButtonsStyle = {
-    display: 'flex',
-    gap: '0.5rem'
-  };
-
-  return (
-    <div 
-      style={{...elementStyle, ...(JSON.parse(`{"${element.styles}"}`))}}
-      onMouseEnter={(e) => {
-        if (!isPreview) {
-          e.currentTarget.querySelector('.element-controls').style.opacity = 1;
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isPreview) {
-          e.currentTarget.querySelector('.element-controls').style.opacity = 0;
-        }
-      }}
-    >
-      {!isPreview && (
-        <div className="element-controls" style={controlsStyle}>
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            style={controlButtonStyle}
-          >
-            ✏️
-          </button>
-          <button
-            onClick={() => onDelete(element.id)}
-            style={{...controlButtonStyle, borderColor: '#ef4444'}}
-          >
-            🗑️
-          </button>
-        </div>
-      )}
-
-      {isEditing && !isPreview ? (
-        <div style={editAreaStyle}>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            style={editTextareaStyle}
-          />
-          <div style={editButtonsStyle}>
-            <button
-              onClick={handleSave}
-              style={{...controlButtonStyle, backgroundColor: '#10b981', color: 'white', border: 'none', width: 'auto', padding: '0 0.75rem'}}
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                setContent(element.content);
-                setIsEditing(false);
-              }}
-              style={{...controlButtonStyle, backgroundColor: '#6b7280', color: 'white', border: 'none', width: 'auto', padding: '0 0.75rem'}}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div dangerouslySetInnerHTML={{ __html: content }} />
-      )}
     </div>
   );
 }
