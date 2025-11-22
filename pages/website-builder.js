@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+// pages/website-builder.js - WITH INLINE CSS
+import { useState, useRef } from 'react';
 import Head from 'next/head';
 
 export default function WebsiteBuilder() {
@@ -38,15 +39,15 @@ export default function WebsiteBuilder() {
   const getDefaultContent = (type) => {
     switch (type) {
       case 'header':
-        return '<h1 class="text-4xl font-bold text-center">Welcome to My Website</h1>';
+        return '<h1 style="font-size: 2.5rem; font-weight: bold; text-align: center; margin: 0;">Welcome to My Website</h1>';
       case 'text':
-        return '<p class="text-lg">Start editing this text to add your content...</p>';
+        return '<p style="font-size: 1.125rem; line-height: 1.6;">Start editing this text to add your content...</p>';
       case 'button':
-        return '<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Click Me</button>';
+        return '<button style="background-color: #3b82f6; color: white; font-weight: 600; padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; cursor: pointer;">Click Me</button>';
       case 'section':
-        return '<div class="bg-gray-100 p-8 rounded-lg"><h2 class="text-2xl font-bold mb-4">Section Title</h2><p>Section content goes here...</p></div>';
+        return '<div style="background-color: #f8fafc; padding: 2rem; border-radius: 0.5rem;"><h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Section Title</h2><p>Section content goes here...</p></div>';
       case 'footer':
-        return '<footer class="bg-gray-800 text-white p-6 text-center">&copy; 2024 My Website. All rights reserved.</footer>';
+        return '<footer style="background-color: #1f2937; color: white; padding: 1.5rem; text-align: center;">&copy; 2024 My Website. All rights reserved.</footer>';
       default:
         return '';
     }
@@ -56,15 +57,15 @@ export default function WebsiteBuilder() {
   const getDefaultStyles = (type) => {
     switch (type) {
       case 'header':
-        return 'p-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white';
+        return 'padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;';
       case 'text':
-        return 'p-4';
+        return 'padding: 1rem;';
       case 'button':
-        return 'text-center p-4';
+        return 'text-align: center; padding: 1rem;';
       case 'section':
-        return 'my-4';
+        return 'margin: 1rem 0;';
       case 'footer':
-        return 'mt-8';
+        return 'margin-top: 2rem;';
       default:
         return '';
     }
@@ -73,7 +74,6 @@ export default function WebsiteBuilder() {
   // Save website
   const saveWebsite = async () => {
     try {
-      // Here you can integrate with your Supabase
       console.log('Saving website:', { name: websiteName, elements });
       alert('Website saved successfully!');
     } catch (error) {
@@ -88,7 +88,7 @@ export default function WebsiteBuilder() {
     alert('Website published successfully!');
   };
 
-  // Get AI assistance using your existing OpenRouter setup
+  // Get AI assistance
   const getAIAssistance = async () => {
     if (!aiPrompt.trim()) {
       alert('Please enter a prompt for AI assistance');
@@ -97,7 +97,6 @@ export default function WebsiteBuilder() {
 
     setIsLoading(true);
     try {
-      // Use your existing OpenRouter API integration
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -134,57 +133,170 @@ export default function WebsiteBuilder() {
     addElement(type);
   };
 
+  // Inline CSS Styles
+  const containerStyle = {
+    minHeight: '100vh',
+    backgroundColor: '#f9fafb'
+  };
+
+  const headerStyle = {
+    backgroundColor: 'white',
+    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+    borderBottom: '1px solid #e5e7eb',
+    padding: '0 1rem'
+  };
+
+  const headerInnerStyle = {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '4rem'
+  };
+
+  const buttonStyle = {
+    padding: '0.5rem 1rem',
+    backgroundColor: '#3b82f6',
+    color: 'white',
+    border: 'none',
+    borderRadius: '0.375rem',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+    fontWeight: '600'
+  };
+
+  const inputStyle = {
+    padding: '0.5rem 0.75rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    fontSize: '0.875rem'
+  };
+
+  const mainContainerStyle = {
+    display: 'flex',
+    height: 'calc(100vh - 4rem)'
+  };
+
+  const sidebarStyle = {
+    width: '16rem',
+    backgroundColor: 'white',
+    borderRight: '1px solid #e5e7eb',
+    padding: '1rem',
+    overflowY: 'auto'
+  };
+
+  const workspaceStyle = {
+    flex: '1',
+    padding: '1.5rem',
+    backgroundColor: '#f3f4f6',
+    overflow: 'auto'
+  };
+
+  const canvasStyle = {
+    backgroundColor: 'white',
+    borderRadius: '0.5rem',
+    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+    minHeight: '100%',
+    padding: '1.5rem',
+    border: elements.length === 0 ? '2px dashed #d1d5db' : 'none'
+  };
+
+  const componentStyle = {
+    padding: '1rem',
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    cursor: 'move',
+    marginBottom: '0.75rem',
+    backgroundColor: '#f9fafb'
+  };
+
+  const aiPanelStyle = {
+    width: '20rem',
+    backgroundColor: 'white',
+    borderLeft: '1px solid #e5e7eb',
+    padding: '1rem',
+    overflowY: 'auto'
+  };
+
+  const textareaStyle = {
+    width: '100%',
+    height: '8rem',
+    padding: '0.75rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    resize: 'vertical',
+    fontSize: '0.875rem'
+  };
+
+  const aiResponseStyle = {
+    marginTop: '1rem',
+    padding: '1rem',
+    backgroundColor: '#f9fafb',
+    borderRadius: '0.375rem',
+    fontSize: '0.875rem',
+    lineHeight: '1.5'
+  };
+
+  const emptyCanvasStyle = {
+    textAlign: 'center',
+    padding: '3rem',
+    color: '#6b7280'
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={containerStyle}>
       <Head>
-        <title>Website Builder | Your App Name</title>
+        <title>Website Builder | AI Prompt Maker</title>
         <meta name="description" content="Build your website with AI assistance" />
       </Head>
 
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Website Builder</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <input
-                type="text"
-                value={websiteName}
-                onChange={(e) => setWebsiteName(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Website name"
-              />
-              <button
-                onClick={() => setIsPreview(!isPreview)}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-              >
-                {isPreview ? 'Edit' : 'Preview'}
-              </button>
-              <button
-                onClick={saveWebsite}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Save
-              </button>
-              <button
-                onClick={publishWebsite}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-              >
-                Publish
-              </button>
-            </div>
+      <header style={headerStyle}>
+        <div style={headerInnerStyle}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>
+              Website Builder
+            </h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <input
+              type="text"
+              value={websiteName}
+              onChange={(e) => setWebsiteName(e.target.value)}
+              style={inputStyle}
+              placeholder="Website name"
+            />
+            <button
+              onClick={() => setIsPreview(!isPreview)}
+              style={{ ...buttonStyle, backgroundColor: '#6b7280' }}
+            >
+              {isPreview ? 'Edit' : 'Preview'}
+            </button>
+            <button
+              onClick={saveWebsite}
+              style={buttonStyle}
+            >
+              Save
+            </button>
+            <button
+              onClick={publishWebsite}
+              style={{ ...buttonStyle, backgroundColor: '#10b981' }}
+            >
+              Publish
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-4rem)]">
+      <div style={mainContainerStyle}>
         {/* Sidebar - Components */}
         {!isPreview && (
-          <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-4">Components</h2>
-            <div className="space-y-3">
+          <div style={sidebarStyle}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+              Components
+            </h2>
+            <div>
               {[
                 { type: 'header', icon: '📄', label: 'Header' },
                 { type: 'text', icon: '📝', label: 'Text' },
@@ -196,11 +308,11 @@ export default function WebsiteBuilder() {
                   key={component.type}
                   draggable
                   onDragStart={(e) => handleDragStart(e, component.type)}
-                  className="p-4 border border-gray-200 rounded-lg cursor-move hover:bg-gray-50 transition-colors"
+                  style={componentStyle}
                 >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-xl">{component.icon}</span>
-                    <span className="font-medium">{component.label}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <span style={{ fontSize: '1.25rem' }}>{component.icon}</span>
+                    <span style={{ fontWeight: '500' }}>{component.label}</span>
                   </div>
                 </div>
               ))}
@@ -209,22 +321,20 @@ export default function WebsiteBuilder() {
         )}
 
         {/* Main Canvas */}
-        <div className="flex-1 p-6 overflow-auto">
+        <div style={workspaceStyle}>
           <div
             ref={canvasRef}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            className={`bg-white rounded-lg shadow-sm border-2 border-dashed ${
-              elements.length === 0 ? 'border-gray-300' : 'border-transparent'
-            } min-h-full p-6`}
+            style={canvasStyle}
           >
             {elements.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🚀</div>
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              <div style={emptyCanvasStyle}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚀</div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
                   Start Building Your Website
                 </h3>
-                <p className="text-gray-500">
+                <p>
                   Drag components from the sidebar or use AI assistance to get started
                 </p>
               </div>
@@ -244,27 +354,29 @@ export default function WebsiteBuilder() {
 
         {/* AI Assistance Panel */}
         {!isPreview && (
-          <div className="w-80 bg-white border-l border-gray-200 p-4 overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-4">AI Assistant</h2>
-            <div className="space-y-4">
+          <div style={aiPanelStyle}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+              AI Assistant
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <textarea
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 placeholder="Tell me what kind of content you need for your website..."
-                className="w-full h-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                style={textareaStyle}
               />
               <button
                 onClick={getAIAssistance}
                 disabled={isLoading}
-                className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors disabled:opacity-50"
+                style={{ ...buttonStyle, backgroundColor: '#8b5cf6' }}
               >
                 {isLoading ? 'Generating...' : 'Get AI Help'}
               </button>
               
               {aiResponse && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                  <h4 className="font-semibold mb-2">AI Suggestion:</h4>
-                  <p className="text-gray-700 whitespace-pre-wrap">{aiResponse}</p>
+                <div style={aiResponseStyle}>
+                  <h4 style={{ fontWeight: '600', marginBottom: '0.5rem' }}>AI Suggestion:</h4>
+                  <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{aiResponse}</p>
                 </div>
               )}
             </div>
@@ -275,7 +387,7 @@ export default function WebsiteBuilder() {
   );
 }
 
-// Website Element Component
+// Website Element Component with Inline CSS
 function WebsiteElement({ element, onUpdate, onDelete, isPreview }) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(element.content);
@@ -285,19 +397,84 @@ function WebsiteElement({ element, onUpdate, onDelete, isPreview }) {
     setIsEditing(false);
   };
 
+  const elementStyle = {
+    position: 'relative',
+    marginBottom: '1rem',
+    ...(isEditing && !isPreview ? {
+      border: '2px solid #3b82f6',
+      borderRadius: '0.5rem',
+      padding: '1rem'
+    } : {})
+  };
+
+  const controlsStyle = {
+    position: 'absolute',
+    top: '0.5rem',
+    right: '0.5rem',
+    opacity: 0,
+    transition: 'opacity 0.2s',
+    display: 'flex',
+    gap: '0.25rem'
+  };
+
+  const controlButtonStyle = {
+    background: 'white',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.25rem',
+    cursor: 'pointer',
+    fontSize: '0.75rem',
+    width: '1.875rem',
+    height: '1.875rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
+  const editAreaStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem'
+  };
+
+  const editTextareaStyle = {
+    width: '100%',
+    height: '8rem',
+    padding: '0.5rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    fontSize: '0.875rem'
+  };
+
+  const editButtonsStyle = {
+    display: 'flex',
+    gap: '0.5rem'
+  };
+
   return (
-    <div className={`relative group mb-4 ${element.styles}`}>
+    <div 
+      style={{...elementStyle, ...(JSON.parse(`{"${element.styles}"}`))}}
+      onMouseEnter={(e) => {
+        if (!isPreview) {
+          e.currentTarget.querySelector('.element-controls').style.opacity = 1;
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isPreview) {
+          e.currentTarget.querySelector('.element-controls').style.opacity = 0;
+        }
+      }}
+    >
       {!isPreview && (
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+        <div className="element-controls" style={controlsStyle}>
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="bg-blue-500 text-white p-1 rounded"
+            style={controlButtonStyle}
           >
             ✏️
           </button>
           <button
             onClick={() => onDelete(element.id)}
-            className="bg-red-500 text-white p-1 rounded"
+            style={{...controlButtonStyle, borderColor: '#ef4444'}}
           >
             🗑️
           </button>
@@ -305,16 +482,16 @@ function WebsiteElement({ element, onUpdate, onDelete, isPreview }) {
       )}
 
       {isEditing && !isPreview ? (
-        <div className="border-2 border-blue-500 p-4 rounded-lg">
+        <div style={editAreaStyle}>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full h-32 p-2 border border-gray-300 rounded"
+            style={editTextareaStyle}
           />
-          <div className="flex space-x-2 mt-2">
+          <div style={editButtonsStyle}>
             <button
               onClick={handleSave}
-              className="bg-green-500 text-white px-3 py-1 rounded"
+              style={{...controlButtonStyle, backgroundColor: '#10b981', color: 'white', border: 'none', width: 'auto', padding: '0 0.75rem'}}
             >
               Save
             </button>
@@ -323,7 +500,7 @@ function WebsiteElement({ element, onUpdate, onDelete, isPreview }) {
                 setContent(element.content);
                 setIsEditing(false);
               }}
-              className="bg-gray-500 text-white px-3 py-1 rounded"
+              style={{...controlButtonStyle, backgroundColor: '#6b7280', color: 'white', border: 'none', width: 'auto', padding: '0 0.75rem'}}
             >
               Cancel
             </button>
