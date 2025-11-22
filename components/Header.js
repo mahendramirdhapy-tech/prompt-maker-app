@@ -129,7 +129,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
   };
 
   // Button Styles
-  const buttonStyle = (bgColor = '#3b82f6', textColor = '#fff', hover = true) => ({
+  const buttonStyle = (bgColor = '#3b82f6', textColor = '#fff') => ({
     padding: isMobile ? '10px 16px' : '10px 20px',
     backgroundColor: bgColor,
     color: textColor,
@@ -143,12 +143,6 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     gap: '8px',
     transition: 'all 0.3s ease',
     textDecoration: 'none',
-    ...(hover && {
-      ':hover': {
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-      }
-    })
   });
 
   // Mobile Sidebar Styles
