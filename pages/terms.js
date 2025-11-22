@@ -166,7 +166,7 @@ export default function TermsOfService() {
           <p style={styles.paragraph}>
             For questions about these Terms of Service, contact us at:
             <br />
-            <strong>Email:</strong> legal@aipromptmaker.online
+            <strong>Email:</strong> aipromptmakerinfo@gmail.com
           </p>
         </div>
       </div>
