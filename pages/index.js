@@ -106,6 +106,7 @@ const FEATURES_ITEMS = [
   { path: '/translate', label: '🔄 Translator' },
   { path: '/audio', label: '🎵 Audio Tool' },
   { path: '/prompts', label: '📚 Prompt Library' },
+  { path: '/website-builder', label: '🌐 Website Builder' },
 ];
 
 // Pricing Plans
