@@ -179,7 +179,7 @@ export default function CookiePolicy() {
           <p style={styles.paragraph}>
             For questions about our Cookie Policy, contact us at:
             <br />
-            <strong>Email:</strong> privacy@aipromptmaker.online
+            <strong>Email:</strong> aipromptmakerinfo@gmail.com
           </p>
         </div>
       </div>
