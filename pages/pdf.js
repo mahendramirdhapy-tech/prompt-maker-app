@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { supabase } from '../lib/supabase';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 
@@ -81,56 +82,46 @@ export default function PDFMaker() {
       let yPosition = 20;
       const pageHeight = doc.internal.pageSize.height;
       const margin = 20;
-      const lineHeight = fontSize * 0.3528; // Convert px to mm
+      const lineHeight = fontSize * 0.3528;
 
-      // Set text color and style
       doc.setTextColor(textColor);
       doc.setFontSize(fontSize);
       doc.setFont('helvetica', isBold ? 'bold' : 'normal', isItalic ? 'italic' : 'normal');
 
-      // Process content with basic markdown
       const lines = content.split('\n');
       
       for (let line of lines) {
-        // Check if we need a new page
         if (yPosition > pageHeight - margin) {
           doc.addPage();
           yPosition = margin;
         }
 
-        // Basic markdown parsing
         let currentLine = line;
         let currentStyle = { bold: false, italic: false };
 
-        // Handle bold
         if (currentLine.includes('**')) {
           currentStyle.bold = true;
           currentLine = currentLine.replace(/\*\*/g, '');
         }
 
-        // Handle italic
         if (currentLine.includes('*')) {
           currentStyle.italic = true;
           currentLine = currentLine.replace(/\*/g, '');
         }
 
-        // Handle underline
         if (currentLine.includes('__')) {
           doc.setDrawColor(0);
           doc.line(margin, yPosition + 2, margin + doc.getTextWidth(currentLine), yPosition + 2);
           currentLine = currentLine.replace(/__/g, '');
         }
 
-        // Handle headings
         if (currentLine.startsWith('# ')) {
           doc.setFontSize(16);
           currentLine = currentLine.substring(2);
         }
 
-        // Apply styles
         doc.setFont('helvetica', currentStyle.bold ? 'bold' : 'normal', currentStyle.italic ? 'italic' : 'normal');
 
-        // Set alignment
         const textWidth = doc.getTextWidth(currentLine);
         let xPosition = margin;
         
@@ -142,7 +133,6 @@ export default function PDFMaker() {
 
         doc.text(currentLine, xPosition, yPosition);
         
-        // Reset font size for normal text
         if (line.startsWith('# ')) {
           doc.setFontSize(fontSize);
         }
@@ -150,7 +140,6 @@ export default function PDFMaker() {
         yPosition += lineHeight + 2;
       }
 
-      // Add images
       for (let img of images) {
         if (yPosition > pageHeight - 100) {
           doc.addPage();
@@ -170,7 +159,6 @@ export default function PDFMaker() {
         }
       }
 
-      // Generate PDF blob
       const pdfBlob = doc.output('blob');
       const url = URL.createObjectURL(pdfBlob);
       
@@ -216,7 +204,7 @@ export default function PDFMaker() {
           padding: '2rem',
           fontFamily: 'system-ui, -apple-system, sans-serif'
         }}>
-          {/* Header with SEO-rich content */}
+          {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h1 style={{ 
               color: '#1e293b', 
@@ -299,7 +287,6 @@ export default function PDFMaker() {
                   gap: '0.5rem',
                   marginBottom: '1rem'
                 }}>
-                  {/* Color Picker */}
                   <div>
                     <label style={{ fontSize: '0.8rem', color: '#6b7280' }}>Text Color</label>
                     <input 
@@ -316,7 +303,6 @@ export default function PDFMaker() {
                     />
                   </div>
 
-                  {/* Font Size */}
                   <div>
                     <label style={{ fontSize: '0.8rem', color: '#6b7280' }}>Font Size</label>
                     <select 
@@ -338,7 +324,6 @@ export default function PDFMaker() {
                     </select>
                   </div>
 
-                  {/* Alignment */}
                   <div>
                     <label style={{ fontSize: '0.8rem', color: '#6b7280' }}>Alignment</label>
                     <select 
@@ -417,7 +402,7 @@ export default function PDFMaker() {
                 </div>
               </div>
 
-              {/* Image Upload Section */}
+              {/* Image Upload Section - FIXED */}
               <div style={{ 
                 marginBottom: '1.5rem',
                 padding: '1rem',
@@ -442,7 +427,7 @@ export default function PDFMaker() {
                   onMouseEnter={(e) => e.target.style.background = '#e0f2fe'}
                   onMouseLeave={(e) => e.target.style.background = '#f1f5f9'}
                 >
-                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}📷</div>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
                   <div style={{ color: '#64748b' }}>Click to Add Images</div>
                   <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>JPG, PNG, GIF supported</div>
                 </div>
@@ -609,11 +594,8 @@ export default function PDFMaker() {
                         borderRadius: '8px',
                         textAlign: 'center',
                         fontWeight: '600',
-                        fontSize: '1.1rem',
-                        transition: 'all 0.2s'
+                        fontSize: '1.1rem'
                       }}
-                      onMouseEnter={(e) => e.target.style.background = '#2563eb'}
-                      onMouseLeave={(e) => e.target.style.background = '#3b82f6'}
                     >
                       💾 Download PDF
                     </a>
@@ -628,11 +610,8 @@ export default function PDFMaker() {
                         borderRadius: '8px',
                         cursor: 'pointer',
                         fontWeight: '600',
-                        fontSize: '1.1rem',
-                        transition: 'all 0.2s'
+                        fontSize: '1.1rem'
                       }}
-                      onMouseEnter={(e) => e.target.style.background = '#4b5563'}
-                      onMouseLeave={(e) => e.target.style.background = '#6b7280'}
                     >
                       👁️ Preview in New Tab
                     </button>
@@ -677,7 +656,7 @@ export default function PDFMaker() {
             </div>
           </div>
 
-          {/* SEO Rich Features Section */}
+          {/* Features Section */}
           <div style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             padding: '3rem 2rem',
@@ -750,53 +729,6 @@ export default function PDFMaker() {
                   </p>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* SEO Content Section */}
-          <div style={{
-            background: '#f8fafc',
-            padding: '3rem',
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0'
-          }}>
-            <h2 style={{ 
-              textAlign: 'center', 
-              margin: '0 0 2rem 0', 
-              color: '#1e293b',
-              fontSize: '2rem'
-            }}>
-              Create Professional PDFs Online - Free PDF Maker Tool
-            </h2>
-            
-            <div style={{
-              columns: '2',
-              gap: '2rem',
-              color: '#64748b',
-              lineHeight: '1.7'
-            }}>
-              <p>
-                <strong>Our advanced PDF Maker tool</strong> allows you to create professional PDF documents 
-                with ease. Whether you need to generate reports, create presentations, or make professional 
-                documents, our tool has everything you need.
-              </p>
-              
-              <p>
-                <strong>Key features include:</strong> Rich text formatting with bold, italic, and underline 
-                options; Multiple font sizes and colors; Image insertion and management; Text alignment 
-                controls; Professional PDF layouts; Instant download and preview.
-              </p>
-              
-              <p>
-                <strong>Perfect for:</strong> Business professionals, students, teachers, content creators, 
-                and anyone who needs to create professional-looking PDF documents quickly and easily.
-              </p>
-              
-              <p>
-                <strong>No installation required</strong> - our PDF maker works entirely in your web browser. 
-                Your documents are processed locally and never leave your computer, ensuring complete 
-                privacy and security.
-              </p>
             </div>
           </div>
         </div>
