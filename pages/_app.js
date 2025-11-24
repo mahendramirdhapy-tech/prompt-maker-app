@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }) {
         
         {/* Google Site Verification */}
         <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
-            <meta name="google-adsense-account" content="ca-pub-8739462043637379">
+            <meta name="google-adsense-account" content="ca-pub-8739462043637379" />
       </Head>
 
       {/* ✅ AUTO ADS CODE */}
