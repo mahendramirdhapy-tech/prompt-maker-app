@@ -50,6 +50,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     { path: '/audio', label: '🎵 Audio Tool' },
     { path: '/prompts', label: '📚 Prompt Library' },
     { path: '/multitool', label: '🌐 Multi Tool' },
+    { path: '/pdf', label: '📄 PDF Maker' },
   ];
 
   const navigateTo = (path) => {
