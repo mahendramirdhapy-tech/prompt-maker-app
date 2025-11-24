@@ -47,23 +47,7 @@ export default function App({ Component, pageProps }) {
       </Head>
 
       {/* ✅ AUTO ADS CODE */}
-      <Script
-        strategy="afterInteractive"
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8739462043637379"
-        crossOrigin="anonymous"
-      />
-      <Script
-        id="google-auto-ads"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (adsbygoogle = window.adsbygoogle || []).push({
-              google_ad_client: "ca-pub-8739462043637379",
-              enable_page_level_ads: true
-            });
-          `,
-        }}
-      />
+     
 
       {/* ✅ NEW GOOGLE TAG - UPDATED CODE */}
       <Script
