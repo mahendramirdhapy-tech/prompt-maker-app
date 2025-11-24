@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import Layout from '../components/Layout';
 
 export default function HelpCenter() {
   const [darkMode, setDarkMode] = useState(false);
