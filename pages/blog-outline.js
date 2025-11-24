@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 export default function BlogOutline() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
