@@ -51,6 +51,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     { path: '/prompts', label: '📚 Prompt Library' },
     { path: '/multitool', label: '🌐 Multi Tool' },
     { path: '/pdf', label: '📄 PDF Maker' },
+    { path: '/catalog-maker', lable: '💾 Catalog Maker' },
   ];
 
   const navigateTo = (path) => {
