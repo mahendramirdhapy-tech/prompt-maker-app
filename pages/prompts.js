@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
+import Layout from '../components/Layout';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
