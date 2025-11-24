@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-
+import Layout from '../components/Layout';
 export default function CatalogMaker() {
   const [catalogData, setCatalogData] = useState({
     companyName: 'Your Company Name',
