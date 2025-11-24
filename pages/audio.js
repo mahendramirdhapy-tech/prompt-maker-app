@@ -1,6 +1,5 @@
 // pages/audio.js - CORRECTED VERSION
 import { useState, useRef, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 
