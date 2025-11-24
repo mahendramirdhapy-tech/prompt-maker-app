@@ -49,7 +49,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     { path: '/translate', label: '🔄 Translator' },
     { path: '/audio', label: '🎵 Audio Tool' },
     { path: '/prompts', label: '📚 Prompt Library' },
-    { path: '/website-builder', label: '🌐 Website Builder' },
+    { path: '/multitool', label: '🌐 Multi Tool' },
   ];
 
   const navigateTo = (path) => {
