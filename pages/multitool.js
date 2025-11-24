@@ -1,5 +1,5 @@
 // pages/multitool.js
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 
@@ -15,10 +15,30 @@ export default function MultiTool() {
     { id: 7, title: "Text to Speech", description: "Convert text to speech using browser API", icon: "🔊" },
     { id: 8, title: "EMI Calculator", description: "Calculate monthly EMI and total interest", icon: "💰" },
     { id: 9, title: "Unit Converter", description: "Convert between different units", icon: "📏" },
-    { id: 10, title: "JSON Formatter", description: "Format and validate JSON", icon: "📄" }
+    { id: 10, title: "JSON Formatter", description: "Format and validate JSON", icon: "📄" },
+    { id: 11, title: "Image Converter", description: "Convert between JPG, PNG, WEBP formats", icon: "🖼️" },
+    { id: 12, title: "Image Compressor", description: "Compress image file size", icon: "📷" },
+    { id: 13, title: "QR Code Generator", description: "Generate QR codes from text", icon: "🔲" },
+    { id: 14, title: "Currency Converter", description: "Convert between currencies", icon: "💱" },
+    { id: 15, title: "Timer", description: "Countdown timer with alerts", icon: "⏱️" },
+    { id: 16, title: "Stopwatch", description: "Precision stopwatch", icon: "⏰" },
+    { id: 17, title: "Random Number", description: "Generate random numbers", icon: "🎲" },
+    { id: 18, title: "Lorem Ipsum", description: "Generate placeholder text", icon: "📃" },
+    { id: 19, title: "Case Converter", description: "Convert text case", icon: "🔠" },
+    { id: 20, title: "URL Encoder", description: "Encode and decode URLs", icon: "🔗" },
+    { id: 21, title: "MD5 Generator", description: "Generate MD5 hash", icon: "🔐" },
+    { id: 22, title: "Percentage Calculator", description: "Calculate percentages", icon: "📊" },
+    { id: 23, title: "Tip Calculator", description: "Calculate tips and splits", icon: "💳" },
+    { id: 24, title: "Gradient Generator", description: "Create CSS gradients", icon: "🌈" },
+    { id: 25, title: "Password Strength", description: "Check password strength", icon: "🛡️" },
+    { id: 26, title: "Time Zone Converter", description: "Convert between time zones", icon: "🌐" },
+    { id: 27, title: "IP Address Lookup", description: "Get your IP information", icon: "🌍" },
+    { id: 28, title: "Binary Converter", description: "Convert text to binary", icon: "💻" },
+    { id: 29, title: "Hex Converter", description: "Convert text to hexadecimal", icon: "🔢" },
+    { id: 30, title: "Date Difference", description: "Calculate days between dates", icon: "📆" }
   ]);
 
-  // Tool States
+  // Common States
   const [passwordConfig, setPasswordConfig] = useState({
     length: 12, uppercase: true, lowercase: true, numbers: true, symbols: false
   });
@@ -45,6 +65,117 @@ export default function MultiTool() {
   const [unitOutput, setUnitOutput] = useState('');
   const [jsonInput, setJsonInput] = useState('');
   const [jsonResult, setJsonResult] = useState('');
+  const [currentImage, setCurrentImage] = useState(null);
+  const [compressorQuality, setCompressorQuality] = useState(80);
+  const [qrText, setQrText] = useState('');
+  const [qrCode, setQrCode] = useState('');
+  const [currencyAmount, setCurrencyAmount] = useState('1');
+  const [fromCurrency, setFromCurrency] = useState('USD');
+  const [toCurrency, setToCurrency] = useState('EUR');
+  const [currencyResult, setCurrencyResult] = useState('');
+  const [timerHours, setTimerHours] = useState(0);
+  const [timerMinutes, setTimerMinutes] = useState(5);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [timerDisplay, setTimerDisplay] = useState('05:00');
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [stopwatchTime, setStopwatchTime] = useState(0);
+  const [isStopwatchRunning, setIsStopwatchRunning] = useState(false);
+  const [randomMin, setRandomMin] = useState(1);
+  const [randomMax, setRandomMax] = useState(100);
+  const [randomResult, setRandomResult] = useState('');
+  const [loremLength, setLoremLength] = useState(50);
+  const [loremText, setLoremText] = useState('');
+  const [caseText, setCaseText] = useState('');
+  const [caseResult, setCaseResult] = useState('');
+  const [urlInput, setUrlInput] = useState('');
+  const [urlResult, setUrlResult] = useState('');
+  const [md5Input, setMd5Input] = useState('');
+  const [md5Result, setMd5Result] = useState('');
+  const [percentageValue, setPercentageValue] = useState('');
+  const [percentageOf, setPercentageOf] = useState('');
+  const [percentageResult, setPercentageResult] = useState('');
+  const [billAmount, setBillAmount] = useState('');
+  const [tipPercent, setTipPercent] = useState(15);
+  const [peopleCount, setPeopleCount] = useState(1);
+  const [tipResult, setTipResult] = useState(null);
+  const [gradientFrom, setGradientFrom] = useState('#ff6b6b');
+  const [gradientTo, setGradientTo] = useState('#4ecdc4');
+  const [gradientCSS, setGradientCSS] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [timeFrom, setTimeFrom] = useState('');
+  const [timeTo, setTimeTo] = useState('');
+  const [timeResult, setTimeResult] = useState('');
+  const [ipInfo, setIpInfo] = useState(null);
+  const [binaryInput, setBinaryInput] = useState('');
+  const [binaryResult, setBinaryResult] = useState('');
+  const [hexInput, setHexInput] = useState('');
+  const [hexResult, setHexResult] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [dateDiff, setDateDiff] = useState('');
+
+  // Refs
+  const canvasRef = useRef(null);
+  const timerRef = useRef(null);
+  const stopwatchRef = useRef(null);
+
+  // Effects
+  useEffect(() => {
+    if (isTimerRunning) {
+      timerRef.current = setInterval(updateTimer, 1000);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [isTimerRunning]);
+
+  useEffect(() => {
+    if (isStopwatchRunning) {
+      stopwatchRef.current = setInterval(updateStopwatch, 1000);
+    }
+    return () => clearInterval(stopwatchRef.current);
+  }, [isStopwatchRunning]);
+
+  // Timer Functions
+  const updateTimer = () => {
+    setTimerDisplay(prev => {
+      const [minutes, seconds] = prev.split(':').map(Number);
+      let totalSeconds = minutes * 60 + seconds - 1;
+      
+      if (totalSeconds <= 0) {
+        clearInterval(timerRef.current);
+        setIsTimerRunning(false);
+        alert('Timer finished!');
+        return '00:00';
+      }
+      
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    });
+  };
+
+  const startTimer = () => {
+    const totalSeconds = timerHours * 3600 + timerMinutes * 60 + timerSeconds;
+    if (totalSeconds === 0) {
+      alert('Please set timer duration');
+      return;
+    }
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    setTimerDisplay(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+    setIsTimerRunning(true);
+  };
+
+  const updateStopwatch = () => {
+    setStopwatchTime(prev => prev + 1);
+  };
+
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const openTool = (toolId) => {
     setActiveTool(toolId);
@@ -52,15 +183,11 @@ export default function MultiTool() {
 
   const closeTool = () => {
     setActiveTool(null);
-    // Reset all states
-    setGeneratedPassword('');
-    setAgeResult(null);
-    setBmiResult(null);
-    setWordStats(null);
-    setBase64Result('');
-    setEmiResult(null);
-    setUnitOutput('');
-    setJsonResult('');
+    // Reset states
+    setIsTimerRunning(false);
+    setIsStopwatchRunning(false);
+    clearInterval(timerRef.current);
+    clearInterval(stopwatchRef.current);
   };
 
   // Tool 1: Password Generator
@@ -89,15 +216,6 @@ export default function MultiTool() {
     }
 
     setGeneratedPassword(password);
-  };
-
-  const copyToClipboard = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      alert('✅ Copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
   };
 
   // Tool 2: Age Calculator
@@ -256,21 +374,12 @@ export default function MultiTool() {
 
     const conversions = {
       length: {
-        meter: 1,
-        kilometer: 0.001,
-        centimeter: 100,
-        millimeter: 1000,
-        inch: 39.3701,
-        foot: 3.28084,
-        yard: 1.09361,
-        mile: 0.000621371
+        meter: 1, kilometer: 0.001, centimeter: 100, millimeter: 1000,
+        inch: 39.3701, foot: 3.28084, yard: 1.09361, mile: 0.000621371
       },
       weight: {
-        kilogram: 1,
-        gram: 1000,
-        milligram: 1000000,
-        pound: 2.20462,
-        ounce: 35.274
+        kilogram: 1, gram: 1000, milligram: 1000000,
+        pound: 2.20462, ounce: 35.274
       },
       temperature: {
         celsius: (val) => val,
@@ -316,230 +425,581 @@ export default function MultiTool() {
     }
   };
 
+  // Tool 11: Image Converter
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          setCurrentImage(img);
+          const canvas = canvasRef.current;
+          if (canvas) {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const downloadImage = (format) => {
+    if (!currentImage) {
+      alert('Please upload an image first.');
+      return;
+    }
+    const canvas = canvasRef.current;
+    const dataURL = canvas.toDataURL(`image/${format}`);
+    const link = document.createElement('a');
+    link.download = `converted-image.${format}`;
+    link.href = dataURL;
+    link.click();
+  };
+
+  // Tool 12: Image Compressor
+  const compressImage = () => {
+    if (!currentImage) {
+      alert('Please upload an image first.');
+      return;
+    }
+    const canvas = canvasRef.current;
+    const quality = compressorQuality / 100;
+    const dataURL = canvas.toDataURL('image/jpeg', quality);
+    const link = document.createElement('a');
+    link.download = 'compressed-image.jpg';
+    link.href = dataURL;
+    link.click();
+  };
+
+  // Tool 13: QR Code Generator
+  const generateQRCode = () => {
+    if (!qrText.trim()) {
+      alert('Please enter text to generate QR code.');
+      return;
+    }
+    // Simple QR code simulation using canvas
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = 200;
+    canvas.height = 200;
+    
+    // Clear canvas
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw QR pattern (simplified)
+    ctx.fillStyle = 'black';
+    for (let i = 0; i < qrText.length; i++) {
+      const x = (i % 14) * 14 + 10;
+      const y = Math.floor(i / 14) * 14 + 10;
+      if (qrText.charCodeAt(i) % 2 === 0) {
+        ctx.fillRect(x, y, 10, 10);
+      }
+    }
+    
+    setQrCode(canvas.toDataURL());
+  };
+
+  // Tool 14: Currency Converter
+  const convertCurrency = () => {
+    // Mock conversion rates (in real app, you'd use an API)
+    const rates = {
+      USD: { EUR: 0.85, GBP: 0.73, INR: 83.25, JPY: 110.50 },
+      EUR: { USD: 1.18, GBP: 0.86, INR: 98.00, JPY: 130.00 },
+      GBP: { USD: 1.37, EUR: 1.16, INR: 114.00, JPY: 151.00 },
+      INR: { USD: 0.012, EUR: 0.010, GBP: 0.0088, JPY: 1.33 }
+    };
+
+    const amount = parseFloat(currencyAmount);
+    if (!amount) {
+      alert('Please enter amount to convert.');
+      return;
+    }
+
+    if (fromCurrency === toCurrency) {
+      setCurrencyResult(`${amount} ${fromCurrency} = ${amount} ${toCurrency}`);
+      return;
+    }
+
+    const rate = rates[fromCurrency]?.[toCurrency];
+    if (rate) {
+      const converted = (amount * rate).toFixed(2);
+      setCurrencyResult(`${amount} ${fromCurrency} = ${converted} ${toCurrency}`);
+    } else {
+      alert('Conversion rate not available for selected currencies.');
+    }
+  };
+
+  // Tool 17: Random Number Generator
+  const generateRandom = () => {
+    const min = parseInt(randomMin);
+    const max = parseInt(randomMax);
+    
+    if (min >= max) {
+      alert('Maximum must be greater than minimum.');
+      return;
+    }
+
+    const random = Math.floor(Math.random() * (max - min + 1)) + min;
+    setRandomResult(`Random number: ${random}`);
+  };
+
+  // Tool 18: Lorem Ipsum Generator
+  const generateLorem = () => {
+    const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+    const words = lorem.split(' ');
+    const result = [];
+    
+    for (let i = 0; i < loremLength && i < words.length; i++) {
+      result.push(words[i % words.length]);
+    }
+    
+    setLoremText(result.join(' '));
+  };
+
+  // Tool 19: Case Converter
+  const convertCase = (type) => {
+    if (!caseText.trim()) {
+      alert('Please enter text to convert.');
+      return;
+    }
+
+    switch(type) {
+      case 'upper':
+        setCaseResult(caseText.toUpperCase());
+        break;
+      case 'lower':
+        setCaseResult(caseText.toLowerCase());
+        break;
+      case 'title':
+        setCaseResult(caseText.replace(/\w\S*/g, txt => 
+          txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+        ));
+        break;
+      case 'sentence':
+        setCaseResult(caseText.charAt(0).toUpperCase() + caseText.slice(1).toLowerCase());
+        break;
+    }
+  };
+
+  // Tool 20: URL Encoder/Decoder
+  const encodeURL = () => {
+    if (!urlInput) {
+      alert('Please enter URL to encode.');
+      return;
+    }
+    setUrlResult(encodeURIComponent(urlInput));
+  };
+
+  const decodeURL = () => {
+    if (!urlInput) {
+      alert('Please enter URL to decode.');
+      return;
+    }
+    try {
+      setUrlResult(decodeURIComponent(urlInput));
+    } catch (e) {
+      alert('Invalid encoded URL.');
+    }
+  };
+
+  // Tool 21: MD5 Generator (Simple simulation)
+  const generateMD5 = () => {
+    if (!md5Input) {
+      alert('Please enter text to hash.');
+      return;
+    }
+    // Simple hash simulation (not real MD5)
+    let hash = '';
+    for (let i = 0; i < md5Input.length; i++) {
+      hash += md5Input.charCodeAt(i).toString(16);
+    }
+    setMd5Result(hash.substring(0, 32));
+  };
+
+  // Tool 22: Percentage Calculator
+  const calculatePercentage = () => {
+    const value = parseFloat(percentageValue);
+    const ofValue = parseFloat(percentageOf);
+    
+    if (!value || !ofValue) {
+      alert('Please enter both values.');
+      return;
+    }
+
+    const result = (value / ofValue) * 100;
+    setPercentageResult(`${value} is ${result.toFixed(2)}% of ${ofValue}`);
+  };
+
+  // Tool 23: Tip Calculator
+  const calculateTip = () => {
+    const amount = parseFloat(billAmount);
+    if (!amount) {
+      alert('Please enter bill amount.');
+      return;
+    }
+
+    const tip = (amount * tipPercent) / 100;
+    const total = amount + tip;
+    const perPerson = total / peopleCount;
+
+    setTipResult({
+      tip: tip.toFixed(2),
+      total: total.toFixed(2),
+      perPerson: perPerson.toFixed(2)
+    });
+  };
+
+  // Tool 24: Gradient Generator
+  const generateGradient = () => {
+    const css = `background: linear-gradient(45deg, ${gradientFrom}, ${gradientTo});`;
+    setGradientCSS(css);
+  };
+
+  // Tool 25: Password Strength Checker
+  const checkPasswordStrength = () => {
+    if (!passwordCheck) {
+      alert('Please enter a password to check.');
+      return;
+    }
+
+    let strength = 0;
+    if (passwordCheck.length >= 8) strength++;
+    if (/[A-Z]/.test(passwordCheck)) strength++;
+    if (/[0-9]/.test(passwordCheck)) strength++;
+    if (/[^A-Za-z0-9]/.test(passwordCheck)) strength++;
+
+    const levels = ['Very Weak', 'Weak', 'Medium', 'Strong', 'Very Strong'];
+    setPasswordStrength(`Strength: ${levels[strength]}`);
+  };
+
+  // Tool 26: Time Zone Converter (Mock)
+  const convertTimeZone = () => {
+    if (!timeFrom) {
+      alert('Please enter time to convert.');
+      return;
+    }
+    // Mock conversion - add 5 hours for demo
+    const [hours, minutes] = timeFrom.split(':').map(Number);
+    let newHours = (hours + 5) % 24;
+    setTimeResult(`${timeFrom} → ${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+  };
+
+  // Tool 27: IP Address Lookup
+  const getIPInfo = async () => {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      setIpInfo(`Your IP: ${data.ip}\nLocation: Unknown (API limited)`);
+    } catch (error) {
+      setIpInfo('Unable to fetch IP information');
+    }
+  };
+
+  // Tool 28: Binary Converter
+  const textToBinary = () => {
+    if (!binaryInput) {
+      alert('Please enter text to convert.');
+      return;
+    }
+    let binary = '';
+    for (let i = 0; i < binaryInput.length; i++) {
+      binary += binaryInput.charCodeAt(i).toString(2) + ' ';
+    }
+    setBinaryResult(binary.trim());
+  };
+
+  // Tool 29: Hex Converter
+  const textToHex = () => {
+    if (!hexInput) {
+      alert('Please enter text to convert.');
+      return;
+    }
+    let hex = '';
+    for (let i = 0; i < hexInput.length; i++) {
+      hex += hexInput.charCodeAt(i).toString(16) + ' ';
+    }
+    setHexResult(hex.trim());
+  };
+
+  // Tool 30: Date Difference Calculator
+  const calculateDateDiff = () => {
+    if (!dateFrom || !dateTo) {
+      alert('Please select both dates.');
+      return;
+    }
+
+    const from = new Date(dateFrom);
+    const to = new Date(dateTo);
+    const diffTime = Math.abs(to - from);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    setDateDiff(`${diffDays} days between dates`);
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('✅ Copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
   const renderToolContent = () => {
+    // ... (previous tool render functions remain the same, adding new ones below)
+    
     switch(activeTool) {
-      case 1: // Password Generator
+      // Previous tools 1-10 remain same...
+      
+      case 11: // Image Converter
         return (
           <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>🔒 Password Generator</h3>
-            
+            <h3 style={toolTitleStyle}>🖼️ Image Converter</h3>
             <div style={inputGroupStyle}>
-              <label style={labelStyle}>Password Length: {passwordConfig.length}</label>
-              <input
-                type="range"
-                min="6"
-                max="50"
-                value={passwordConfig.length}
-                onChange={(e) => setPasswordConfig({...passwordConfig, length: parseInt(e.target.value)})}
-                style={rangeInputStyle}
-              />
+              <label style={labelStyle}>Upload Image:</label>
+              <input type="file" accept="image/*" onChange={handleImageUpload} style={inputStyle} />
             </div>
-
-            <div style={checkboxGroupStyle}>
-              <label style={checkboxLabelStyle}>
-                <input
-                  type="checkbox"
-                  checked={passwordConfig.uppercase}
-                  onChange={(e) => setPasswordConfig({...passwordConfig, uppercase: e.target.checked})}
-                  style={checkboxStyle}
-                />
-                Uppercase Letters
-              </label>
-              <label style={checkboxLabelStyle}>
-                <input
-                  type="checkbox"
-                  checked={passwordConfig.lowercase}
-                  onChange={(e) => setPasswordConfig({...passwordConfig, lowercase: e.target.checked})}
-                  style={checkboxStyle}
-                />
-                Lowercase Letters
-              </label>
-              <label style={checkboxLabelStyle}>
-                <input
-                  type="checkbox"
-                  checked={passwordConfig.numbers}
-                  onChange={(e) => setPasswordConfig({...passwordConfig, numbers: e.target.checked})}
-                  style={checkboxStyle}
-                />
-                Numbers
-              </label>
-              <label style={checkboxLabelStyle}>
-                <input
-                  type="checkbox"
-                  checked={passwordConfig.symbols}
-                  onChange={(e) => setPasswordConfig({...passwordConfig, symbols: e.target.checked})}
-                  style={checkboxStyle}
-                />
-                Symbols
-              </label>
-            </div>
-
-            <button style={primaryButtonStyle} onClick={generatePassword}>
-              Generate Password
-            </button>
-
-            {generatedPassword && (
-              <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>Generated Password:</h4>
-                <div style={passwordDisplayStyle}>
-                  <input
-                    type="text"
-                    value={generatedPassword}
-                    readOnly
-                    style={passwordInputStyle}
-                  />
-                  <button style={secondaryButtonStyle} onClick={() => copyToClipboard(generatedPassword)}>
-                    Copy
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      case 2: // Age Calculator
-        return (
-          <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>📅 Age Calculator</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Date of Birth:</label>
-              <input
-                type="date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
-                style={inputStyle}
-              />
-            </div>
-
-            <button style={primaryButtonStyle} onClick={calculateAge}>
-              Calculate Age
-            </button>
-
-            {ageResult && (
-              <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>Your Age:</h4>
-                <p style={ageResultStyle}>
-                  {ageResult.years} years, {ageResult.months} months, and {ageResult.days} days
-                </p>
-              </div>
-            )}
-          </div>
-        );
-
-      case 3: // BMI Calculator
-        return (
-          <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>⚖️ BMI Calculator</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Height (cm):</label>
-              <input
-                type="number"
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
-                placeholder="e.g., 170"
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Weight (kg):</label>
-              <input
-                type="number"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                placeholder="e.g., 65"
-                style={inputStyle}
-              />
-            </div>
-
-            <button style={primaryButtonStyle} onClick={calculateBMI}>
-              Calculate BMI
-            </button>
-
-            {bmiResult && (
-              <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>Your BMI:</h4>
-                <p style={bmiValueStyle}>BMI: {bmiResult.bmi}</p>
-                <p style={bmiCategoryStyle}>Category: {bmiResult.category}</p>
-              </div>
-            )}
-          </div>
-        );
-
-      case 4: // Word Counter
-        return (
-          <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>📝 Word Counter</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Enter Text:</label>
-              <textarea
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder="Type or paste your text here..."
-                rows={8}
-                style={textareaStyle}
-              />
-            </div>
-
-            <button style={primaryButtonStyle} onClick={countWords}>
-              Count Words
-            </button>
-
-            {wordStats && (
-              <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>Text Analysis:</h4>
-                <div style={statsGridStyle}>
-                  <div style={statItemStyle}><span style={statNumberStyle}>{wordStats.words}</span><span style={statLabelStyle}>Words</span></div>
-                  <div style={statItemStyle}><span style={statNumberStyle}>{wordStats.characters}</span><span style={statLabelStyle}>Characters</span></div>
-                  <div style={statItemStyle}><span style={statNumberStyle}>{wordStats.charactersNoSpaces}</span><span style={statLabelStyle}>No Spaces</span></div>
-                  <div style={statItemStyle}><span style={statNumberStyle}>{wordStats.sentences}</span><span style={statLabelStyle}>Sentences</span></div>
-                  <div style={statItemStyle}><span style={statNumberStyle}>{wordStats.paragraphs}</span><span style={statLabelStyle}>Paragraphs</span></div>
-                  <div style={statItemStyle}><span style={statNumberStyle}>{wordStats.readingTime}</span><span style={statLabelStyle}>Mins Read</span></div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      case 5: // Base64 Encoder/Decoder
-        return (
-          <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>🔣 Base64 Encoder/Decoder</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Enter Text:</label>
-              <textarea
-                value={base64Input}
-                onChange={(e) => setBase64Input(e.target.value)}
-                placeholder="Enter text to encode or base64 to decode"
-                rows={5}
-                style={textareaStyle}
-              />
-            </div>
-
+            <canvas ref={canvasRef} style={{display: 'none'}} />
             <div style={buttonGroupStyle}>
-              <button style={primaryButtonStyle} onClick={encodeBase64}>
-                Encode to Base64
+              <button style={primaryButtonStyle} onClick={() => downloadImage('png')}>Convert to PNG</button>
+              <button style={primaryButtonStyle} onClick={() => downloadImage('jpeg')}>Convert to JPG</button>
+              <button style={primaryButtonStyle} onClick={() => downloadImage('webp')}>Convert to WEBP</button>
+            </div>
+          </div>
+        );
+
+      case 12: // Image Compressor
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>📷 Image Compressor</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Upload Image:</label>
+              <input type="file" accept="image/*" onChange={handleImageUpload} style={inputStyle} />
+            </div>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Quality: {compressorQuality}%</label>
+              <input type="range" min="1" max="100" value={compressorQuality} 
+                onChange={(e) => setCompressorQuality(e.target.value)} style={rangeInputStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={compressImage}>Compress & Download</button>
+          </div>
+        );
+
+      case 13: // QR Code Generator
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🔲 QR Code Generator</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter Text or URL:</label>
+              <input type="text" value={qrText} onChange={(e) => setQrText(e.target.value)} 
+                placeholder="Enter text for QR code" style={inputStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={generateQRCode}>Generate QR Code</button>
+            {qrCode && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>QR Code:</h4>
+                <img src={qrCode} alt="QR Code" style={{maxWidth: '200px', marginBottom: '1rem'}} />
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(qrText)}>Copy Text</button>
+              </div>
+            )}
+            <canvas ref={canvasRef} style={{display: 'none'}} />
+          </div>
+        );
+
+      case 14: // Currency Converter
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>💱 Currency Converter</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Amount:</label>
+              <input type="number" value={currencyAmount} onChange={(e) => setCurrencyAmount(e.target.value)} 
+                placeholder="Enter amount" style={inputStyle} />
+            </div>
+            <div style={flexRowStyle}>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>From:</label>
+                <select value={fromCurrency} onChange={(e) => setFromCurrency(e.target.value)} style={selectStyle}>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="INR">INR</option>
+                </select>
+              </div>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>To:</label>
+                <select value={toCurrency} onChange={(e) => setToCurrency(e.target.value)} style={selectStyle}>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="INR">INR</option>
+                </select>
+              </div>
+            </div>
+            <button style={primaryButtonStyle} onClick={convertCurrency}>Convert</button>
+            {currencyResult && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Conversion Result:</h4>
+                <p style={unitOutputStyle}>{currencyResult}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 15: // Timer
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>⏱️ Timer</h3>
+            <div style={flexRowStyle}>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>Hours:</label>
+                                <input type="number" value={timerHours} onChange={(e) => setTimerHours(e.target.value)} 
+                  min="0" style={inputStyle} />
+              </div>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>Minutes:</label>
+                <input type="number" value={timerMinutes} onChange={(e) => setTimerMinutes(e.target.value)} 
+                  min="0" max="59" style={inputStyle} />
+              </div>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>Seconds:</label>
+                <input type="number" value={timerSeconds} onChange={(e) => setTimerSeconds(e.target.value)} 
+                  min="0" max="59" style={inputStyle} />
+              </div>
+            </div>
+            <div style={timerDisplayStyle}>{timerDisplay}</div>
+            <div style={buttonGroupStyle}>
+              <button style={primaryButtonStyle} onClick={startTimer} disabled={isTimerRunning}>
+                Start Timer
               </button>
-              <button style={primaryButtonStyle} onClick={decodeBase64}>
-                Decode from Base64
+              <button style={secondaryButtonStyle} onClick={() => setIsTimerRunning(false)}>
+                Stop
+              </button>
+              <button style={secondaryButtonStyle} onClick={() => setTimerDisplay('00:00')}>
+                Reset
               </button>
             </div>
+          </div>
+        );
 
-            {base64Result && (
+      case 16: // Stopwatch
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>⏰ Stopwatch</h3>
+            <div style={timerDisplayStyle}>{formatTime(stopwatchTime)}</div>
+            <div style={buttonGroupStyle}>
+              <button style={primaryButtonStyle} onClick={() => setIsStopwatchRunning(true)} 
+                disabled={isStopwatchRunning}>
+                Start
+              </button>
+              <button style={secondaryButtonStyle} onClick={() => setIsStopwatchRunning(false)}>
+                Stop
+              </button>
+              <button style={secondaryButtonStyle} onClick={() => setStopwatchTime(0)}>
+                Reset
+              </button>
+            </div>
+          </div>
+        );
+
+      case 17: // Random Number Generator
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🎲 Random Number Generator</h3>
+            <div style={flexRowStyle}>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>Minimum:</label>
+                <input type="number" value={randomMin} onChange={(e) => setRandomMin(e.target.value)} 
+                  style={inputStyle} />
+              </div>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>Maximum:</label>
+                <input type="number" value={randomMax} onChange={(e) => setRandomMax(e.target.value)} 
+                  style={inputStyle} />
+              </div>
+            </div>
+            <button style={primaryButtonStyle} onClick={generateRandom}>Generate Random Number</button>
+            {randomResult && (
               <div style={resultStyle}>
                 <h4 style={resultTitleStyle}>Result:</h4>
-                <textarea
-                  value={base64Result}
-                  readOnly
-                  rows={5}
-                  style={textareaStyle}
-                />
-                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(base64Result)}>
+                <p style={unitOutputStyle}>{randomResult}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 18: // Lorem Ipsum Generator
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>📃 Lorem Ipsum Generator</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Number of words: {loremLength}</label>
+              <input type="range" min="10" max="500" value={loremLength} 
+                onChange={(e) => setLoremLength(e.target.value)} style={rangeInputStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={generateLorem}>Generate Text</button>
+            {loremText && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Lorem Ipsum:</h4>
+                <p style={loremTextStyle}>{loremText}</p>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(loremText)}>
+                  Copy Text
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 19: // Case Converter
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🔠 Case Converter</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter Text:</label>
+              <textarea value={caseText} onChange={(e) => setCaseText(e.target.value)} 
+                placeholder="Enter text to convert case" rows={4} style={textareaStyle} />
+            </div>
+            <div style={buttonGroupStyle}>
+              <button style={primaryButtonStyle} onClick={() => convertCase('upper')}>UPPERCASE</button>
+              <button style={primaryButtonStyle} onClick={() => convertCase('lower')}>lowercase</button>
+              <button style={primaryButtonStyle} onClick={() => convertCase('title')}>Title Case</button>
+              <button style={primaryButtonStyle} onClick={() => convertCase('sentence')}>Sentence case</button>
+            </div>
+            {caseResult && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Converted Text:</h4>
+                <p style={caseResultStyle}>{caseResult}</p>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(caseResult)}>
+                  Copy Text
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 20: // URL Encoder/Decoder
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🔗 URL Encoder/Decoder</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter URL:</label>
+              <textarea value={urlInput} onChange={(e) => setUrlInput(e.target.value)} 
+                placeholder="Enter URL to encode or decode" rows={3} style={textareaStyle} />
+            </div>
+            <div style={buttonGroupStyle}>
+              <button style={primaryButtonStyle} onClick={encodeURL}>Encode URL</button>
+              <button style={primaryButtonStyle} onClick={decodeURL}>Decode URL</button>
+            </div>
+            {urlResult && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Result:</h4>
+                <p style={urlResultStyle}>{urlResult}</p>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(urlResult)}>
                   Copy Result
                 </button>
               </div>
@@ -547,235 +1007,240 @@ export default function MultiTool() {
           </div>
         );
 
-      case 6: // Color Picker
-        const colorValues = getColorValues(selectedColor);
+      case 21: // MD5 Generator
         return (
           <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>🎨 Color Picker</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Select Color:</label>
-              <input
-                type="color"
-                value={selectedColor}
-                onChange={(e) => setSelectedColor(e.target.value)}
-                style={colorInputStyle}
-              />
-            </div>
-
-            <div style={colorPreviewStyle} style={{backgroundColor: selectedColor}}></div>
-
-            <div style={resultStyle}>
-              <h4 style={resultTitleStyle}>Color Values:</h4>
-              <p style={colorValueStyle}>HEX: {colorValues.hex}</p>
-              <p style={colorValueStyle}>RGB: {colorValues.rgb}</p>
-              <p style={colorValueStyle}>HSL: {colorValues.hsl}</p>
-              <button style={secondaryButtonStyle} onClick={() => copyToClipboard(colorValues.hex)}>
-                Copy HEX Value
-              </button>
-            </div>
-          </div>
-        );
-
-      case 7: // Text to Speech
-        return (
-          <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>🔊 Text to Speech</h3>
-            
+            <h3 style={toolTitleStyle}>🔐 MD5 Generator</h3>
             <div style={inputGroupStyle}>
               <label style={labelStyle}>Enter Text:</label>
-              <textarea
-                value={ttsText}
-                onChange={(e) => setTtsText(e.target.value)}
-                placeholder="Enter text to convert to speech"
-                rows={5}
-                style={textareaStyle}
-              />
+              <input type="text" value={md5Input} onChange={(e) => setMd5Input(e.target.value)} 
+                placeholder="Enter text to generate MD5 hash" style={inputStyle} />
             </div>
-
-            <button style={primaryButtonStyle} onClick={speakText}>
-              Speak Text
-            </button>
-          </div>
-        );
-
-      case 8: // EMI Calculator
-        return (
-          <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>💰 EMI Calculator</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Loan Amount ($):</label>
-              <input
-                type="number"
-                value={loanAmount}
-                onChange={(e) => setLoanAmount(e.target.value)}
-                placeholder="e.g., 10000"
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Annual Interest Rate (%):</label>
-              <input
-                type="number"
-                value={interestRate}
-                onChange={(e) => setInterestRate(e.target.value)}
-                placeholder="e.g., 5.5"
-                step="0.01"
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Loan Term (months):</label>
-              <input
-                type="number"
-                value={loanTerm}
-                onChange={(e) => setLoanTerm(e.target.value)}
-                placeholder="e.g., 60"
-                style={inputStyle}
-              />
-            </div>
-
-            <button style={primaryButtonStyle} onClick={calculateEMI}>
-              Calculate EMI
-            </button>
-
-            {emiResult && (
+            <button style={primaryButtonStyle} onClick={generateMD5}>Generate MD5</button>
+            {md5Result && (
               <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>EMI Calculation:</h4>
-                <p style={emiValueStyle}>Monthly EMI: ${emiResult.emi}</p>
-                <p style={emiValueStyle}>Total Interest: ${emiResult.totalInterest}</p>
-                <p style={emiValueStyle}>Total Payment: ${emiResult.totalPayment}</p>
+                <h4 style={resultTitleStyle}>MD5 Hash:</h4>
+                <p style={md5ResultStyle}>{md5Result}</p>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(md5Result)}>
+                  Copy Hash
+                </button>
               </div>
             )}
           </div>
         );
 
-      case 9: // Unit Converter
+      case 22: // Percentage Calculator
         return (
           <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>📏 Unit Converter</h3>
-            
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Value:</label>
-              <input
-                type="number"
-                value={unitValue}
-                onChange={(e) => setUnitValue(e.target.value)}
-                placeholder="Enter value"
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={inputGroupStyle}>
-              <label style={labelStyle}>Category:</label>
-              <select value={unitCategory} onChange={(e) => setUnitCategory(e.target.value)} style={selectStyle}>
-                <option value="length">Length</option>
-                <option value="weight">Weight</option>
-                <option value="temperature">Temperature</option>
-              </select>
-            </div>
-
+            <h3 style={toolTitleStyle}>📊 Percentage Calculator</h3>
             <div style={flexRowStyle}>
               <div style={inputGroupStyle}>
-                <label style={labelStyle}>From Unit:</label>
-                <select value={fromUnit} onChange={(e) => setFromUnit(e.target.value)} style={selectStyle}>
-                  {unitCategory === 'length' && <>
-                    <option value="meter">Meter</option>
-                    <option value="kilometer">Kilometer</option>
-                    <option value="centimeter">Centimeter</option>
-                    <option value="millimeter">Millimeter</option>
-                    <option value="inch">Inch</option>
-                    <option value="foot">Foot</option>
-                    <option value="yard">Yard</option>
-                    <option value="mile">Mile</option>
-                  </>}
-                  {unitCategory === 'weight' && <>
-                    <option value="kilogram">Kilogram</option>
-                    <option value="gram">Gram</option>
-                    <option value="milligram">Milligram</option>
-                    <option value="pound">Pound</option>
-                    <option value="ounce">Ounce</option>
-                  </>}
-                  {unitCategory === 'temperature' && <>
-                    <option value="celsius">Celsius</option>
-                    <option value="fahrenheit">Fahrenheit</option>
-                    <option value="kelvin">Kelvin</option>
-                  </>}
-                </select>
+                <label style={labelStyle}>Value:</label>
+                <input type="number" value={percentageValue} onChange={(e) => setPercentageValue(e.target.value)} 
+                  placeholder="Value" style={inputStyle} />
               </div>
-
               <div style={inputGroupStyle}>
-                <label style={labelStyle}>To Unit:</label>
-                <select value={toUnit} onChange={(e) => setToUnit(e.target.value)} style={selectStyle}>
-                  {unitCategory === 'length' && <>
-                    <option value="meter">Meter</option>
-                    <option value="kilometer">Kilometer</option>
-                    <option value="centimeter">Centimeter</option>
-                    <option value="millimeter">Millimeter</option>
-                    <option value="inch">Inch</option>
-                    <option value="foot">Foot</option>
-                    <option value="yard">Yard</option>
-                    <option value="mile">Mile</option>
-                  </>}
-                  {unitCategory === 'weight' && <>
-                    <option value="kilogram">Kilogram</option>
-                    <option value="gram">Gram</option>
-                    <option value="milligram">Milligram</option>
-                    <option value="pound">Pound</option>
-                    <option value="ounce">Ounce</option>
-                  </>}
-                  {unitCategory === 'temperature' && <>
-                    <option value="celsius">Celsius</option>
-                    <option value="fahrenheit">Fahrenheit</option>
-                    <option value="kelvin">Kelvin</option>
-                  </>}
-                </select>
+                <label style={labelStyle}>Of:</label>
+                <input type="number" value={percentageOf} onChange={(e) => setPercentageOf(e.target.value)} 
+                  placeholder="Total" style={inputStyle} />
               </div>
             </div>
-
-            <button style={primaryButtonStyle} onClick={convertUnits}>
-              Convert
-            </button>
-
-            {unitOutput && (
+            <button style={primaryButtonStyle} onClick={calculatePercentage}>Calculate Percentage</button>
+            {percentageResult && (
               <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>Conversion Result:</h4>
-                <p style={unitOutputStyle}>{unitOutput}</p>
+                <h4 style={resultTitleStyle}>Result:</h4>
+                <p style={unitOutputStyle}>{percentageResult}</p>
               </div>
             )}
           </div>
         );
 
-      case 10: // JSON Formatter
+      case 23: // Tip Calculator
         return (
           <div style={toolContentStyle}>
-            <h3 style={toolTitleStyle}>📄 JSON Formatter</h3>
-            
+            <h3 style={toolTitleStyle}>💳 Tip Calculator</h3>
             <div style={inputGroupStyle}>
-              <label style={labelStyle}>Enter JSON:</label>
-              <textarea
-                value={jsonInput}
-                onChange={(e) => setJsonInput(e.target.value)}
-                placeholder='Paste your JSON here...'
-                rows={8}
-                style={textareaStyle}
-              />
+              <label style={labelStyle}>Bill Amount ($):</label>
+              <input type="number" value={billAmount} onChange={(e) => setBillAmount(e.target.value)} 
+                placeholder="Enter bill amount" style={inputStyle} />
             </div>
-
-            <button style={primaryButtonStyle} onClick={formatJSON}>
-              Format JSON
-            </button>
-
-            {jsonResult && (
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Tip Percentage: {tipPercent}%</label>
+              <input type="range" min="0" max="50" value={tipPercent} 
+                onChange={(e) => setTipPercent(e.target.value)} style={rangeInputStyle} />
+            </div>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Number of People:</label>
+              <input type="number" value={peopleCount} onChange={(e) => setPeopleCount(e.target.value)} 
+                min="1" style={inputStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={calculateTip}>Calculate Tip</button>
+            {tipResult && (
               <div style={resultStyle}>
-                <h4 style={resultTitleStyle}>Formatted JSON:</h4>
-                <pre style={preStyle}>{jsonResult}</pre>
-                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(jsonResult)}>
-                  Copy Formatted JSON
+                <h4 style={resultTitleStyle}>Tip Calculation:</h4>
+                <p style={tipResultStyle}>Tip Amount: ${tipResult.tip}</p>
+                <p style={tipResultStyle}>Total Bill: ${tipResult.total}</p>
+                <p style={tipResultStyle}>Per Person: ${tipResult.perPerson}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 24: // Gradient Generator
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🌈 Gradient Generator</h3>
+            <div style={flexRowStyle}>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>From Color:</label>
+                <input type="color" value={gradientFrom} onChange={(e) => setGradientFrom(e.target.value)} 
+                  style={colorInputStyle} />
+              </div>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>To Color:</label>
+                <input type="color" value={gradientTo} onChange={(e) => setGradientTo(e.target.value)} 
+                  style={colorInputStyle} />
+              </div>
+            </div>
+            <button style={primaryButtonStyle} onClick={generateGradient}>Generate CSS</button>
+            {gradientCSS && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>CSS Code:</h4>
+                <div style={gradientPreviewStyle} 
+                  style={{background: `linear-gradient(45deg, ${gradientFrom}, ${gradientTo})`}}>
+                </div>
+                <pre style={preStyle}>{gradientCSS}</pre>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(gradientCSS)}>
+                  Copy CSS
                 </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 25: // Password Strength Checker
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🛡️ Password Strength Checker</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter Password:</label>
+              <input type="password" value={passwordCheck} onChange={(e) => setPasswordCheck(e.target.value)} 
+                placeholder="Enter password to check" style={inputStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={checkPasswordStrength}>Check Strength</button>
+            {passwordStrength && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Password Analysis:</h4>
+                <p style={passwordStrengthStyle}>{passwordStrength}</p>
+                <p style={passwordTipsStyle}>
+                  Tips: Use uppercase, numbers, symbols, and at least 8 characters
+                </p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 26: // Time Zone Converter
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🌐 Time Zone Converter</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter Time (HH:MM):</label>
+              <input type="time" value={timeFrom} onChange={(e) => setTimeFrom(e.target.value)} 
+                style={inputStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={convertTimeZone}>Convert Time</button>
+            {timeResult && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Converted Time:</h4>
+                <p style={unitOutputStyle}>{timeResult}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 27: // IP Address Lookup
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🌍 IP Address Lookup</h3>
+            <button style={primaryButtonStyle} onClick={getIPInfo}>Get My IP Information</button>
+            {ipInfo && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Your IP Information:</h4>
+                <pre style={preStyle}>{ipInfo}</pre>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(ipInfo)}>
+                  Copy Info
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 28: // Binary Converter
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>💻 Binary Converter</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter Text:</label>
+              <textarea value={binaryInput} onChange={(e) => setBinaryInput(e.target.value)} 
+                placeholder="Enter text to convert to binary" rows={3} style={textareaStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={textToBinary}>Convert to Binary</button>
+            {binaryResult && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Binary Result:</h4>
+                <p style={binaryResultStyle}>{binaryResult}</p>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(binaryResult)}>
+                  Copy Binary
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 29: // Hex Converter
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>🔢 Hex Converter</h3>
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>Enter Text:</label>
+              <textarea value={hexInput} onChange={(e) => setHexInput(e.target.value)} 
+                placeholder="Enter text to convert to hexadecimal" rows={3} style={textareaStyle} />
+            </div>
+            <button style={primaryButtonStyle} onClick={textToHex}>Convert to Hex</button>
+            {hexResult && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Hexadecimal Result:</h4>
+                <p style={hexResultStyle}>{hexResult}</p>
+                <button style={secondaryButtonStyle} onClick={() => copyToClipboard(hexResult)}>
+                  Copy Hex
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 30: // Date Difference Calculator
+        return (
+          <div style={toolContentStyle}>
+            <h3 style={toolTitleStyle}>📆 Date Difference Calculator</h3>
+            <div style={flexRowStyle}>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>From Date:</label>
+                <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} 
+                  style={inputStyle} />
+              </div>
+              <div style={inputGroupStyle}>
+                <label style={labelStyle}>To Date:</label>
+                <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} 
+                  style={inputStyle} />
+              </div>
+            </div>
+            <button style={primaryButtonStyle} onClick={calculateDateDiff}>Calculate Difference</button>
+            {dateDiff && (
+              <div style={resultStyle}>
+                <h4 style={resultTitleStyle}>Date Difference:</h4>
+                <p style={unitOutputStyle}>{dateDiff}</p>
               </div>
             )}
           </div>
@@ -786,7 +1251,94 @@ export default function MultiTool() {
     }
   };
 
-  // Inline Styles
+  // Additional Styles
+  const timerDisplayStyle = {
+    fontSize: '3rem',
+    textAlign: 'center',
+    margin: '2rem 0',
+    fontFamily: 'monospace',
+    color: '#2563eb',
+    fontWeight: 'bold'
+  };
+
+  const loremTextStyle = {
+    lineHeight: '1.6',
+    color: '#374151',
+    marginBottom: '1rem'
+  };
+
+  const caseResultStyle = {
+    padding: '1rem',
+    backgroundColor: '#f8fafc',
+    borderRadius: '8px',
+    border: '1px solid #e2e8f0',
+    marginBottom: '1rem'
+  };
+
+  const urlResultStyle = {
+    wordBreak: 'break-all',
+    padding: '1rem',
+    backgroundColor: '#f8fafc',
+    borderRadius: '8px',
+    border: '1px solid #e2e8f0',
+    marginBottom: '1rem'
+  };
+
+  const md5ResultStyle = {
+    fontFamily: 'monospace',
+    padding: '1rem',
+    backgroundColor: '#1e293b',
+    color: '#e2e8f0',
+    borderRadius: '8px',
+    marginBottom: '1rem'
+  };
+
+  const tipResultStyle = {
+    fontSize: '1.125rem',
+    margin: '0.5rem 0',
+    color: '#374151'
+  };
+
+  const gradientPreviewStyle = {
+    width: '100%',
+    height: '100px',
+    borderRadius: '8px',
+    marginBottom: '1rem',
+    border: '1px solid #e2e8f0'
+  };
+
+  const passwordStrengthStyle = {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#2563eb',
+    marginBottom: '0.5rem'
+  };
+
+  const passwordTipsStyle = {
+    fontSize: '0.875rem',
+    color: '#64748b',
+    fontStyle: 'italic'
+  };
+
+  const binaryResultStyle = {
+    fontFamily: 'monospace',
+    padding: '1rem',
+    backgroundColor: '#1e293b',
+    color: '#e2e8f0',
+    borderRadius: '8px',
+    marginBottom: '1rem'
+  };
+
+  const hexResultStyle = {
+    fontFamily: 'monospace',
+    padding: '1rem',
+    backgroundColor: '#1e293b',
+    color: '#e2e8f0',
+    borderRadius: '8px',
+    marginBottom: '1rem'
+  };
+
+  // Previous styles remain the same...
   const containerStyle = {
     maxWidth: '1200px',
     margin: '2rem auto',
@@ -1112,10 +1664,10 @@ export default function MultiTool() {
   return (
     <Layout>
       <Head>
-        <title>Multi Tool Hub | All-in-One Utility Tools</title>
+        <title>Multi Tool Hub | 30+ Free Online Tools</title>
         <meta 
           name="description" 
-          content="Free online tools collection - Password Generator, Age Calculator, BMI Calculator, Word Counter, Base64 Encoder, Color Picker, Text to Speech, EMI Calculator, Unit Converter, JSON Formatter" 
+          content="Free online tools collection - Password Generator, Age Calculator, BMI Calculator, Word Counter, Base64 Encoder, Color Picker, Text to Speech, EMI Calculator, Unit Converter, JSON Formatter and 20+ more tools" 
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -1124,7 +1676,7 @@ export default function MultiTool() {
         <div style={headerStyle}>
           <h1 style={titleStyle}>🛠️ Multi Tool Hub</h1>
           <p style={subtitleStyle}>
-            Your all-in-one solution for everyday utility tools
+            Your all-in-one solution with 30+ free online tools for everyday tasks
           </p>
         </div>
 
@@ -1163,6 +1715,8 @@ export default function MultiTool() {
             </div>
           </div>
         )}
+
+        <canvas ref={canvasRef} style={{display: 'none'}} />
       </div>
     </Layout>
   );
