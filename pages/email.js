@@ -818,7 +818,7 @@ export default function EmailGenerator() {
               backgroundColor: '#fef3c7',
               padding: '1.5rem',
               borderRadius: '8px',
-              borderLeft: '4px solid '#d97706'
+              borderLeft: '4px solid #d97706'
             }}>
               <div style={{ display: 'grid', gap: '1rem' }}>
                 <div>
