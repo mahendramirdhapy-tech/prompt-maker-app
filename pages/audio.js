@@ -910,7 +910,7 @@ export default function AudioSilenceRemover() {
                     </p>
                   </div>
                   
-                  <div style={{ background: '#fef7ed', padding: '1.5rem', borderRadius: '8px', border: '1px solid '#fdba74' }}>
+                  <div style={{ background: '#fef7ed', padding: '1.5rem', borderRadius: '8px', border: '1px solid #fdba74' }}>
                     <h3 style={{ color: '#9a3412', marginBottom: '1rem' }}>🎨 No Watermarks</h3>
                     <p style={{ color: '#64748b' }}>
                       Processed audio files par koi watermarks ya branding nahi hoti. Aapko clean, professional quality audio milti hai jo aap directly use kar sakte hain.
