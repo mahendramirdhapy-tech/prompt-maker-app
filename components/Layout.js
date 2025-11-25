@@ -16,14 +16,19 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     setIsClient(true);
     
     const checkScreenSize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
+      if (typeof window !== 'undefined') {
+        const mobile = window.innerWidth < 768;
+        setIsMobile(mobile);
+      }
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', checkScreenSize);
+    }
 
-    const isDark = localStorage.getItem('darkMode') === 'true';
+    const isDark = typeof window !== 'undefined' ? localStorage.getItem('darkMode') === 'true' : false;
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
@@ -33,7 +38,11 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
       checkPushPermission();
     }
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', checkScreenSize);
+      }
+    };
   }, []);
 
   const checkPushPermission = () => {
@@ -45,12 +54,11 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
   };
 
   const loadAllAds = () => {
-    // Non-intrusive banner ads
+    // All PropellerAds formats except Monetag
     loadNativeBannerAds();
     loadVintageBannerAds();
-    
-    // Push notifications ads
     loadPushNotifications();
+    loadInPagePushAds();
   };
 
   const loadNativeBannerAds = () => {
@@ -64,6 +72,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         })(document.createElement('script'));
       `;
       document.head.appendChild(script);
+      console.log('Native Banner Ads loaded - Zone: 10209722');
     } catch (error) {
       console.log('Native ad load error:', error);
     }
@@ -80,6 +89,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         })(document.createElement('script'));
       `;
       document.head.appendChild(script);
+      console.log('Vintage Banner Ads loaded - Zone: 10212308');
     } catch (error) {
       console.log('Vintage ad load error:', error);
     }
@@ -87,13 +97,29 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
   const loadPushNotifications = () => {
     try {
+      // Push Notifications Ads
       const script = document.createElement('script');
-      script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
+      script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10233742';
       script.setAttribute('data-cfasync', 'false');
       script.async = true;
       document.head.appendChild(script);
+      console.log('Push Notifications loaded - Zone: 10233742');
     } catch (error) {
       console.log('Push ad load error:', error);
+    }
+  };
+
+  const loadInPagePushAds = () => {
+    try {
+      // In-Page Push Ads
+      const script = document.createElement('script');
+      script.src = 'https://nap5k.com/tag.min.js';
+      script.setAttribute('data-zone', '10209689');
+      script.async = true;
+      document.head.appendChild(script);
+      console.log('In-Page Push Ads loaded - Zone: 10209689');
+    } catch (error) {
+      console.log('In-Page Push ad load error:', error);
     }
   };
 
@@ -102,13 +128,10 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
       Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
           setPushPermission(true);
-          alert('Push notifications enabled! You will receive updates.');
-        } else {
-          alert('Push notifications blocked. You can enable them later from browser settings.');
+          // Reload push ads after permission granted
+          setTimeout(loadPushNotifications, 1000);
         }
       });
-    } else {
-      alert('Your browser does not support push notifications.');
     }
   };
 
@@ -148,8 +171,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         padding: '15px',
         maxWidth: '300px',
         boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-        zIndex: 1000,
-        animation: 'slideIn 0.3s ease-out'
+        zIndex: 1000
       }}>
         <div style={{
           display: 'flex',
@@ -172,7 +194,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
               fontSize: '0.8rem',
               lineHeight: '1.4'
             }}>
-              Enable push notifications to stay updated with our latest AI tools and features.
+              Enable push notifications for latest AI tools updates.
             </p>
           </div>
         </div>
@@ -212,19 +234,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
             Enable
           </button>
         </div>
-
-        <style jsx>{`
-          @keyframes slideIn {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
-          }
-        `}</style>
       </div>
     );
   };
@@ -322,10 +331,12 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
       />
 
       <main>
+        {/* Header ke niche Vintage Banner */}
         <VintageBannerAd />
         
         {children}
         
+        {/* Content ke beech Native Banner */}
         <NativeBannerAd />
       </main>
 
@@ -335,6 +346,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         navigateTo={navigateTo}
       />
 
+      {/* ToolCards ke baad Native Banner */}
       <NativeBannerAd />
 
       <FeedbackSection
@@ -351,36 +363,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
       {/* Push Notification Prompt - Only shows on client side */}
       {isClient && <PushNotificationPrompt />}
-
-      {/* Global Push Ads Script - Only loads on client side */}
-      {isClient && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Global Push Ads Loader with retry
-              function loadPushAds() {
-                try {
-                  var existingScript = document.querySelector('script[src*="3nbf4.com"]');
-                  if (existingScript) existingScript.remove();
-                  
-                  var script = document.createElement('script');
-                  script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
-                  script.setAttribute('data-cfasync', 'false');
-                  script.async = true;
-                  document.head.appendChild(script);
-                } catch(e) {
-                  console.log('Push ads load error:', e);
-                  // Retry after 5 seconds
-                  setTimeout(loadPushAds, 5000);
-                }
-              }
-              
-              // Load push ads after page load
-              setTimeout(loadPushAds, 3000);
-            `
-          }}
-        />
-      )}
     </div>
   );
 };
