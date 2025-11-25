@@ -8,6 +8,7 @@ import FeedbackSection from './FeedbackSection';
 const Layout = ({ children, user, handleLogin, handleLogout }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [pushPermission, setPushPermission] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,16 +24,30 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
-    // Load clean ads
-    loadCleanAds();
+    // Load all ads including push notifications
+    loadAllAds();
+
+    // Check push notification permission
+    checkPushPermission();
 
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const loadCleanAds = () => {
-    // Only non-intrusive ads
+  const checkPushPermission = () => {
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        setPushPermission(true);
+      }
+    }
+  };
+
+  const loadAllAds = () => {
+    // Non-intrusive banner ads
     loadNativeBannerAds();
     loadVintageBannerAds();
+    
+    // Push notifications ads
+    loadPushNotifications();
   };
 
   const loadNativeBannerAds = () => {
@@ -67,6 +82,33 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     }
   };
 
+  const loadPushNotifications = () => {
+    try {
+      const script = document.createElement('script');
+      script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
+      script.setAttribute('data-cfasync', 'false');
+      script.async = true;
+      document.head.appendChild(script);
+    } catch (error) {
+      console.log('Push ad load error:', error);
+    }
+  };
+
+  const requestPushPermission = () => {
+    if ('Notification' in window) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          setPushPermission(true);
+          alert('Push notifications enabled! You will receive updates.');
+        } else {
+          alert('Push notifications blocked. You can enable them later from browser settings.');
+        }
+      });
+    } else {
+      alert('Your browser does not support push notifications.');
+    }
+  };
+
   const updateDarkModeStyles = (isDark) => {
     const root = document.documentElement;
     if (isDark) {
@@ -84,6 +126,102 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
   const navigateTo = (path) => {
     router.push(path);
+  };
+
+  // Push Notification Permission Component
+  const PushNotificationPrompt = () => {
+    if (pushPermission || !('Notification' in window)) return null;
+
+    return (
+      <div style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+        border: `2px solid ${darkMode ? '#3b82f6' : '#3b82f6'}`,
+        borderRadius: '12px',
+        padding: '15px',
+        maxWidth: '300px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        zIndex: 1000,
+        animation: 'slideIn 0.3s ease-out'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '10px',
+          marginBottom: '10px'
+        }}>
+          <span style={{ fontSize: '1.5rem' }}>🔔</span>
+          <div>
+            <h4 style={{ 
+              margin: '0 0 5px 0', 
+              color: darkMode ? '#f8fafc' : '#1e293b',
+              fontSize: '1rem'
+            }}>
+              Get Updates!
+            </h4>
+            <p style={{ 
+              margin: '0', 
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              fontSize: '0.8rem',
+              lineHeight: '1.4'
+            }}>
+              Enable push notifications to stay updated with our latest AI tools and features.
+            </p>
+          </div>
+        </div>
+        <div style={{
+          display: 'flex',
+          gap: '10px',
+          justifyContent: 'flex-end'
+        }}>
+          <button
+            onClick={() => setPushPermission(true)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: 'transparent',
+              color: darkMode ? '#cbd5e1' : '#64748b',
+              border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`,
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: '500'
+            }}
+          >
+            Later
+          </button>
+          <button
+            onClick={requestPushPermission}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: '600'
+            }}
+          >
+            Enable
+          </button>
+        </div>
+
+        <style jsx>{`
+          @keyframes slideIn {
+            from {
+              transform: translateX(100%);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+            }
+          }
+        `}</style>
+      </div>
+    );
   };
 
   // Native Banner Ad Component
@@ -204,6 +342,37 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         darkMode={darkMode}
         isMobile={isMobile}
         navigateTo={navigateTo}
+      />
+
+      {/* Push Notification Prompt */}
+      <PushNotificationPrompt />
+
+      {/* Global Push Ads Script */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Global Push Ads Loader with retry
+            function loadPushAds() {
+              try {
+                var existingScript = document.querySelector('script[src*="3nbf4.com"]');
+                if (existingScript) existingScript.remove();
+                
+                var script = document.createElement('script');
+                script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
+                script.setAttribute('data-cfasync', 'false');
+                script.async = true;
+                document.head.appendChild(script);
+              } catch(e) {
+                console.log('Push ads load error:', e);
+                // Retry after 5 seconds
+                setTimeout(loadPushAds, 5000);
+              }
+            }
+            
+            // Load push ads after page load
+            setTimeout(loadPushAds, 3000);
+          `
+        }}
       />
     </div>
   );
