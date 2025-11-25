@@ -1370,7 +1370,7 @@ export default function MultiToolHub() {
     padding: '1.5rem',
     borderRadius: '8px',
     margin: '1.5rem 0',
-    borderLeft: '4px solid '#d97706'',
+    borderLeft: '4px solid '#d97706',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
   };
 
