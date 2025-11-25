@@ -17,6 +17,7 @@ export default function PromptLibrary() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [showEducationalContent, setShowEducationalContent] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -372,6 +373,93 @@ export default function PromptLibrary() {
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
       marginBottom: '20px'
+    },
+    toggleSection: {
+      textAlign: 'center',
+      marginBottom: '30px'
+    },
+    toggleButton: {
+      padding: '12px 24px',
+      backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+      color: darkMode ? '#f8fafc' : '#374151',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '0.9rem',
+      fontWeight: '600',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px'
+    },
+    educationalContent: {
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      borderRadius: '16px',
+      padding: '40px',
+      marginBottom: '40px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      border: darkMode ? '1px solid #334155' : 'none'
+    },
+    tipBox: {
+      padding: '20px',
+      backgroundColor: darkMode ? '#0c4a6e20' : '#dbeafe',
+      borderRadius: '12px',
+      borderLeft: '4px solid #3b82f6',
+      marginBottom: '20px'
+    },
+    warningBox: {
+      padding: '20px',
+      backgroundColor: darkMode ? '#92400e20' : '#fef3c7',
+      borderRadius: '12px',
+      borderLeft: '4px solid #f59e0b',
+      marginBottom: '20px'
+    },
+    successBox: {
+      padding: '20px',
+      backgroundColor: darkMode ? '#065f4620' : '#d1fae5',
+      borderRadius: '12px',
+      borderLeft: '4px solid #10b981',
+      marginBottom: '20px'
+    },
+    comparisonTable: {
+      width: '100%',
+      borderCollapse: 'collapse',
+      marginBottom: '30px'
+    },
+    tableHeader: {
+      backgroundColor: darkMode ? '#334155' : '#f1f5f9',
+      padding: '15px',
+      textAlign: 'left',
+      fontWeight: '600',
+      borderBottom: `2px solid ${darkMode ? '#475569' : '#e2e8f0'}`
+    },
+    tableCell: {
+      padding: '15px',
+      borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      verticalAlign: 'top'
+    },
+    stepGuide: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+      marginBottom: '30px'
+    },
+    stepItem: {
+      display: 'flex',
+      gap: '15px',
+      alignItems: 'flex-start'
+    },
+    stepNumber: {
+      width: '32px',
+      height: '32px',
+      backgroundColor: '#3b82f6',
+      color: 'white',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: '600',
+      fontSize: '0.9rem',
+      flexShrink: 0
     }
   };
 
@@ -396,9 +484,11 @@ export default function PromptLibrary() {
   return (
     <>
       <Head>
-        <title>Prompt Library - AI Prompt Maker</title>
-        <meta name="description" content="Browse our collection of AI prompts for various use cases including creative writing, coding, business, and more." />
-        <meta name="keywords" content="AI prompts, prompt library, chatgpt prompts, AI templates, creative writing prompts" />
+        <title>AI Prompt Library - Discover & Master Effective Prompt Engineering</title>
+        <meta name="description" content="Comprehensive collection of AI prompts with complete guide to prompt engineering. Learn to create effective prompts for ChatGPT, GPT-4, and other AI models." />
+        <meta name="keywords" content="AI prompts, prompt library, prompt engineering, ChatGPT prompts, AI templates, effective prompts, GPT-4 prompts" />
+        <meta property="og:title" content="AI Prompt Library - Master Prompt Engineering" />
+        <meta property="og:description" content="Discover ready-to-use AI prompts and learn professional prompt engineering techniques." />
       </Head>
 
       <div style={styles.container}>
@@ -417,6 +507,236 @@ export default function PromptLibrary() {
           <p style={styles.heroSubtitle}>Copy, customize, and use professionally crafted prompts for various tasks</p>
         </div>
 
+        {/* Educational Content Toggle */}
+        <div style={styles.toggleSection}>
+          <button 
+            onClick={() => setShowEducationalContent(!showEducationalContent)}
+            style={styles.toggleButton}
+          >
+            {showEducationalContent ? '📚 Hide Guide' : '📚 Show Prompt Engineering Guide'}
+          </button>
+        </div>
+
+        {/* Comprehensive Educational Content */}
+        {showEducationalContent && (
+          <div style={styles.educationalContent}>
+            <h2 style={{ 
+              fontSize: '2rem', 
+              color: darkMode ? '#f8fafc' : '#1e293b',
+              marginBottom: '2rem',
+              textAlign: 'center'
+            }}>
+              🚀 The Complete Guide to Prompt Engineering
+            </h2>
+
+            {/* Introduction */}
+            <div style={styles.tipBox}>
+              <h3 style={{ color: '#1e40af', marginTop: 0 }}>💡 What is Prompt Engineering?</h3>
+              <p style={{ lineHeight: '1.7', margin: 0 }}>
+                Prompt engineering is the art and science of crafting inputs that guide AI models to produce 
+                desired outputs. It's like learning to speak the AI's language effectively. Well-designed prompts 
+                can dramatically improve the quality, relevance, and accuracy of AI-generated content.
+              </p>
+            </div>
+
+            {/* Core Principles */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+                🎯 Core Principles of Effective Prompt Engineering
+              </h3>
+
+              <div style={styles.stepGuide}>
+                <div style={styles.stepItem}>
+                  <div style={styles.stepNumber}>1</div>
+                  <div>
+                    <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', margin: '0 0 8px 0' }}>Be Specific and Detailed</h4>
+                    <p style={{ lineHeight: '1.6', margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                      Vague prompts get vague results. Include context, desired format, tone, and any constraints.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={styles.stepItem}>
+                  <div style={styles.stepNumber}>2</div>
+                  <div>
+                    <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', margin: '0 0 8px 0' }}>Provide Examples</h4>
+                    <p style={{ lineHeight: '1.6', margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                      Show the AI exactly what you want by including sample inputs and outputs.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={styles.stepItem}>
+                  <div style={styles.stepNumber}>3</div>
+                  <div>
+                    <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', margin: '0 0 8px 0' }}>Use Clear Structure</h4>
+                    <p style={{ lineHeight: '1.6', margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                      Organize your prompt with clear sections, bullet points, and formatting.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={styles.stepItem}>
+                  <div style={styles.stepNumber}>4</div>
+                  <div>
+                    <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', margin: '0 0 8px 0' }}>Iterate and Refine</h4>
+                    <p style={{ lineHeight: '1.6', margin: 0, color: darkMode ? '#cbd5e1' : '#64748b' }}>
+                      Treat prompt creation as an iterative process. Test, analyze results, and improve.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Prompt Types Comparison */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+                📊 Types of Prompts and Their Applications
+              </h3>
+
+              <table style={styles.comparisonTable}>
+                <thead>
+                  <tr>
+                    <th style={styles.tableHeader}>Prompt Type</th>
+                    <th style={styles.tableHeader}>Best For</th>
+                    <th style={styles.tableHeader}>Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={styles.tableCell}>
+                      <strong>Instruction-based</strong>
+                    </td>
+                    <td style={styles.tableCell}>
+                      Direct tasks, commands, specific actions
+                    </td>
+                    <td style={styles.tableCell}>
+                      "Write a professional email to decline a meeting invitation politely."
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={styles.tableCell}>
+                      <strong>Role-playing</strong>
+                    </td>
+                    <td style={styles.tableCell}>
+                      Creative writing, simulations, perspective-taking
+                    </td>
+                    <td style={styles.tableCell}>
+                      "Act as a senior software engineer reviewing this code..."
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={styles.tableCell}>
+                      <strong>Few-shot Learning</strong>
+                    </td>
+                    <td style={styles.tableCell}>
+                      Pattern recognition, consistent formatting
+                    </td>
+                    <td style={styles.tableCell}>
+                      "Input: 'I love this product' → Sentiment: Positive\nInput: 'This is terrible' → Sentiment:"
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={styles.tableCell}>
+                      <strong>Chain-of-Thought</strong>
+                    </td>
+                    <td style={styles.tableCell}>
+                      Complex reasoning, step-by-step problems
+                    </td>
+                    <td style={styles.tableCell}>
+                      "Let's think step by step. First, calculate X, then consider Y..."
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Advanced Techniques */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+                ⚡ Advanced Prompt Engineering Techniques
+              </h3>
+
+              <div style={styles.successBox}>
+                <h4 style={{ color: '#065f46', marginTop: 0 }}>✅ Temperature and Parameters</h4>
+                <p style={{ lineHeight: '1.7', marginBottom: '1rem' }}>
+                  Understand how different parameters affect output:
+                </p>
+                <ul style={{ lineHeight: '1.7', paddingLeft: '1.5rem', margin: 0 }}>
+                  <li><strong>Temperature (0-1):</strong> Lower = more deterministic, Higher = more creative</li>
+                  <li><strong>Max Tokens:</strong> Controls response length</li>
+                  <li><strong>Top-p:</strong> Nucleus sampling for diversity control</li>
+                </ul>
+              </div>
+
+              <div style={styles.tipBox}>
+                <h4 style={{ color: '#1e40af', marginTop: 0 }}>💡 Prompt Chaining</h4>
+                <p style={{ lineHeight: '1.7', margin: 0 }}>
+                  Break complex tasks into multiple prompts. Use the output of one prompt as input for the next 
+                  to handle sophisticated workflows and maintain context.
+                </p>
+              </div>
+            </div>
+
+            {/* Common Mistakes */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+                ⚠️ Common Prompt Engineering Mistakes to Avoid
+              </h3>
+
+              <div style={styles.warningBox}>
+                <ul style={{ lineHeight: '1.7', paddingLeft: '1.5rem', margin: 0 }}>
+                  <li><strong>Being too vague:</strong> "Write something about marketing" vs "Write a 500-word blog post about digital marketing trends in 2024"</li>
+                  <li><strong>Overloading with information:</strong> Keep prompts focused and organized</li>
+                  <li><strong>Ignoring context windows:</strong> Be mindful of token limits</li>
+                  <li><strong>Not testing variations:</strong> Always try multiple prompt formulations</li>
+                  <li><strong>Forgetting to specify format:</strong> Always indicate desired output structure</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Industry Applications */}
+            <div>
+              <h3 style={{ color: darkMode ? '#f8fafc' : '#1e293b', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+                🏢 Industry-Specific Prompt Strategies
+              </h3>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                <div style={{ padding: '20px', backgroundColor: darkMode ? '#334155' : '#f8fafc', borderRadius: '12px' }}>
+                  <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', marginTop: 0 }}>💻 Software Development</h4>
+                  <ul style={{ lineHeight: '1.6', paddingLeft: '1.5rem', margin: 0 }}>
+                    <li>Code generation with specific frameworks</li>
+                    <li>Debugging and error explanation</li>
+                    <li>API documentation creation</li>
+                    <li>Code review and optimization</li>
+                  </ul>
+                </div>
+
+                <div style={{ padding: '20px', backgroundColor: darkMode ? '#334155' : '#f8fafc', borderRadius: '12px' }}>
+                  <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', marginTop: 0 }}>📝 Content Creation</h4>
+                  <ul style={{ lineHeight: '1.6', paddingLeft: '1.5rem', margin: 0 }}>
+                    <li>SEO-optimized article writing</li>
+                    <li>Social media content planning</li>
+                    <li>Email marketing campaigns</li>
+                    <li>Brand voice consistency</li>
+                  </ul>
+                </div>
+
+                <div style={{ padding: '20px', backgroundColor: darkMode ? '#334155' : '#f8fafc', borderRadius: '12px' }}>
+                  <h4 style={{ color: darkMode ? '#f8fafc' : '#1e293b', marginTop: 0 }}>🎓 Education</h4>
+                  <ul style={{ lineHeight: '1.6', paddingLeft: '1.5rem', margin: 0 }}>
+                    <li>Lesson plan development</li>
+                    <li>Interactive learning materials</li>
+                    <li>Assessment creation</li>
+                    <li>Personalized tutoring</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Tool Interface */}
         <div style={styles.controls}>
           <input
             type="text"
@@ -541,7 +861,7 @@ export default function PromptLibrary() {
 
         <footer style={styles.footer}>
           <p>
-            Need a custom prompt?{' '}
+            Ready to master prompt engineering?{' '}
             <a 
               href="/prompt-builder" 
               style={styles.footerLink}
@@ -550,7 +870,7 @@ export default function PromptLibrary() {
                 router.push('/prompt-builder');
               }}
             >
-              Create your own →
+              Start creating your own prompts →
             </a>
           </p>
         </footer>
@@ -580,6 +900,25 @@ export default function PromptLibrary() {
         @media (max-width: 768px) {
           .prompts-grid {
             grid-template-columns: 1fr;
+          }
+          
+          .educational-content {
+            padding: 20px !important;
+          }
+          
+          .comparison-table {
+            font-size: 0.8rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .step-item {
+            flex-direction: column;
+            text-align: center;
+          }
+          
+          .step-number {
+            align-self: center;
           }
         }
       `}</style>
