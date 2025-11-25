@@ -1,4 +1,4 @@
-// pages/index.js - WITH LAYOUT COMPONENT
+// pages/index.js - WITH LAYOUT COMPONENT AND EDUCATIONAL CONTENT
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/router';
@@ -528,6 +528,34 @@ export default function Home() {
     minWidth: 0
   };
 
+  // Educational Content Styles
+  const tipBoxStyle = {
+    backgroundColor: darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(219, 234, 254, 0.8)',
+    border: `1px solid ${darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(147, 197, 253, 0.6)'}`,
+    borderRadius: '12px',
+    padding: isMobile ? '16px' : '20px',
+    margin: '20px 0',
+    position: 'relative'
+  };
+
+  const warningBoxStyle = {
+    backgroundColor: darkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(254, 243, 199, 0.8)',
+    border: `1px solid ${darkMode ? 'rgba(245, 158, 11, 0.3)' : 'rgba(252, 211, 77, 0.6)'}`,
+    borderRadius: '12px',
+    padding: isMobile ? '16px' : '20px',
+    margin: '20px 0',
+    position: 'relative'
+  };
+
+  const successBoxStyle = {
+    backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(209, 250, 229, 0.8)',
+    border: `1px solid ${darkMode ? 'rgba(16, 185, 129, 0.3)' : 'rgba(110, 231, 183, 0.6)'}`,
+    borderRadius: '12px',
+    padding: isMobile ? '16px' : '20px',
+    margin: '20px 0',
+    position: 'relative'
+  };
+
   return (
     <Layout 
       darkMode={darkMode}
@@ -541,6 +569,10 @@ export default function Home() {
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="keywords" content="AI prompt generator, AI writing tool, prompt engineering, content creation, AI assistance" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="website" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </Head>
 
@@ -1091,9 +1123,391 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Rest of the content remains the same */}
-        {/* ... (other sections like feedback, etc.) ... */}
+        {/* COMPREHENSIVE EDUCATIONAL SECTION */}
+        <section style={{
+          maxWidth: '1200px',
+          margin: '60px auto',
+          padding: isMobile ? '0 12px' : '0 24px'
+        }}>
+          <div style={cardStyle}>
+            <h2 style={{
+              fontSize: isMobile ? '1.8rem' : '2.5rem',
+              textAlign: 'center',
+              margin: '0 0 40px 0',
+              background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: '900'
+            }}>
+              Master the Art of AI Prompt Engineering
+            </h2>
+
+            {/* Introduction */}
+            <div style={tipBoxStyle}>
+              <h3 style={{ margin: '0 0 12px 0', color: darkMode ? '#3b82f6' : '#1d4ed8', fontSize: '1.3rem' }}>
+                💡 What is Prompt Engineering?
+              </h3>
+              <p style={{ margin: 0, lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                Prompt engineering is the art and science of crafting inputs that guide AI models to produce desired outputs. 
+                It's like learning to speak the AI's language - the better your prompts, the better your results. 
+                With the right techniques, you can transform simple ideas into professional-grade content, stunning images, 
+                and effective marketing copy.
+              </p>
+            </div>
+
+            {/* The Science Behind Effective Prompts */}
+            <div style={{ margin: '40px 0' }}>
+              <h3 style={{ 
+                fontSize: isMobile ? '1.5rem' : '1.8rem', 
+                margin: '0 0 20px 0',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '800'
+              }}>
+                The Science Behind Effective Prompts
+              </h3>
+              
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+                gap: '20px',
+                marginBottom: '30px'
+              }}>
+                <div style={successBoxStyle}>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#10b981' : '#047857', fontSize: '1.1rem' }}>
+                    ✅ Context is King
+                  </h4>
+                  <p style={{ margin: 0, lineHeight: '1.6', fontSize: '0.95rem', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                    Provide sufficient background information. The more context you give, the more accurate and relevant 
+                    the AI's response will be. Include details about your audience, purpose, and desired outcome.
+                  </p>
+                </div>
+
+                <div style={successBoxStyle}>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#10b981' : '#047857', fontSize: '1.1rem' }}>
+                    ✅ Specificity Matters
+                  </h4>
+                  <p style={{ margin: 0, lineHeight: '1.6', fontSize: '0.95rem', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                    Vague prompts get vague results. Be precise about what you want. Instead of "write about marketing," 
+                    try "write a 500-word blog post about digital marketing strategies for small businesses in 2024."
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+                gap: '20px'
+              }}>
+                <div style={successBoxStyle}>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#10b981' : '#047857', fontSize: '1.1rem' }}>
+                    ✅ Structure Your Prompts
+                  </h4>
+                  <p style={{ margin: 0, lineHeight: '1.6', fontSize: '0.95rem', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                    Use clear formatting. Break complex requests into steps. Start with the main task, then add specifications, 
+                    tone requirements, and any constraints or preferences.
+                  </p>
+                </div>
+
+                <div style={successBoxStyle}>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#10b981' : '#047857', fontSize: '1.1rem' }}>
+                    ✅ Iterate and Refine
+                  </h4>
+                  <p style={{ margin: 0, lineHeight: '1.6', fontSize: '0.95rem', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                    Your first prompt might not be perfect. Use the AI's response to refine your next attempt. 
+                    This iterative process helps you learn what works best for different AI models.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Advanced Prompt Engineering Techniques */}
+            <div style={{ margin: '40px 0' }}>
+              <h3 style={{ 
+                fontSize: isMobile ? '1.5rem' : '1.8rem', 
+                margin: '0 0 20px 0',
+                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '800'
+              }}>
+                Advanced Prompt Engineering Techniques
+              </h3>
+
+              <div style={tipBoxStyle}>
+                <h4 style={{ margin: '0 0 12px 0', color: darkMode ? '#3b82f6' : '#1d4ed8', fontSize: '1.2rem' }}>
+                  🎯 Role-Playing Prompts
+                </h4>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  Assign specific roles to the AI to get more targeted responses. For example:
+                </p>
+                <div style={{
+                  backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  marginBottom: '15px'
+                }}>
+                  <code style={{ 
+                    color: darkMode ? '#e2e8f0' : '#374151',
+                    fontSize: '0.9rem',
+                    lineHeight: '1.5'
+                  }}>
+                    "Act as a senior digital marketing expert with 10 years of experience. Create a comprehensive 
+                    social media strategy for a new eco-friendly clothing brand targeting millennials."
+                  </code>
+                </div>
+              </div>
+
+              <div style={tipBoxStyle}>
+                <h4 style={{ margin: '0 0 12px 0', color: darkMode ? '#3b82f6' : '#1d4ed8', fontSize: '1.2rem' }}>
+                  📝 Chain-of-Thought Prompting
+                </h4>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  Break down complex problems into steps. This helps the AI reason through the problem systematically:
+                </p>
+                <div style={{
+                  backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  marginBottom: '15px'
+                }}>
+                  <code style={{ 
+                    color: darkMode ? '#e2e8f0' : '#374151',
+                    fontSize: '0.9rem',
+                    lineHeight: '1.5'
+                  }}>
+                    "Let's think step by step. First, identify the target audience. Second, determine their pain points. 
+                    Third, create solutions that address these pain points. Fourth, develop a marketing message that 
+                    communicates these solutions effectively."
+                  </code>
+                </div>
+              </div>
+
+              <div style={tipBoxStyle}>
+                <h4 style={{ margin: '0 0 12px 0', color: darkMode ? '#3b82f6' : '#1d4ed8', fontSize: '1.2rem' }}>
+                  🎨 Few-Shot Learning
+                </h4>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  Provide examples of what you want. This teaches the AI the pattern and style you're looking for:
+                </p>
+                <div style={{
+                  backgroundColor: darkMode ? '#0f172a' : '#f8fafc',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  marginBottom: '15px'
+                }}>
+                  <code style={{ 
+                    color: darkMode ? '#e2e8f0' : '#374151',
+                    fontSize: '0.9rem',
+                    lineHeight: '1.5'
+                  }}>
+                    "Example 1: Input: 'Product: Wireless headphones' → Output: 'Experience crystal-clear audio with our 
+                    premium wireless headphones. 40-hour battery life, noise cancellation, and comfortable over-ear design.'\n\n
+                    Now create a similar product description for: 'Smart fitness watch'"
+                  </code>
+                </div>
+              </div>
+            </div>
+
+            {/* Industry-Specific Applications */}
+            <div style={{ margin: '40px 0' }}>
+              <h3 style={{ 
+                fontSize: isMobile ? '1.5rem' : '1.8rem', 
+                margin: '0 0 20px 0',
+                background: 'linear-gradient(135deg, #ec4899, #db2777)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '800'
+              }}>
+                Industry-Specific Applications
+              </h3>
+
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', 
+                gap: '20px',
+                marginBottom: '30px'
+              }}>
+                <div style={{
+                  backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                  padding: '20px',
+                  borderRadius: '12px',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>📊</div>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#e2e8f0' : '#374151' }}>Marketing</h4>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: darkMode ? '#cbd5e1' : '#64748b', lineHeight: '1.5' }}>
+                    Create compelling ad copy, social media posts, email campaigns, and brand messaging that converts.
+                  </p>
+                </div>
+
+                <div style={{
+                  backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                  padding: '20px',
+                  borderRadius: '12px',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>💻</div>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#e2e8f0' : '#374151' }}>Development</h4>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: darkMode ? '#cbd5e1' : '#64748b', lineHeight: '1.5' }}>
+                    Generate code, debug errors, create documentation, and explain complex programming concepts.
+                  </p>
+                </div>
+
+                <div style={{
+                  backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                  padding: '20px',
+                  borderRadius: '12px',
+                  border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>🎨</div>
+                  <h4 style={{ margin: '0 0 10px 0', color: darkMode ? '#e2e8f0' : '#374151' }}>Creative</h4>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: darkMode ? '#cbd5e1' : '#64748b', lineHeight: '1.5' }}>
+                    Write stories, create character profiles, develop plot ideas, and generate artistic concepts.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Common Mistakes to Avoid */}
+            <div style={{ margin: '40px 0' }}>
+              <h3 style={{ 
+                fontSize: isMobile ? '1.5rem' : '1.8rem', 
+                margin: '0 0 20px 0',
+                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '800'
+              }}>
+                Common Mistakes to Avoid
+              </h3>
+
+              <div style={warningBoxStyle}>
+                <h4 style={{ margin: '0 0 12px 0', color: darkMode ? '#f59e0b' : '#92400e', fontSize: '1.2rem' }}>
+                  ⚠️ Being Too Vague
+                </h4>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  <strong>Bad:</strong> "Write about technology"<br/>
+                  <strong>Good:</strong> "Write a 800-word beginner's guide to blockchain technology for small business owners, 
+                  explaining how it can improve supply chain transparency in simple terms."
+                </p>
+              </div>
+
+              <div style={warningBoxStyle}>
+                <h4 style={{ margin: '0 0 12px 0', color: darkMode ? '#f59e0b' : '#92400e', fontSize: '1.2rem' }}>
+                  ⚠️ Overloading with Information
+                </h4>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  While context is important, too much information can confuse the AI. Focus on the most relevant details 
+                  and structure your prompt clearly with paragraphs or bullet points when necessary.
+                </p>
+              </div>
+
+              <div style={warningBoxStyle}>
+                <h4 style={{ margin: '0 0 12px 0', color: darkMode ? '#f59e0b' : '#92400e', fontSize: '1.2rem' }}>
+                  ⚠️ Not Specifying Format
+                </h4>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  Always specify your desired output format. Do you want bullet points, paragraphs, a table, or code? 
+                  Being clear about format ensures you get usable results.
+                </p>
+              </div>
+            </div>
+
+            {/* Future of Prompt Engineering */}
+            <div style={{ margin: '40px 0' }}>
+              <h3 style={{ 
+                fontSize: isMobile ? '1.5rem' : '1.8rem', 
+                margin: '0 0 20px 0',
+                background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '800'
+              }}>
+                The Future of Prompt Engineering
+              </h3>
+
+              <div style={tipBoxStyle}>
+                <p style={{ margin: '0 0 15px 0', lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  Prompt engineering is evolving from an art into a science. As AI models become more sophisticated, 
+                  the ability to communicate effectively with them will become an essential skill across all industries. 
+                  Professionals who master prompt engineering will have a significant advantage in productivity and creativity.
+                </p>
+                <p style={{ margin: 0, lineHeight: '1.7', color: darkMode ? '#e2e8f0' : '#374151' }}>
+                  The future will see more specialized prompt engineering roles, standardized prompt patterns, 
+                  and AI systems that can better understand human intent with less explicit instruction. However, 
+                  the fundamental principles of clear communication and structured thinking will remain valuable.
+                </p>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            <div style={{
+              textAlign: 'center',
+              padding: '40px 20px',
+              backgroundColor: darkMode ? 'rgba(15, 23, 42, 0.8)' : 'rgba(248, 250, 252, 0.8)',
+              borderRadius: '16px',
+              border: `2px dashed ${darkMode ? '#334155' : '#e2e8f0'}`,
+              marginTop: '40px'
+            }}>
+              <h3 style={{ 
+                margin: '0 0 16px 0',
+                fontSize: isMobile ? '1.4rem' : '1.8rem',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '800'
+              }}>
+                Ready to Master Prompt Engineering?
+              </h3>
+              <p style={{ 
+                margin: '0 0 24px 0', 
+                color: darkMode ? '#cbd5e1' : '#64748b',
+                fontSize: isMobile ? '1rem' : '1.1rem',
+                maxWidth: '600px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                lineHeight: '1.6'
+              }}>
+                Start practicing with our AI Prompt Maker today. Experiment with different templates, tones, 
+                and advanced options to discover what works best for your specific needs.
+              </p>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                style={{
+                  padding: isMobile ? '16px 24px' : '18px 32px',
+                  background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontSize: isMobile ? '1rem' : '1.1rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 20px -5px rgba(59, 130, 246, 0.4)'
+                }}
+              >
+                🚀 Try the Prompt Generator Now
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Additional sections like feedback can be added here */}
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </Layout>
   );
 }
