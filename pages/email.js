@@ -605,7 +605,7 @@ export default function EmailGenerator() {
                 padding: '1.5rem',
                 backgroundColor: '#fef2f2',
                 borderRadius: '8px',
-                border: '1px solid '#fecaca'
+                border: '1px solid #fecaca'
               }}>
                 <h4 style={{ color: '#991b1b', marginTop: '0' }}>🤝 Follow-up Emails</h4>
                 <p style={{ color: '#475569', marginBottom: '1rem' }}>
