@@ -19,47 +19,43 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
 
-    // Initialize dark mode
     const isDark = localStorage.getItem('darkMode') === 'true';
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
-    // Load PropellerAds scripts
-    loadPropellerAds();
+    // Load all ads
+    loadAllAds();
 
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const loadPropellerAds = () => {
-    // Global PropellerAds scripts
-    const adsScripts = [
-      {
-        id: 'propeller-push',
-        src: 'https://3nbf4.com/act/files/tag.min.js?z=10209677',
-        dataset: { zone: '10209677' }
-      },
-      {
-        id: 'propeller-inpage',
-        src: 'https://nap5k.com/tag.min.js',
-        dataset: { zone: '10209689' }
-      }
-    ];
+  const loadAllAds = () => {
+    // PropellerAds Monetag Format
+    const monetagScript = document.createElement('script');
+    monetagScript.src = 'https://fpyf8.com/88/tag.min.js';
+    monetagScript.setAttribute('data-zone', '187915');
+    monetagScript.setAttribute('data-cfasync', 'false');
+    monetagScript.async = true;
+    document.head.appendChild(monetagScript);
 
-    adsScripts.forEach(scriptConfig => {
-      const script = document.createElement('script');
-      script.id = scriptConfig.id;
-      script.src = scriptConfig.src;
-      script.async = true;
-      script.dataset.cfasync = "false";
-      
-      if (scriptConfig.dataset) {
-        Object.keys(scriptConfig.dataset).forEach(key => {
-          script.dataset[key] = scriptConfig.dataset[key];
-        });
-      }
-      
-      document.head.appendChild(script);
-    });
+    // Existing PropellerAds
+    loadPropellerAds();
+  };
+
+  const loadPropellerAds = () => {
+    // Push Notifications
+    const pushScript = document.createElement('script');
+    pushScript.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
+    pushScript.setAttribute('data-cfasync', 'false');
+    pushScript.async = true;
+    document.head.appendChild(pushScript);
+
+    // In-Page Push
+    const inpageScript = document.createElement('script');
+    inpageScript.src = 'https://nap5k.com/tag.min.js';
+    inpageScript.setAttribute('data-zone', '10209689');
+    inpageScript.async = true;
+    document.head.appendChild(inpageScript);
   };
 
   const updateDarkModeStyles = (isDark) => {
@@ -81,16 +77,60 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     router.push(path);
   };
 
-  // Ads Components
+  // Monetag Ad Component (PropellerAds through)
+  const MonetagAd = ({ position = 'native' }) => {
+    const adStyle = {
+      margin: '20px 0',
+      padding: position === 'banner' ? '10px' : '15px',
+      backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+      border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+      borderRadius: '8px',
+      textAlign: 'center',
+      minHeight: position === 'banner' ? '100px' : '250px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative'
+    };
+
+    return (
+      <div style={adStyle}>
+        {/* Monetag Ad Container */}
+        <div id={`monetag-ad-${position}`}></div>
+        
+        {/* Fallback Text */}
+        <div style={{
+          position: 'absolute',
+          top: '5px',
+          left: '5px',
+          fontSize: '0.7rem',
+          color: darkMode ? '#94a3b8' : '#64748b',
+          background: darkMode ? '#334155' : '#e2e8f0',
+          padding: '2px 6px',
+          borderRadius: '4px'
+        }}>
+          Monetag Ad
+        </div>
+      </div>
+    );
+  };
+
+  // Vintage Banner Ad Component
   const VintageBannerAd = () => {
     useEffect(() => {
-      const script = document.createElement('script');
-      script.innerHTML = `(function(s){s.dataset.zone='10212308',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
-      document.head.appendChild(script);
-      
-      return () => {
-        document.head.removeChild(script);
+      const loadVintageAd = () => {
+        const script = document.createElement('script');
+        script.innerHTML = `
+          (function(s){
+            s.dataset.zone='10212308';
+            s.src='https://gizokraijaw.net/vignette.min.js';
+            s.async = true;
+          })(document.createElement('script'));
+        `;
+        document.head.appendChild(script);
       };
+
+      setTimeout(loadVintageAd, 1000);
     }, []);
 
     return (
@@ -106,45 +146,14 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        {/* Vintage Banner Ad will load here */}
         <div id="vintage-banner-ad"></div>
-      </div>
-    );
-  };
-
-  const NativeBannerAd = () => {
-    useEffect(() => {
-      const script = document.createElement('script');
-      script.innerHTML = `(function(s){s.dataset.zone='10209722',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
-      document.head.appendChild(script);
-      
-      return () => {
-        document.head.removeChild(script);
-      };
-    }, []);
-
-    return (
-      <div style={{
-        margin: '20px 0',
-        padding: '10px',
-        backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-        border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-        borderRadius: '8px',
-        textAlign: 'center',
-        minHeight: '250px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        {/* Native Banner Ad will load here */}
-        <div id="native-banner-ad"></div>
       </div>
     );
   };
 
   const containerStyle = {
     fontFamily: "'Inter', sans-serif",
-    maxWidth: '100%',
+    maxWidth: '1200px',
     margin: '0 auto',
     padding: isMobile ? '12px' : '24px',
     paddingBottom: isMobile ? '80px' : '40px',
@@ -167,13 +176,13 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
       />
 
       <main>
-        {/* Header ke niche Vintage Banner */}
-        <VintageBannerAd />
+        {/* Header ke niche Monetag Banner */}
+        <MonetagAd position="banner" />
         
         {children}
         
-        {/* Content ke beech mein Native Banner */}
-        <NativeBannerAd />
+        {/* Content ke beech Monetag Native */}
+        <MonetagAd position="native" />
       </main>
 
       <ToolCards
@@ -182,8 +191,8 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         navigateTo={navigateTo}
       />
 
-      {/* ToolCards ke baad ek aur Native Banner */}
-      <NativeBannerAd />
+      {/* ToolCards ke baad Monetag Ad */}
+      <MonetagAd position="native" />
 
       <FeedbackSection
         darkMode={darkMode}
@@ -191,10 +200,34 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         navigateTo={navigateTo}
       />
 
+      {/* Footer se pehle Vintage Banner */}
+      <VintageBannerAd />
+
       <Footer
         darkMode={darkMode}
         isMobile={isMobile}
         navigateTo={navigateTo}
+      />
+
+      {/* Global Ads Script */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Global Monetag Ads Loader
+            setTimeout(function() {
+              try {
+                var monetagScript = document.createElement('script');
+                monetagScript.src = 'https://fpyf8.com/88/tag.min.js';
+                monetagScript.setAttribute('data-zone', '187915');
+                monetagScript.setAttribute('data-cfasync', 'false');
+                monetagScript.async = true;
+                document.head.appendChild(monetagScript);
+              } catch(e) { 
+                console.log('Monetag ad load error:', e);
+              }
+            }, 2000);
+          `
+        }}
       />
     </div>
   );
