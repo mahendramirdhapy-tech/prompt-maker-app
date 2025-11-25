@@ -61,10 +61,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     { path: '/email', label: '✉️ Email Writer' },
     { path: '/translate', label: '🔄 Translator' },
     { path: '/audio', label: '🎵 Audio Tool' },
-    { path: '/prompts', label: '📚 Prompt Library' },
-    { path: '/multitool', label: '🌐 Multi Tool' },
     { path: '/pdf', label: '📄 PDF Maker' },
-    { path: '/catalog-maker', label: '💾 Catalog Maker' },
   ];
 
   const navigateTo = (path) => {
