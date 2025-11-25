@@ -9,9 +9,12 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [pushPermission, setPushPermission] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setIsClient(true);
+    
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
@@ -24,17 +27,17 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
-    // Load all ads including push notifications
-    loadAllAds();
-
-    // Check push notification permission
-    checkPushPermission();
+    // Load all ads only on client side
+    if (typeof window !== 'undefined') {
+      loadAllAds();
+      checkPushPermission();
+    }
 
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   const checkPushPermission = () => {
-    if ('Notification' in window) {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'granted') {
         setPushPermission(true);
       }
@@ -95,7 +98,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
   };
 
   const requestPushPermission = () => {
-    if ('Notification' in window) {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
       Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
           setPushPermission(true);
@@ -110,17 +113,19 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
   };
 
   const updateDarkModeStyles = (isDark) => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.style.setProperty('--bg-primary', '#0f172a');
-      root.style.setProperty('--bg-secondary', '#1e293b');
-      root.style.setProperty('--text-primary', '#f8fafc');
-      root.style.setProperty('--text-secondary', '#cbd5e1');
-    } else {
-      root.style.setProperty('--bg-primary', '#ffffff');
-      root.style.setProperty('--bg-secondary', '#f8fafc');
-      root.style.setProperty('--text-primary', '#1e293b');
-      root.style.setProperty('--text-secondary', '#64748b');
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (isDark) {
+        root.style.setProperty('--bg-primary', '#0f172a');
+        root.style.setProperty('--bg-secondary', '#1e293b');
+        root.style.setProperty('--text-primary', '#f8fafc');
+        root.style.setProperty('--text-secondary', '#cbd5e1');
+      } else {
+        root.style.setProperty('--bg-primary', '#ffffff');
+        root.style.setProperty('--bg-secondary', '#f8fafc');
+        root.style.setProperty('--text-primary', '#1e293b');
+        root.style.setProperty('--text-secondary', '#64748b');
+      }
     }
   };
 
@@ -130,7 +135,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
   // Push Notification Permission Component
   const PushNotificationPrompt = () => {
-    if (pushPermission || !('Notification' in window)) return null;
+    if (!isClient || pushPermission || !('Notification' in window)) return null;
 
     return (
       <div style={{
@@ -344,36 +349,38 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         navigateTo={navigateTo}
       />
 
-      {/* Push Notification Prompt */}
-      <PushNotificationPrompt />
+      {/* Push Notification Prompt - Only shows on client side */}
+      {isClient && <PushNotificationPrompt />}
 
-      {/* Global Push Ads Script */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            // Global Push Ads Loader with retry
-            function loadPushAds() {
-              try {
-                var existingScript = document.querySelector('script[src*="3nbf4.com"]');
-                if (existingScript) existingScript.remove();
-                
-                var script = document.createElement('script');
-                script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
-                script.setAttribute('data-cfasync', 'false');
-                script.async = true;
-                document.head.appendChild(script);
-              } catch(e) {
-                console.log('Push ads load error:', e);
-                // Retry after 5 seconds
-                setTimeout(loadPushAds, 5000);
+      {/* Global Push Ads Script - Only loads on client side */}
+      {isClient && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Global Push Ads Loader with retry
+              function loadPushAds() {
+                try {
+                  var existingScript = document.querySelector('script[src*="3nbf4.com"]');
+                  if (existingScript) existingScript.remove();
+                  
+                  var script = document.createElement('script');
+                  script.src = 'https://3nbf4.com/act/files/tag.min.js?z=10209677';
+                  script.setAttribute('data-cfasync', 'false');
+                  script.async = true;
+                  document.head.appendChild(script);
+                } catch(e) {
+                  console.log('Push ads load error:', e);
+                  // Retry after 5 seconds
+                  setTimeout(loadPushAds, 5000);
+                }
               }
-            }
-            
-            // Load push ads after page load
-            setTimeout(loadPushAds, 3000);
-          `
-        }}
-      />
+              
+              // Load push ads after page load
+              setTimeout(loadPushAds, 3000);
+            `
+          }}
+        />
+      )}
     </div>
   );
 };
