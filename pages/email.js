@@ -859,7 +859,7 @@ export default function EmailGenerator() {
               backgroundColor: '#ecfdf5',
               padding: '1.5rem',
               borderRadius: '8px',
-              borderLeft: '4px solid '#10b981'
+              borderLeft: '4px solid #10b981'
             }}>
               <h4 style={{ color: '#047857', marginTop: '0', marginBottom: '1rem' }}>✅ Pro-Level Email Techniques</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
