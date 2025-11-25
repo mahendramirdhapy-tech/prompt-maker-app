@@ -389,7 +389,7 @@ export default function Translator() {
                   padding: '1.5rem',
                   backgroundColor: '#fef7ed',
                   borderRadius: '8px',
-                  border: '1px solid '#fed7aa'
+                  border: '1px solid #fed7aa'
                 }}>
                   <h5 style={{ color: '#9a3412', marginTop: 0 }}>🇺🇸 English (Latin Script)</h5>
                   <ul style={{ lineHeight: '1.6', paddingLeft: '1.5rem', margin: 0 }}>
@@ -445,7 +445,7 @@ export default function Translator() {
                 padding: '1.5rem',
                 backgroundColor: '#fef2f2',
                 borderRadius: '8px',
-                border: '1px solid '#fecaca'
+                border: '1px solid #fecaca'
               }}>
                 <h4 style={{ color: '#dc2626', marginTop: 0 }}>🤔 Idioms and Cultural References</h4>
                 <p style={{ lineHeight: '1.6', marginBottom: '1rem' }}>
@@ -462,7 +462,7 @@ export default function Translator() {
                 padding: '1.5rem',
                 backgroundColor: '#f0f9ff',
                 borderRadius: '8px',
-                border: '1px solid '#bae6fd'
+                border: '1px solid #bae6fd'
               }}>
                 <h4 style={{ color: '#0c4a6e', marginTop: 0 }}>🔤 Honorifics and Formality</h4>
                 <p style={{ lineHeight: '1.6', marginBottom: '1rem' }}>
@@ -479,7 +479,7 @@ export default function Translator() {
                 padding: '1.5rem',
                 backgroundColor: '#f0fdf4',
                 borderRadius: '8px',
-                border: '1px solid '#bbf7d0'
+                border: '1px solid #bbf7d0'
               }}>
                 <h4 style={{ color: '#166534', marginTop: 0 }}>📝 Compound Words</h4>
                 <p style={{ lineHeight: '1.6', marginBottom: '1rem' }}>
@@ -611,7 +611,7 @@ export default function Translator() {
                 padding: '1.5rem',
                 backgroundColor: '#fef7ed',
                 borderRadius: '8px',
-                border: '1px solid '#fed7aa'
+                border: '1px solid #fed7aa'
               }}>
                 <h4 style={{ color: '#9a3412', marginTop: 0 }}>1. Understand Context First</h4>
                 <p style={{ lineHeight: '1.6', margin: 0 }}>
@@ -624,7 +624,7 @@ export default function Translator() {
                 padding: '1.5rem',
                 backgroundColor: '#f0f9ff',
                 borderRadius: '8px',
-                border: '1px solid '#bae6fd'
+                border: '1px solid #bae6fd'
               }}>
                 <h4 style={{ color: '#0c4a6e', marginTop: 0 }}>2. Preserve Meaning, Not Words</h4>
                 <p style={{ lineHeight: '1.6', margin: 0 }}>
@@ -637,7 +637,7 @@ export default function Translator() {
                 padding: '1.5rem',
                 backgroundColor: '#f0fdf4',
                 borderRadius: '8px',
-                border: '1px solid '#bbf7d0'
+                border: '1px solid #bbf7d0'
               }}>
                 <h4 style={{ color: '#166534', marginTop: 0 }}>3. Consider Cultural Nuances</h4>
                 <p style={{ lineHeight: '1.6', margin: 0 }}>
@@ -658,7 +658,7 @@ export default function Translator() {
               padding: '1.5rem',
               backgroundColor: '#faf5ff',
               borderRadius: '8px',
-              border: '1px solid '#e9d5ff'
+              border: '1px solid #e9d5ff'
             }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
                 <div>
@@ -730,7 +730,7 @@ export default function Translator() {
             backgroundColor: '#f0f9ff',
             borderRadius: '8px',
             textAlign: 'center',
-            border: '1px solid '#bae6fd'
+            border: '1px solid #bae6fd'
           }}>
             <h3 style={{ color: '#0369a1', marginTop: 0 }}>🌉 Bridge Languages, Connect Cultures</h3>
             <p style={{ lineHeight: '1.7', fontSize: '1.125rem', marginBottom: '1rem' }}>
@@ -768,19 +768,11 @@ export default function Translator() {
             h3 {
               font-size: 1.25rem !important;
             }
-            
-            .language-grid {
-              grid-template-columns: 1fr !important;
-            }
           }
 
           @media (max-width: 480px) {
             .translation-example {
               grid-template-columns: 1fr !important;
-              text-align: center !important;
-            }
-            
-            .translation-example div:first-child {
               text-align: center !important;
             }
           }
