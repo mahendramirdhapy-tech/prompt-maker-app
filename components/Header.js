@@ -1,4 +1,4 @@
-// components/Header.js - PROFESSIONAL NAVBAR VERSION WITH AUTH
+// components/Header.js - PROFESSIONAL NAVBAR VERSION WITH AUTH & ADS
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
@@ -35,6 +35,19 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Load PropellerAds for mobile sidebar
+  useEffect(() => {
+    if (mobileMenuOpen && isMobile) {
+      const script = document.createElement('script');
+      script.innerHTML = `(function(s){s.dataset.zone='10209722',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
+      document.head.appendChild(script);
+      
+      return () => {
+        document.head.removeChild(script);
+      };
+    }
+  }, [mobileMenuOpen, isMobile]);
+
   // Navigation items
   const navItems = [
     { path: '/features', label: 'Features', icon: '⚡', dropdown: true },
@@ -51,7 +64,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     { path: '/prompts', label: '📚 Prompt Library' },
     { path: '/multitool', label: '🌐 Multi Tool' },
     { path: '/pdf', label: '📄 PDF Maker' },
-    { path: '/catalog-maker', lable: '💾 Catalog Maker' },
+    { path: '/catalog-maker', label: '💾 Catalog Maker' },
   ];
 
   const navigateTo = (path) => {
@@ -251,6 +264,27 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     marginTop: '8px'
   };
 
+  // Mobile Sidebar Ad Component
+  const MobileSidebarAd = () => {
+    return (
+      <div style={{
+        padding: '15px',
+        borderTop: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+        borderBottom: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+        textAlign: 'center',
+        minHeight: '120px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: darkMode ? '#0f172a' : '#f1f5f9',
+        margin: '10px 0'
+      }}>
+        {/* Native Banner Ad Container for Mobile Sidebar */}
+        <div id="sidebar-mobile-ad"></div>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Mobile Sidebar Overlay */}
@@ -311,7 +345,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
           </div>
 
           {/* Sidebar Navigation */}
-          <div style={{ padding: '20px 0', flex: 1 }}>
+          <div style={{ padding: '10px 0', flex: 1 }}>
             {/* Home Link */}
             <button
               onClick={() => navigateTo('/')}
@@ -397,6 +431,9 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
                 {item.label}
               </button>
             ))}
+
+            {/* Mobile Sidebar Advertisement */}
+            <MobileSidebarAd />
           </div>
 
           {/* Sidebar Footer */}
