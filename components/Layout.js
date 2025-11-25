@@ -24,8 +24,43 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
+    // Load PropellerAds scripts
+    loadPropellerAds();
+
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  const loadPropellerAds = () => {
+    // Global PropellerAds scripts
+    const adsScripts = [
+      {
+        id: 'propeller-push',
+        src: 'https://3nbf4.com/act/files/tag.min.js?z=10209677',
+        dataset: { zone: '10209677' }
+      },
+      {
+        id: 'propeller-inpage',
+        src: 'https://nap5k.com/tag.min.js',
+        dataset: { zone: '10209689' }
+      }
+    ];
+
+    adsScripts.forEach(scriptConfig => {
+      const script = document.createElement('script');
+      script.id = scriptConfig.id;
+      script.src = scriptConfig.src;
+      script.async = true;
+      script.dataset.cfasync = "false";
+      
+      if (scriptConfig.dataset) {
+        Object.keys(scriptConfig.dataset).forEach(key => {
+          script.dataset[key] = scriptConfig.dataset[key];
+        });
+      }
+      
+      document.head.appendChild(script);
+    });
+  };
 
   const updateDarkModeStyles = (isDark) => {
     const root = document.documentElement;
@@ -44,6 +79,67 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
   const navigateTo = (path) => {
     router.push(path);
+  };
+
+  // Ads Components
+  const VintageBannerAd = () => {
+    useEffect(() => {
+      const script = document.createElement('script');
+      script.innerHTML = `(function(s){s.dataset.zone='10212308',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
+      document.head.appendChild(script);
+      
+      return () => {
+        document.head.removeChild(script);
+      };
+    }, []);
+
+    return (
+      <div style={{
+        margin: '20px 0',
+        padding: '10px',
+        backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+        border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+        borderRadius: '8px',
+        textAlign: 'center',
+        minHeight: '100px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {/* Vintage Banner Ad will load here */}
+        <div id="vintage-banner-ad"></div>
+      </div>
+    );
+  };
+
+  const NativeBannerAd = () => {
+    useEffect(() => {
+      const script = document.createElement('script');
+      script.innerHTML = `(function(s){s.dataset.zone='10209722',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`;
+      document.head.appendChild(script);
+      
+      return () => {
+        document.head.removeChild(script);
+      };
+    }, []);
+
+    return (
+      <div style={{
+        margin: '20px 0',
+        padding: '10px',
+        backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
+        border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
+        borderRadius: '8px',
+        textAlign: 'center',
+        minHeight: '250px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {/* Native Banner Ad will load here */}
+        <div id="native-banner-ad"></div>
+      </div>
+    );
   };
 
   const containerStyle = {
@@ -71,7 +167,13 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
       />
 
       <main>
+        {/* Header ke niche Vintage Banner */}
+        <VintageBannerAd />
+        
         {children}
+        
+        {/* Content ke beech mein Native Banner */}
+        <NativeBannerAd />
       </main>
 
       <ToolCards
@@ -79,6 +181,9 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         isMobile={isMobile}
         navigateTo={navigateTo}
       />
+
+      {/* ToolCards ke baad ek aur Native Banner */}
+      <NativeBannerAd />
 
       <FeedbackSection
         darkMode={darkMode}
