@@ -44,6 +44,7 @@ export default function App({ Component, pageProps }) {
         {/* Google Site Verification */}
         <meta name="google-site-verification" content="FeI7rBqbWesNjgaCWozMEhBcFPU7EjubLYkWmS85vOI" />
             <meta name="google-adsense-account" content="ca-pub-8739462043637379" />
+             <meta name="monetag" content="2ff36e6e9d16445611d088cf9546df1d" />
       </Head>
 
       {/* ✅ AUTO ADS CODE */}
