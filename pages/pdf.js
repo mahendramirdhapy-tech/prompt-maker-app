@@ -955,7 +955,7 @@ export default function PDFMaker() {
                 backgroundColor: '#ecfdf5',
                 padding: '1.5rem',
                 borderRadius: '8px',
-                borderLeft: '4px solid '#10b981'
+                borderLeft: '4px solid #10b981'
               }}>
                 <h4 style={{ color: '#047857', marginTop: '0', marginBottom: '1rem' }}>✅ Professional-Grade PDF Capabilities</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
