@@ -50,7 +50,7 @@ export default function Blog() {
       date: "6 November 2025",
       category: "Hindi Guide",
       readTime: "6 min read",
-      image: "https://images.unsplash.com/photo-1529254479751-fbacb4c3b7d7?w=500&h=300&fit=crop"
+      image: "https://unsplash.com/photos/man-using-laptop-between-eyeglasses-and-iphone-uTi9PhSJPm8"
     },
     {
       title: "10 Common Prompt Writing Mistakes and How to Avoid Them",
