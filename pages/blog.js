@@ -50,7 +50,7 @@ export default function Blog() {
       date: "6 November 2025",
       category: "Hindi Guide",
       readTime: "6 min read",
-      image: "https://unsplash.com/photos/man-using-laptop-between-eyeglasses-and-iphone-uTi9PhSJPm8"
+      image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizwv4oeP5Od2tdtUuSX_q02jdGtlYU4T3Instl0Gou-_J-VByq6HdEpKN7K88J8WxQfwVBEBT32G6D8WtlhXjzm0pH7CHU2bXyJ1bdVxU3K6vWqlNPaqTxdfgFOulZ21KL8JRr-dq95yHdmjpkcZtc05aKGDkr_FctsgKCGG8f01Kg_bUQ0lATmBQD8G0y/s1024/Gemini_Generated_Image_iphz49iphz49iphz.png"
     },
     {
       title: "10 Common Prompt Writing Mistakes and How to Avoid Them",
