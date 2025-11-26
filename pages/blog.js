@@ -1,6 +1,7 @@
 // pages/blog.js
 import Head from 'next/head';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Blog() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +23,7 @@ export default function Blog() {
       date: "9 November 2025",
       category: "Programming",
       readTime: "7 min read",
-      image: "/images/coding-prompts.jpg"
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&h=300&fit=crop"
     },
     {
       title: "Why Free AI Models Are Enough for Prompt Engineering",
@@ -31,9 +32,8 @@ export default function Blog() {
       date: "8 November 2025",
       category: "AI Models",
       readTime: "6 min read",
-      image: "/images/free-models.jpg"
+      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500&h=300&fit=crop"
     },
-    // New articles added below
     {
       title: "Advanced Prompt Engineering Techniques for Developers",
       excerpt: "Master chain-of-thought, few-shot learning, and other advanced techniques to improve AI responses significantly.",
@@ -41,7 +41,7 @@ export default function Blog() {
       date: "7 November 2025",
       category: "Advanced",
       readTime: "8 min read",
-      image: "/images/advanced-techniques.jpg"
+      image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=500&h=300&fit=crop"
     },
     {
       title: "Hindi vs English: Which Language Works Better for AI Prompts?",
@@ -50,7 +50,7 @@ export default function Blog() {
       date: "6 November 2025",
       category: "Hindi Guide",
       readTime: "6 min read",
-      image: "/images/language-comparison.jpg"
+      image: "https://images.unsplash.com/photo-1529254479751-fbacb4c3b7d7?w=500&h=300&fit=crop"
     },
     {
       title: "10 Common Prompt Writing Mistakes and How to Avoid Them",
@@ -59,7 +59,7 @@ export default function Blog() {
       date: "5 November 2025",
       category: "Beginner",
       readTime: "5 min read",
-      image: "/images/common-mistakes.jpg"
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop"
     },
     {
       title: "How to Use AI Prompts for Content Writing and Blogging",
@@ -68,7 +68,7 @@ export default function Blog() {
       date: "4 November 2025",
       category: "Content Writing",
       readTime: "7 min read",
-      image: "/images/content-writing.jpg"
+      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500&h=300&fit=crop"
     },
     {
       title: "Prompt Engineering for Business: Increase Productivity 3x",
@@ -77,7 +77,7 @@ export default function Blog() {
       date: "3 November 2025",
       category: "Business",
       readTime: "8 min read",
-      image: "/images/business-prompts.jpg"
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop"
     },
     {
       title: "Free AI Tools for Prompt Engineering: Complete Guide 2025",
@@ -86,7 +86,7 @@ export default function Blog() {
       date: "2 November 2025",
       category: "Tools",
       readTime: "10 min read",
-      image: "/images/free-tools.jpg"
+      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500&h=300&fit=crop"
     },
     {
       title: "How to Write Prompts for Image Generation AI (DALL-E, Midjourney)",
@@ -95,7 +95,7 @@ export default function Blog() {
       date: "1 November 2025",
       category: "Image AI",
       readTime: "6 min read",
-      image: "/images/image-prompts.jpg"
+      image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&h=300&fit=crop"
     },
     {
       title: "ChatGPT Prompt Engineering: Secret Tips from Experts",
@@ -104,7 +104,7 @@ export default function Blog() {
       date: "31 October 2025",
       category: "ChatGPT",
       readTime: "7 min read",
-      image: "/images/chatgpt-tips.jpg"
+      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500&h=300&fit=crop"
     },
     {
       title: "Building Custom AI Assistants with Effective Prompt Design",
@@ -113,7 +113,7 @@ export default function Blog() {
       date: "30 October 2025",
       category: "Advanced",
       readTime: "9 min read",
-      image: "/images/custom-assistants.jpg"
+      image: "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=500&h=300&fit=crop"
     },
     {
       title: "Hindi Technical Terms for AI Prompt Engineering",
@@ -122,7 +122,7 @@ export default function Blog() {
       date: "29 October 2025",
       category: "Hindi Guide",
       readTime: "4 min read",
-      image: "/images/technical-terms.jpg"
+      image: "https://images.unsplash.com/photo-1589652717521-10c0d092dea9?w=500&h=300&fit=crop"
     },
     {
       title: "Prompt Templates for Daily Use: Copy-Paste Ready",
@@ -131,7 +131,7 @@ export default function Blog() {
       date: "28 October 2025",
       category: "Templates",
       readTime: "5 min read",
-      image: "/images/prompt-templates.jpg"
+      image: "https://images.unsplash.com/photo-1581276879432-15e50529f34b?w=500&h=300&fit=crop"
     },
     {
       title: "Measuring Prompt Effectiveness: Metrics and Analysis",
@@ -140,7 +140,7 @@ export default function Blog() {
       date: "27 October 2025",
       category: "Advanced",
       readTime: "7 min read",
-      image: "/images/measuring-effectiveness.jpg"
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop"
     },
     {
       title: "AI Prompt Security: Protecting Your Data and Privacy",
@@ -149,7 +149,7 @@ export default function Blog() {
       date: "26 October 2025",
       category: "Security",
       readTime: "6 min read",
-      image: "/images/prompt-security.jpg"
+      image: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=500&h=300&fit=crop"
     },
     {
       title: "Multilingual Prompt Engineering: Beyond English and Hindi",
@@ -158,7 +158,7 @@ export default function Blog() {
       date: "25 October 2025",
       category: "Multilingual",
       readTime: "8 min read",
-      image: "/images/multilingual-prompts.jpg"
+      image: "https://images.unsplash.com/photo-1529254479751-fbacb4c3b7d7?w=500&h=300&fit=crop"
     },
     {
       title: "Automating Workflows with AI Prompts: Practical Examples",
@@ -167,7 +167,7 @@ export default function Blog() {
       date: "24 October 2025",
       category: "Automation",
       readTime: "9 min read",
-      image: "/images/automation-workflows.jpg"
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=300&fit=crop"
     },
     {
       title: "Educational Applications of AI Prompts for Students and Teachers",
@@ -176,7 +176,7 @@ export default function Blog() {
       date: "23 October 2025",
       category: "Education",
       readTime: "7 min read",
-      image: "/images/educational-prompts.jpg"
+      image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&h=300&fit=crop"
     },
     {
       title: "The Psychology Behind Effective AI Prompt Design",
@@ -185,7 +185,7 @@ export default function Blog() {
       date: "22 October 2025",
       category: "Psychology",
       readTime: "6 min read",
-      image: "/images/psychology-prompts.jpg"
+      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=300&fit=crop"
     },
     {
       title: "Real-World Case Studies: Successful Prompt Engineering Examples",
@@ -194,7 +194,7 @@ export default function Blog() {
       date: "21 October 2025",
       category: "Case Studies",
       readTime: "10 min read",
-      image: "/images/case-studies.jpg"
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop"
     },
     {
       title: "Mobile Apps for Prompt Engineering On The Go",
@@ -203,7 +203,7 @@ export default function Blog() {
       date: "20 October 2025",
       category: "Mobile",
       readTime: "5 min read",
-      image: "/images/mobile-apps.jpg"
+      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500&h=300&fit=crop"
     },
     {
       title: "Future of Prompt Engineering: Trends and Predictions for 2026",
@@ -212,7 +212,7 @@ export default function Blog() {
       date: "19 October 2025",
       category: "Future",
       readTime: "8 min read",
-      image: "/images/future-trends.jpg"
+      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&h=300&fit=crop"
     },
     {
       title: "Debugging AI Responses: How to Fix Poor Outputs",
@@ -221,7 +221,7 @@ export default function Blog() {
       date: "18 October 2025",
       category: "Debugging",
       readTime: "6 min read",
-      image: "/images/debugging-ai.jpg"
+      image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=500&h=300&fit=crop"
     },
     {
       title: "Community Resources for Prompt Engineering Learners",
@@ -230,7 +230,7 @@ export default function Blog() {
       date: "17 October 2025",
       category: "Resources",
       readTime: "5 min read",
-      image: "/images/community-resources.jpg"
+      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&h=300&fit=crop"
     }
   ];
 
@@ -361,12 +361,9 @@ export default function Blog() {
           borderRadius: '8px'
         }}>
           {/* AdSense Code Here */}
-          <ins className="adsbygoogle"
-            style={{ display: 'block' }}
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="XXXXXXXXXX"
-            data-ad-format="auto"
-            data-full-width-responsive="true"></ins>
+          <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
+            Advertisement Space
+          </div>
         </div>
 
         {/* Articles Grid */}
@@ -396,20 +393,45 @@ export default function Blog() {
                 e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
               }}
             >
-              {/* Article Image */}
+              {/* Article Image with Next.js Image component */}
               <div style={{
                 width: '100%',
                 height: '200px',
-                backgroundColor: '#f3f4f6',
                 borderRadius: '12px',
                 marginBottom: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#9ca3af',
-                fontSize: '14px'
+                overflow: 'hidden',
+                position: 'relative'
               }}>
-                {article.image ? '📷 Related Image' : '🖼️ Image Placeholder'}
+                {article.image ? (
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    style={{ 
+                      objectFit: 'cover',
+                      objectPosition: 'center'
+                    }}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div 
+                  style={{
+                    display: article.image ? 'none' : 'flex',
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: '#f3f4f6',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#9ca3af',
+                    fontSize: '14px'
+                  }}
+                >
+                  🖼️ Image Loading...
+                </div>
               </div>
 
               {/* Article Meta */}
@@ -483,12 +505,9 @@ export default function Blog() {
           borderRadius: '8px'
         }}>
           {/* AdSense Code Here */}
-          <ins className="adsbygoogle"
-            style={{ display: 'block' }}
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="XXXXXXXXXX"
-            data-ad-format="auto"
-            data-full-width-responsive="true"></ins>
+          <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
+            Advertisement Space
+          </div>
         </div>
 
         {/* CTA Section */}
@@ -545,20 +564,11 @@ export default function Blog() {
           borderRadius: '8px'
         }}>
           {/* AdSense Code Here */}
-          <ins className="adsbygoogle"
-            style={{ display: 'block' }}
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="XXXXXXXXXX"
-            data-ad-format="auto"
-            data-full-width-responsive="true"></ins>
+          <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
+            Advertisement Space
+          </div>
         </div>
       </div>
-
-      {/* AdSense Script */}
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-      <script>
-        {`(adsbygoogle = window.adsbygoogle || []).push({});`}
-      </script>
     </>
   );
 }
