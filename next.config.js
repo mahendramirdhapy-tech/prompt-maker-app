@@ -1,13 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,      // ✅ Correct
-  swcMinify: true,           // ✅ Correct  
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: [
+      'blogger.googleusercontent.com',
+      'images.unsplash.com',
+      'aipromptmaker.online'
+    ],
+    formats: ['image/webp', 'image/avif'],
+  },
   eslint: {
-    ignoreDuringBuilds: true, // ✅ Correct - ESLint errors ignore
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,  // ✅ Correct - TypeScript errors ignore
+    ignoreBuildErrors: true,
   }
 }
 
-module.exports = nextConfig   // ✅ Correct export
+module.exports = nextConfig
