@@ -13,7 +13,7 @@ export default function Blog() {
       date: "10 November 2025",
       category: "Hindi Guide",
       readTime: "5 min read",
-      image: "/images/hindi-prompts.jpg"
+      image: "/images/hindi-prompts.png"
     },
     {
       title: "How to Generate Coding Prompts That Actually Work",
