@@ -8,7 +8,6 @@ import FeedbackSection from './FeedbackSection';
 const Layout = ({ children, user, handleLogin, handleLogout }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [pushPermission, setPushPermission] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
@@ -35,7 +34,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     // Load all ads only on client side
     if (typeof window !== 'undefined') {
       loadAllAds();
-      checkPushPermission();
     }
 
     return () => {
@@ -44,14 +42,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
       }
     };
   }, []);
-
-  const checkPushPermission = () => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      if (Notification.permission === 'granted') {
-        setPushPermission(true);
-      }
-    }
-  };
 
   const loadAllAds = () => {
     // All PropellerAds formats except Monetag
@@ -123,18 +113,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     }
   };
 
-  const requestPushPermission = () => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      Notification.requestPermission().then((permission) => {
-        if (permission === 'granted') {
-          setPushPermission(true);
-          // Reload push ads after permission granted
-          setTimeout(loadPushNotifications, 1000);
-        }
-      });
-    }
-  };
-
   const updateDarkModeStyles = (isDark) => {
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
@@ -154,88 +132,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
   const navigateTo = (path) => {
     router.push(path);
-  };
-
-  // Push Notification Permission Component
-  const PushNotificationPrompt = () => {
-    if (!isClient || pushPermission || !('Notification' in window)) return null;
-
-    return (
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-        border: `2px solid ${darkMode ? '#3b82f6' : '#3b82f6'}`,
-        borderRadius: '12px',
-        padding: '15px',
-        maxWidth: '300px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-        zIndex: 1000
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '10px',
-          marginBottom: '10px'
-        }}>
-          <span style={{ fontSize: '1.5rem' }}>🔔</span>
-          <div>
-            <h4 style={{ 
-              margin: '0 0 5px 0', 
-              color: darkMode ? '#f8fafc' : '#1e293b',
-              fontSize: '1rem'
-            }}>
-              Get Updates!
-            </h4>
-            <p style={{ 
-              margin: '0', 
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              fontSize: '0.8rem',
-              lineHeight: '1.4'
-            }}>
-              Enable push notifications for latest AI tools updates.
-            </p>
-          </div>
-        </div>
-        <div style={{
-          display: 'flex',
-          gap: '10px',
-          justifyContent: 'flex-end'
-        }}>
-          <button
-            onClick={() => setPushPermission(true)}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: 'transparent',
-              color: darkMode ? '#cbd5e1' : '#64748b',
-              border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`,
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: '500'
-            }}
-          >
-            Later
-          </button>
-          <button
-            onClick={requestPushPermission}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: '600'
-            }}
-          >
-            Enable
-          </button>
-        </div>
-      </div>
-    );
   };
 
   // Native Banner Ad Component
@@ -360,9 +256,6 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         isMobile={isMobile}
         navigateTo={navigateTo}
       />
-
-      {/* Push Notification Prompt - Only shows on client side */}
-      {isClient && <PushNotificationPrompt />}
     </div>
   );
 };
