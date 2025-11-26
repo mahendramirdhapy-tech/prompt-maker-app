@@ -13,7 +13,7 @@ export default function Blog() {
       date: "10 November 2025",
       category: "Hindi Guide",
       readTime: "5 min read",
-      image: "/images/hindi-prompts.png"
+      image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi60hbLdT20bwH998Y9gpoqtPmZ6KCN93LFbpZEsrnIxtD7Pwv6QI64nS1Kowb3D8gWYH0eTZioJgkDr07nlth4z_c4QIGHJNPZOq-krTqm9rIZYSBEG8Iw8XSs-hOV7wY3lnljO5WICs4wCr5RXGdFTQU88rdO-tKGArdVoTqrfywps8UW8QyHPac9IpOp/s1024/hindi-prompts.png"
     },
     {
       title: "How to Generate Coding Prompts That Actually Work",
