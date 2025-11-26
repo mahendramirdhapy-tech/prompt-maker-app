@@ -27,26 +27,6 @@ const FeedbackSection = ({ darkMode, isMobile, navigateTo }) => {
     }
   };
 
-  const NativeBannerAd = () => {
-    return (
-      <div style={{
-        margin: '30px 0',
-        padding: '15px',
-        backgroundColor: darkMode ? '#1e293b' : '#f8fafc',
-        border: `1px solid ${darkMode ? '#334155' : '#e2e8f0'}`,
-        borderRadius: '8px',
-        textAlign: 'center',
-        minHeight: '250px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        {/* Native Banner Ad Container */}
-        <div id="feedback-native-ad"></div>
-      </div>
-    );
-  };
-
   return (
     <section style={{
       marginTop: '60px',
@@ -236,9 +216,6 @@ const FeedbackSection = ({ darkMode, isMobile, navigateTo }) => {
             </button>
           </div>
         )}
-
-        {/* Feedback section ke beech mein ad */}
-        <NativeBannerAd />
 
         {/* Call to Action */}
         <div style={{
