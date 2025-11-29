@@ -75,6 +75,9 @@ const Footer = ({ darkMode, isMobile, navigateTo }) => {
             <button onClick={() => navigateTo('/translate')} style={linkButtonStyle}>
               🔄 Translator
             </button>
+            <button onClick={() => window.open('https://pixel-forge-kappa.vercel.app/', '_blank')} style={linkButtonStyle}>
+              🎨 Pixel Forge
+            </button>
           </div>
         </div>
         
