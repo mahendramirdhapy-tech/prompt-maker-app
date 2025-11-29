@@ -49,6 +49,7 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
     { path: '/translate', label: '🔄 Translator' },
     { path: '/audio', label: '🎵 Audio Tool' },
     { path: '/pdf', label: '📄 PDF Maker' },
+    { path: '/pixel-forge', label: '🎨 Pixel Forge', action: () => window.open('https://pixel-forge-kappa.vercel.app/', '_blank') },
   ];
 
   const navigateTo = (path) => {
