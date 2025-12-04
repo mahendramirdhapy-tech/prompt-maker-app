@@ -1,9 +1,9 @@
-// components/Header.js - PROFESSIONAL NAVBAR VERSION WITH AUTH (ADS REMOVED)
+// components/Header.js - PROFESSIONAL NAVBAR VERSION WITH ADS
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
 
-const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobile }) => {
+const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobile, AdBanner }) => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFeaturesDropdown, setShowFeaturesDropdown] = useState(false);
@@ -748,6 +748,24 @@ const Header = ({ darkMode, setDarkMode, user, handleLogin, handleLogout, isMobi
 
       {/* Add space for fixed header */}
       <div style={{ height: '70px' }}></div>
+
+      {/* Ad in Header Area (Below fixed header) */}
+      {AdBanner && !isMobile && (
+        <div style={{ 
+          marginTop: '10px', 
+          marginBottom: '20px',
+          maxWidth: '1200px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          padding: '0 20px'
+        }}>
+          <AdBanner 
+            adId="615b610ffe45a0412605aecbdac54718" 
+            size="large" 
+            position="center"
+          />
+        </div>
+      )}
     </>
   );
 };
