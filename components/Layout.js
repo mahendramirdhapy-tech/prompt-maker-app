@@ -31,12 +31,62 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
+    // Load advertisement scripts
+    loadAdScripts();
+
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('resize', checkScreenSize);
       }
     };
   }, []);
+
+  const loadAdScripts = () => {
+    // Load first ad script
+    const script1 = document.createElement('script');
+    script1.type = 'text/javascript';
+    script1.innerHTML = `
+      atOptions = {
+        'key': '615b610ffe45a0412605aecbdac54718',
+        'format': 'iframe',
+        'height': 90,
+        'width': 728,
+        'params': {}
+      };
+    `;
+    document.head.appendChild(script1);
+
+    const script2 = document.createElement('script');
+    script2.type = 'text/javascript';
+    script2.src = '//www.highperformanceformat.com/615b610ffe45a0412605aecbdac54718/invoke.js';
+    document.head.appendChild(script2);
+
+    // Load second ad script
+    const script3 = document.createElement('script');
+    script3.type = 'text/javascript';
+    script3.innerHTML = `
+      atOptions = {
+        'key': '76390f46075c4f249d538d793d556a83',
+        'format': 'iframe',
+        'height': 50,
+        'width': 320,
+        'params': {}
+      };
+    `;
+    document.head.appendChild(script3);
+
+    const script4 = document.createElement('script');
+    script4.type = 'text/javascript';
+    script4.src = '//www.highperformanceformat.com/76390f46075c4f249d538d793d556a83/invoke.js';
+    document.head.appendChild(script4);
+
+    // Load third ad script
+    const script5 = document.createElement('script');
+    script5.async = true;
+    script5.setAttribute('data-cfasync', 'false');
+    script5.src = '//pl28186536.effectivegatecpm.com/d63cce37510d96a8534132920fcceba7/invoke.js';
+    document.head.appendChild(script5);
+  };
 
   const updateDarkModeStyles = (isDark) => {
     if (typeof document !== 'undefined') {
@@ -85,6 +135,19 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
       <main>
         {children}
+        
+        {/* Advertisement Placeholders */}
+        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
+          <div id="container-615b610ffe45a0412605aecbdac54718"></div>
+        </div>
+        
+        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
+          <div id="container-76390f46075c4f249d538d793d556a83"></div>
+        </div>
+        
+        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
+          <div id="container-d63cce37510d96a8534132920fcceba7"></div>
+        </div>
       </main>
 
       <ToolCards
