@@ -31,8 +31,11 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
     setDarkMode(isDark);
     updateDarkModeStyles(isDark);
 
-    // Load advertisement scripts
-    loadAdScripts();
+    // Load advertisement scripts only once
+    if (!window.adsLoaded) {
+      loadAdScripts();
+      window.adsLoaded = true;
+    }
 
     return () => {
       if (typeof window !== 'undefined') {
@@ -42,50 +45,65 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
   }, []);
 
   const loadAdScripts = () => {
-    // Load first ad script
-    const script1 = document.createElement('script');
-    script1.type = 'text/javascript';
-    script1.innerHTML = `
-      atOptions = {
+    // Function to load a script
+    const loadScript = (innerHTML, src, async = false, dataAttr = null) => {
+      if (typeof document === 'undefined') return;
+      
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      
+      if (innerHTML) {
+        script.innerHTML = innerHTML;
+      }
+      
+      if (src) {
+        script.src = src;
+      }
+      
+      if (async) {
+        script.async = true;
+      }
+      
+      if (dataAttr) {
+        script.setAttribute('data-cfasync', dataAttr);
+      }
+      
+      document.head.appendChild(script);
+    };
+
+    // First ad (728x90)
+    loadScript(
+      `atOptions = {
         'key': '615b610ffe45a0412605aecbdac54718',
         'format': 'iframe',
         'height': 90,
         'width': 728,
         'params': {}
-      };
-    `;
-    document.head.appendChild(script1);
+      };`,
+      null
+    );
+    loadScript(null, '//www.highperformanceformat.com/615b610ffe45a0412605aecbdac54718/invoke.js');
 
-    const script2 = document.createElement('script');
-    script2.type = 'text/javascript';
-    script2.src = '//www.highperformanceformat.com/615b610ffe45a0412605aecbdac54718/invoke.js';
-    document.head.appendChild(script2);
-
-    // Load second ad script
-    const script3 = document.createElement('script');
-    script3.type = 'text/javascript';
-    script3.innerHTML = `
-      atOptions = {
+    // Second ad (320x50)
+    loadScript(
+      `atOptions = {
         'key': '76390f46075c4f249d538d793d556a83',
         'format': 'iframe',
         'height': 50,
         'width': 320,
         'params': {}
-      };
-    `;
-    document.head.appendChild(script3);
+      };`,
+      null
+    );
+    loadScript(null, '//www.highperformanceformat.com/76390f46075c4f249d538d793d556a83/invoke.js');
 
-    const script4 = document.createElement('script');
-    script4.type = 'text/javascript';
-    script4.src = '//www.highperformanceformat.com/76390f46075c4f249d538d793d556a83/invoke.js';
-    document.head.appendChild(script4);
-
-    // Load third ad script
-    const script5 = document.createElement('script');
-    script5.async = true;
-    script5.setAttribute('data-cfasync', 'false');
-    script5.src = '//pl28186536.effectivegatecpm.com/d63cce37510d96a8534132920fcceba7/invoke.js';
-    document.head.appendChild(script5);
+    // Third ad
+    loadScript(
+      null,
+      '//pl28186536.effectivegatecpm.com/d63cce37510d96a8534132920fcceba7/invoke.js',
+      true,
+      'false'
+    );
   };
 
   const updateDarkModeStyles = (isDark) => {
@@ -107,6 +125,31 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
   const navigateTo = (path) => {
     router.push(path);
+  };
+
+  const AdBanner = ({ id, isMobile, isLeaderboard = false }) => {
+    if (isMobile && isLeaderboard) {
+      return null; // Don't show leaderboard ads on mobile
+    }
+
+    const adStyle = {
+      margin: '20px auto',
+      textAlign: 'center',
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: isLeaderboard ? '90px' : '50px',
+      backgroundColor: darkMode ? '#1e293b' : '#f1f5f9',
+      borderRadius: '8px',
+      overflow: 'hidden'
+    };
+
+    return (
+      <div style={adStyle}>
+        <div id={`container-${id}`} />
+      </div>
+    );
   };
 
   const containerStyle = {
@@ -133,27 +176,33 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         isMobile={isMobile}
       />
 
+      {/* Top Ad (Leaderboard) */}
+      <AdBanner 
+        id="615b610ffe45a0412605aecbdac54718" 
+        isMobile={isMobile} 
+        isLeaderboard={true}
+      />
+
       <main>
         {children}
-        
-        {/* Advertisement Placeholders */}
-        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
-          <div id="container-615b610ffe45a0412605aecbdac54718"></div>
-        </div>
-        
-        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
-          <div id="container-76390f46075c4f249d538d793d556a83"></div>
-        </div>
-        
-        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
-          <div id="container-d63cce37510d96a8534132920fcceba7"></div>
-        </div>
       </main>
+
+      {/* Middle Ad (Mobile) */}
+      <AdBanner 
+        id="76390f46075c4f249d538d793d556a83" 
+        isMobile={isMobile}
+      />
 
       <ToolCards
         darkMode={darkMode}
         isMobile={isMobile}
         navigateTo={navigateTo}
+      />
+
+      {/* Bottom Ad */}
+      <AdBanner 
+        id="d63cce37510d96a8534132920fcceba7" 
+        isMobile={isMobile}
       />
 
       <FeedbackSection
