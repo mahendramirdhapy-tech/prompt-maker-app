@@ -1,3 +1,4 @@
+// Layout.js
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Header from './Header';
@@ -8,12 +9,10 @@ import FeedbackSection from './FeedbackSection';
 const Layout = ({ children, user, handleLogin, handleLogout }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [adsLoaded, setAdsLoaded] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
-    
     const checkScreenSize = () => {
       if (typeof window !== 'undefined') {
         const mobile = window.innerWidth < 768;
@@ -29,12 +28,11 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
     const isDark = typeof window !== 'undefined' ? localStorage.getItem('darkMode') === 'true' : false;
     setDarkMode(isDark);
-    updateDarkModeStyles(isDark);
 
-    // Load advertisement scripts only once
-    if (!window.adsLoaded) {
+    // Load ads after component mounts
+    if (typeof window !== 'undefined' && !adsLoaded) {
       loadAdScripts();
-      window.adsLoaded = true;
+      setAdsLoaded(true);
     }
 
     return () => {
@@ -42,114 +40,86 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         window.removeEventListener('resize', checkScreenSize);
       }
     };
-  }, []);
+  }, [adsLoaded]);
 
   const loadAdScripts = () => {
-    // Function to load a script
-    const loadScript = (innerHTML, src, async = false, dataAttr = null) => {
-      if (typeof document === 'undefined') return;
-      
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      
-      if (innerHTML) {
-        script.innerHTML = innerHTML;
-      }
-      
-      if (src) {
-        script.src = src;
-      }
-      
-      if (async) {
-        script.async = true;
-      }
-      
-      if (dataAttr) {
-        script.setAttribute('data-cfasync', dataAttr);
-      }
-      
-      document.head.appendChild(script);
-    };
+    if (typeof document === 'undefined') return;
 
     // First ad (728x90)
-    loadScript(
-      `atOptions = {
+    const script1 = document.createElement('script');
+    script1.type = 'text/javascript';
+    script1.innerHTML = `
+      atOptions = {
         'key': '615b610ffe45a0412605aecbdac54718',
         'format': 'iframe',
         'height': 90,
         'width': 728,
         'params': {}
-      };`,
-      null
-    );
-    loadScript(null, '//www.highperformanceformat.com/615b610ffe45a0412605aecbdac54718/invoke.js');
+      };
+    `;
+    document.head.appendChild(script1);
+
+    const script2 = document.createElement('script');
+    script2.type = 'text/javascript';
+    script2.src = '//www.highperformanceformat.com/615b610ffe45a0412605aecbdac54718/invoke.js';
+    document.head.appendChild(script2);
 
     // Second ad (320x50)
-    loadScript(
-      `atOptions = {
+    const script3 = document.createElement('script');
+    script3.type = 'text/javascript';
+    script3.innerHTML = `
+      atOptions = {
         'key': '76390f46075c4f249d538d793d556a83',
         'format': 'iframe',
         'height': 50,
         'width': 320,
         'params': {}
-      };`,
-      null
-    );
-    loadScript(null, '//www.highperformanceformat.com/76390f46075c4f249d538d793d556a83/invoke.js');
+      };
+    `;
+    document.head.appendChild(script3);
+
+    const script4 = document.createElement('script');
+    script4.type = 'text/javascript';
+    script4.src = '//www.highperformanceformat.com/76390f46075c4f249d538d793d556a83/invoke.js';
+    document.head.appendChild(script4);
 
     // Third ad
-    loadScript(
-      null,
-      '//pl28186536.effectivegatecpm.com/d63cce37510d96a8534132920fcceba7/invoke.js',
-      true,
-      'false'
-    );
+    const script5 = document.createElement('script');
+    script5.async = true;
+    script5.setAttribute('data-cfasync', 'false');
+    script5.src = '//pl28186536.effectivegatecpm.com/d63cce37510d96a8534132920fcceba7/invoke.js';
+    document.head.appendChild(script5);
   };
 
-  const updateDarkModeStyles = (isDark) => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      if (isDark) {
-        root.style.setProperty('--bg-primary', '#0f172a');
-        root.style.setProperty('--bg-secondary', '#1e293b');
-        root.style.setProperty('--text-primary', '#f8fafc');
-        root.style.setProperty('--text-secondary', '#cbd5e1');
-      } else {
-        root.style.setProperty('--bg-primary', '#ffffff');
-        root.style.setProperty('--bg-secondary', '#f8fafc');
-        root.style.setProperty('--text-primary', '#1e293b');
-        root.style.setProperty('--text-secondary', '#64748b');
-      }
-    }
+  // AdBanner Component
+  const AdBanner = ({ adId, size = 'medium', position = 'center' }) => {
+    if (!adsLoaded) return null;
+
+    const adStyle = {
+      margin: '20px auto',
+      textAlign: position,
+      width: '100%',
+      display: 'flex',
+      justifyContent: position === 'center' ? 'center' : 'flex-start',
+      alignItems: 'center',
+      minHeight: size === 'large' ? '90px' : '50px',
+      backgroundColor: darkMode ? '#1e293b' : '#f1f5f9',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      padding: '10px'
+    };
+
+    const containerId = `container-${adId}`;
+
+    return (
+      <div style={adStyle}>
+        <div id={containerId} />
+      </div>
+    );
   };
 
   const navigateTo = (path) => {
     router.push(path);
-  };
-
-  const AdBanner = ({ id, isMobile, isLeaderboard = false }) => {
-    if (isMobile && isLeaderboard) {
-      return null; // Don't show leaderboard ads on mobile
-    }
-
-    const adStyle = {
-      margin: '20px auto',
-      textAlign: 'center',
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: isLeaderboard ? '90px' : '50px',
-      backgroundColor: darkMode ? '#1e293b' : '#f1f5f9',
-      borderRadius: '8px',
-      overflow: 'hidden'
-    };
-
-    return (
-      <div style={adStyle}>
-        <div id={`container-${id}`} />
-      </div>
-    );
   };
 
   const containerStyle = {
@@ -174,23 +144,25 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         isMobile={isMobile}
+        AdBanner={AdBanner} // Pass AdBanner as prop
       />
 
-      {/* Top Ad (Leaderboard) */}
-      <AdBanner 
-        id="615b610ffe45a0412605aecbdac54718" 
-        isMobile={isMobile} 
-        isLeaderboard={true}
-      />
+      {/* Top Ad */}
+      {!isMobile && (
+        <AdBanner 
+          adId="615b610ffe45a0412605aecbdac54718" 
+          size="large" 
+        />
+      )}
 
       <main>
         {children}
       </main>
 
-      {/* Middle Ad (Mobile) */}
+      {/* Middle Ad */}
       <AdBanner 
-        id="76390f46075c4f249d538d793d556a83" 
-        isMobile={isMobile}
+        adId="76390f46075c4f249d538d793d556a83" 
+        size="medium" 
       />
 
       <ToolCards
@@ -201,8 +173,8 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
 
       {/* Bottom Ad */}
       <AdBanner 
-        id="d63cce37510d96a8534132920fcceba7" 
-        isMobile={isMobile}
+        adId="d63cce37510d96a8534132920fcceba7" 
+        size="medium" 
       />
 
       <FeedbackSection
@@ -215,6 +187,7 @@ const Layout = ({ children, user, handleLogin, handleLogout }) => {
         darkMode={darkMode}
         isMobile={isMobile}
         navigateTo={navigateTo}
+        AdBanner={AdBanner} // Pass AdBanner as prop
       />
     </div>
   );
